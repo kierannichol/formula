@@ -6,6 +6,8 @@ export interface ResolvedValue {
   asBoolean(): boolean;
 
   equals(other: ResolvedValue): boolean;
+
+  map(fn: (value: ResolvedValue) => ResolvedValue): ResolvedValue;
 }
 
 class TextValue implements ResolvedValue {
@@ -32,6 +34,10 @@ class TextValue implements ResolvedValue {
   toString(): string {
     return this.asText();
   }
+
+  map(fn: (value: ResolvedValue) => ResolvedValue): ResolvedValue {
+    return fn(this);
+  }
 }
 
 class BooleanValue implements ResolvedValue {
@@ -49,6 +55,10 @@ class BooleanValue implements ResolvedValue {
 
   asText(): string {
     return this.value ? "true" : "false";
+  }
+
+  map(fn: (value: ResolvedValue) => ResolvedValue): ResolvedValue {
+    return fn(this);
   }
 
   equals(other: ResolvedValue): boolean {
@@ -74,6 +84,10 @@ class NullValue implements ResolvedValue {
 
   asText(): string {
     return '';
+  }
+
+  map(fn: (value: ResolvedValue) => ResolvedValue): ResolvedValue {
+    return this;
   }
 
   equals(other: ResolvedValue): boolean {

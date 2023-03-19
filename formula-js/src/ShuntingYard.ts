@@ -1,5 +1,6 @@
 import {DataContext} from "./DataContext";
 import Parser from "./Parser";
+import {QuotedTextResolvedValue} from "./QuotedTextResolvedValue";
 import {Resolvable} from "./Resolvable";
 import {ResolvedValue} from "./ResolvedValue";
 import {ResolveError} from "./ResolveError";
@@ -101,11 +102,19 @@ class Variable implements Node {
   }
 }
 
+class Comment implements Node {
+  constructor(public readonly comment: string, public readonly fn: (subject: ResolvedValue, comment: string) => ResolvedValue|Resolvable|undefined) {}
+}
+
 class Term implements Node {
-  constructor(private readonly resolver: (context: DataContext) => ResolvedValue|Resolvable|undefined) {}
+  constructor(private readonly resolver: (context: DataContext) => ResolvedValue|Resolvable|undefined,
+              private readonly prefix: string|undefined = undefined,
+              private readonly suffix: string|undefined = undefined) {}
 
   resolve(context: DataContext) {
-    return this.resolver(context);
+    return (this.prefix && this.suffix)
+      ? this.resolver(context).map(resolved => new QuotedTextResolvedValue(resolved, this.prefix, this.suffix))
+      : this.resolver(context);
   }
 }
 
@@ -121,8 +130,8 @@ export class ShuntingYardParser implements Parser {
       .add('(', token => token)
       .add(')', token => token)
       .add(',', token => token)
-      .add(literal('"', '"', '\\"'), quote => quote.slice(1,-1))
-      .add(literal("'", "'", "\\'"), quote => quote.slice(1,-1));
+      .add(literal('"', '"', '\\"'), quote => new Term(() => ResolvedValue.of(quote.slice(1,-1)), "\"", "\""))
+      .add(literal("'", "'", "\\'"), quote => new Term(() => ResolvedValue.of(quote.slice(1,-1)), "'", "'"))
   }
 
   operator(symbol: string, precedence: number, associativity: Associativity, operands: number, fn: OperandFunction<ResolvedValue>) {
@@ -159,6 +168,12 @@ export class ShuntingYardParser implements Parser {
     this.parser.add([ term(prefix), alpha, optional(key), term(suffix) ],
         key => new Variable(key, (context: DataContext, key: string) =>
             extractor(context, key.substring(prefix.length, key.length - suffix.length))));
+    return this;
+  }
+
+  comment(prefix: string, suffix: string, fn: (subject: ResolvedValue, comment: string) => ResolvedValue|Resolvable|undefined) {
+    this.parser.add([ literal(prefix, suffix, "\\"+prefix) ],
+        token => new Comment(token, fn));
     return this;
   }
 
@@ -211,6 +226,11 @@ export class ShuntingYardParser implements Parser {
       }
 
       if (token instanceof Variable) {
+        outputBuffer.push(token);
+        continue;
+      }
+
+      if (token instanceof Comment) {
         outputBuffer.push(token);
         continue;
       }
@@ -340,6 +360,11 @@ export class ShuntingYard extends Resolvable {
           params.push(stack.pop() as ResolvedValue);
         }
         stack.push(func.execute(params));
+        continue;
+      }
+
+      if (next instanceof Comment) {
+        stack.push(next.fn(stack.pop() as ResolvedValue, next.comment));
         continue;
       }
 

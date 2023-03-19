@@ -54,6 +54,10 @@ public class Formula implements Resolvable {
         return new Formula(PARSER.parse(formulaText));
     }
 
+    public static String optimize(String formulaText) {
+        return FormulaOptimizer.optimize(formulaText);
+    }
+
     @Override
     public ResolvedValue resolve(DataContext context) {
         return resolvable.resolve(context);

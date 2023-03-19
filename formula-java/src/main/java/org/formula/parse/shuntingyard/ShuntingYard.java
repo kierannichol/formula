@@ -39,6 +39,8 @@ public class ShuntingYard implements Resolvable {
                     params.add((ResolvedValue) checkedPopParameter(next, arity, localStack));
                 }
                 localStack.push(func.execute(params));
+            } else if (next instanceof Comment comment) {
+                localStack.push(comment.fn().execute((ResolvedValue) localStack.pop(), comment.text()));
             } else {
                 while (next instanceof Resolvable resolvable) {
                     next = resolvable.resolve(context);

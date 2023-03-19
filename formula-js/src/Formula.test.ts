@@ -155,8 +155,8 @@ test('parse performance test', () => {
   let endTime = getRealSystemTime();
   let total = endTime - startTime;
   let average = total / iterations;
-  // log.info(`Total: ${total}ms`);
-  // log.info(`Average: ${average}ms`);
+  console.log(`Total Parse: ${total}ms`);
+  console.log(`Average Parse: ${average}ms`);
 })
 
 test('resolve performance test', () => {
@@ -179,6 +179,6 @@ test('resolve performance test', () => {
   let endTime = getRealSystemTime();
   let total = endTime - startTime;
   let average = total / iterations;
-  // log.info(`Total: ${total}ms`);
-  // log.info(`Average: ${average}ms`);
+  console.log(`Total Resolve: ${total}ms`);
+  console.log(`Average Resolve: ${average}ms`);
 })

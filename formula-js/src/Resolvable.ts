@@ -13,6 +13,10 @@ export abstract class Resolvable {
   abstract asFormula(): string;
   abstract resolve(context: DataContext): ResolvedValue;
 
+  map(fn: (resolved: ResolvedValue) => ResolvedValue): Resolvable {
+    return new Resolvable.MappedResolvable(this, fn);
+  }
+
   private static StaticResolvable = class extends Resolvable {
     constructor(private readonly resolved: ResolvedValue) {
       super();
@@ -24,6 +28,21 @@ export abstract class Resolvable {
 
     asFormula(): string {
       return this.resolved.asText();
+    }
+  }
+
+  private static MappedResolvable = class extends Resolvable {
+    constructor(private readonly resolvable: Resolvable,
+                private readonly mapFn: (resolved: ResolvedValue) => ResolvedValue) {
+      super();
+    }
+
+    resolve(context?: DataContext): ResolvedValue | undefined {
+      return this.mapFn(this.resolvable.resolve(context));
+    }
+
+    asFormula(): string {
+      return this.resolvable.asFormula();
     }
   }
 

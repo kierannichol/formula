@@ -1,4 +1,5 @@
 import {DataContext} from "./DataContext";
+import {FormulaOptimizer} from "./FormulaOptimizer";
 import {Resolvable} from "./Resolvable";
 import {ResolvedValue} from "./ResolvedValue";
 import {Associativity, ShuntingYard} from "./ShuntingYard";
@@ -46,6 +47,10 @@ export class Formula extends Resolvable {
       return new Formula(formula);
     }
     return new Formula(this.Parser.parse(formula));
+  }
+
+  static optimize(formula: string): string {
+    return FormulaOptimizer.optimize(formula);
   }
 
   resolve(context?: DataContext | undefined): ResolvedValue | undefined {
