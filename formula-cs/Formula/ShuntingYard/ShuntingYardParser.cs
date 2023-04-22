@@ -93,7 +93,7 @@ public class ShuntingYardParser
         return this;
     }
 
-    public ShuntingYardParser Comment(string prefix, string suffix, ILambda2<ResolvedValue, string, ResolvedValue> fn) {
+    public ShuntingYardParser Comment(string prefix, string suffix, Func<ResolvedValue, string, ResolvedValue> fn) {
         var commentExpression = NodeExpression.Literal(prefix, suffix);
         _tokenTree.Add(commentExpression, token => new Comment(token, fn));
         return this;

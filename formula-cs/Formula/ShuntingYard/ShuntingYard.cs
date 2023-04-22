@@ -47,7 +47,7 @@ public class ShuntingYard : IResolvable
                     break;
                 }
                 case Comment comment:
-                    localStack.Push(comment.Function.Execute((ResolvedValue) localStack.Pop(), comment.Text));
+                    localStack.Push(comment.Function((ResolvedValue) localStack.Pop(), comment.Text));
                     break;
                 default:
                 {
@@ -124,7 +124,7 @@ public interface IOperator : INode, INamed
 }
 
 public record struct Arity(int Value) : INode;
-public record struct Comment(string Text, ILambda2<ResolvedValue, string, ResolvedValue> Function) : INode;
+public record struct Comment(string Text, Func<ResolvedValue, string, ResolvedValue> Function) : INode;
 
 public readonly record struct Function0(string Name, Func<ResolvedValue> Function) : IFunction, IOperatorFunction0
 {
