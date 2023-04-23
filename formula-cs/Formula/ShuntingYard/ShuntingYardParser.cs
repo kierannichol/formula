@@ -2,8 +2,6 @@ using Formula.TokenTree;
 
 namespace Formula.ShuntingYard;
 
-public delegate ResolvedValue Resolver(IDataContext context, string key);
-    
 public class ShuntingYardParser
 {
     private readonly TokenTree<INode> _tokenTree;
@@ -69,18 +67,18 @@ public class ShuntingYardParser
         return this;
     }
 
-    public ShuntingYardParser Variable(string identifier, Resolver resolver) {
+    public ShuntingYardParser Variable(string identifier, VariableResolver variableResolver) {
         INodeExpression variableExpression = NodeExpression.Of(
                 NodeExpression.Term(identifier),
                 NodeExpression.Alpha,
                 NodeExpression.Optional(NodeExpression.Key)
         );
         _tokenTree.Add(variableExpression,
-                key => new Variable(key, (context, k) => resolver(context, k[identifier.Length..])));
+                key => new Variable(key, (context, k) => variableResolver(context, k[identifier.Length..])));
         return this;
     }
 
-    public ShuntingYardParser Variable(string prefix, string suffix, Resolver resolver) {
+    public ShuntingYardParser Variable(string prefix, string suffix, VariableResolver variableResolver) {
         INodeExpression variableExpression = NodeExpression.Of(
                 NodeExpression.Term(prefix),
                 NodeExpression.Alpha,
@@ -88,7 +86,7 @@ public class ShuntingYardParser
                 NodeExpression.Term(suffix)
         );
         _tokenTree.Add(variableExpression,
-                key => new Variable(key, (context, k) => resolver(context,
+                key => new Variable(key, (context, k) => variableResolver(context,
                         k.Substring(prefix.Length, k.Length - prefix.Length - suffix.Length))));
         return this;
     }

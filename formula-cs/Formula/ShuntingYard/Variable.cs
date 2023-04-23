@@ -1,9 +1,11 @@
 namespace Formula.ShuntingYard;
 
-public readonly record struct Variable(string Key, Resolver Resolver) : IResolvable, INode
+public delegate ResolvedValue VariableResolver(IDataContext context, string key);
+
+public readonly record struct Variable(string Key, VariableResolver VariableResolver) : IResolvable, INode
 {
     public ResolvedValue Resolve(IDataContext context)
     {
-        return Resolver(context, Key);
+        return VariableResolver(context, Key);
     }
 }

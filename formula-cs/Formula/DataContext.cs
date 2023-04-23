@@ -11,10 +11,15 @@ public class DataContext : IDataContext
     public static readonly IDataContext Empty = new EmptyDataContext();
 
     private readonly Dictionary<string, IResolvable> _data;
-
-    public static DataContext Of(IDictionary<string, IResolvable> values)
+    
+    public DataContext()
     {
-        return new DataContext(values);
+        _data = new Dictionary<string, IResolvable>();
+    }
+    
+    public DataContext(IDictionary<string, IResolvable> values)
+    {
+        _data = new Dictionary<string, IResolvable>(values);
     }
 
     public ResolvedValue Get(string key)
@@ -59,16 +64,6 @@ public class DataContext : IDataContext
     public DataContext Set(string key, bool value)
     {
         return Set(key, ResolvedValue.Of(value));
-    }
-
-    public DataContext()
-    {
-        _data = new Dictionary<string, IResolvable>();
-    }
-    
-    public DataContext(IDictionary<string, IResolvable> values)
-    {
-        _data = new Dictionary<string, IResolvable>(values);
     }
 }
 
