@@ -1,5 +1,6 @@
 import {DataContext} from "./DataContext";
 import {Formula} from "./Formula";
+import {ResolvedValue} from "./ResolvedValue";
 import getRealSystemTime = jest.getRealSystemTime;
 
 test('add two scalars', () => {
@@ -148,15 +149,14 @@ test ('sum(a:wildcard:b)', () => {
 
 test('parse performance test', () => {
   const iterations = 1000;
-  let startTime = getRealSystemTime();
+  let startTime = performance.now();
   for (let i = 0; i < iterations; i++) {
     Formula.parse("@alpha AND (@beta OR @delta) AND @sigma AND (@omega >= 5)");
   }
-  let endTime = getRealSystemTime();
+  let endTime = performance.now();
   let total = endTime - startTime;
-  let average = total / iterations;
-  console.log(`Total Parse: ${total}ms`);
-  console.log(`Average Parse: ${average}ms`);
+  let average = total / iterations * 1000;
+  console.log(`Average Parse: ${average.toFixed(2)} µs`);
 })
 
 test('resolve performance test', () => {
@@ -172,13 +172,34 @@ test('resolve performance test', () => {
   for (let j = 0; j < 200; j++) {
     context.set(`key_${j}`, `value_${j}`);
   }
-  let startTime = getRealSystemTime();
+  let startTime = performance.now();
   for (let i = 0; i < iterations; i++) {
-    formula.resolve(context)?.asBoolean();
+    formula.resolve(context);
   }
-  let endTime = getRealSystemTime();
+  let endTime = performance.now();
   let total = endTime - startTime;
-  let average = total / iterations;
-  console.log(`Total Resolve: ${total}ms`);
-  console.log(`Average Resolve: ${average}ms`);
+  let average = total / iterations * 1000;
+  console.log(`Average Resolve: ${average.toFixed(2)} µs`);
+})
+
+test('deep resolve performance test', () => {
+  const iterations = 1000;
+  const depth = 2000;
+  const formula = Formula.parse(`@step_${depth}`);
+  const context = DataContext.of({
+    "step_1": 1
+  });
+  for (let j = 2; j <= depth; j++) {
+    context.set(`step_${j}`, Formula.parse(`@step_${j-1} + 1`));
+  }
+  let startTime = performance.now();
+  let result = ResolvedValue.none();
+  for (let i = 0; i < iterations; i++) {
+    result = formula.resolve(context);
+  }
+  let endTime = performance.now();
+  let total = endTime - startTime;
+  let average = total / iterations * 1000;
+  expect(result.asNumber()).toBe(depth);
+  console.log(`Average Deep Resolve: ${average.toFixed(2)} µs`);
 })

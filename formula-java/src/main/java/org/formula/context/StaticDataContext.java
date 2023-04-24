@@ -11,7 +11,7 @@ class StaticDataContext implements MutableDataContext {
     private final Map<String, Resolvable> data;
 
     public static StaticDataContext of(Map<String, Resolvable> data) {
-        return new StaticDataContext(data);
+        return new StaticDataContext(new HashMap<>(data));
     }
 
     @Override
@@ -44,6 +44,7 @@ class StaticDataContext implements MutableDataContext {
     StaticDataContext() {
         this(new HashMap<>());
     }
+
     StaticDataContext(Map<String, Resolvable> data) {
         this.data = data;
     }
