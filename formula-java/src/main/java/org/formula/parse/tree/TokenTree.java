@@ -37,7 +37,8 @@ public class TokenTree<T> {
     public List<T> parse(String text) {
         List<T> tokens = new ArrayList<>();
         for (int i = 0; i < text.length(); i++) {
-            List<TokenMatch<T>> matches = root.walk(text, i).toList();
+            List<TokenMatch<T>> matches = new ArrayList<>();
+            root.walk(text, i, matches);
             if (!matches.isEmpty()) {
                 var match = matches.get(0);
                 var token = match.get();

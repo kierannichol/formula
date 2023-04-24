@@ -1,24 +1,22 @@
 package org.formula.parse.tree;
 
+import java.util.List;
 import java.util.Objects;
-import java.util.stream.Stream;
-import org.formula.util.StreamUtils;
 
 public class MatcherNode<T> extends MappableNode<T> {
     protected final TokenMatcher matcher;
 
     @Override
-    public Stream<TokenMatch<T>> walk(String text, int startIndex, int currentIndex) {
+    public void walk(String text, int startIndex, int currentIndex, List<TokenMatch<T>> matches) {
         if (!matches(text, startIndex, currentIndex)) {
-            return Stream.empty();
+            return;
         }
-        var matches = walkChildren(text, startIndex, currentIndex + 1);
+        walkChildren(text, startIndex, currentIndex + 1, matches);
         if (mapper == null) {
-            return matches;
+            return;
         }
         var match = new TokenMatch<>(text, startIndex, currentIndex + 1, mapper);
-        return StreamUtils.defaultIfEmpty(matches,
-                () -> match);
+        matches.add(match);
     }
 
     protected boolean matches(String text, int startIndex, int currentIndex) {

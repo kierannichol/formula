@@ -4,7 +4,7 @@ import static org.formula.parse.assertions.FormulaAssertions.assertFormula;
 import static org.formula.parse.assertions.ResolvedValueAssertions.assertResolvedValue;
 
 import org.formula.context.DataContext;
-import org.formula.context.StaticDataContext;
+import org.formula.context.MutableDataContext;
 import org.junit.jupiter.api.Test;
 
 class FormulaTest {
@@ -86,21 +86,21 @@ class FormulaTest {
     @Test
     void simpleVariableFunction() {
         var formula = org.formula.parse.Formula.parse("@foo");
-        var context = StaticDataContext.empty().set("foo", 12);
+        var context = MutableDataContext.create().set("foo", 12);
         assertResolvedValue(formula.resolve(context)).hasValue(12);
     }
 
     @Test
     void variableMath() {
         var formula = org.formula.parse.Formula.parse("@foo + 2");
-        var context = StaticDataContext.empty().set("foo", 1);
+        var context = MutableDataContext.create().set("foo", 1);
         assertResolvedValue(formula.resolve(context)).hasValue(3);
     }
 
     @Test
     void variableReferenceFormula() {
         var formula = org.formula.parse.Formula.parse("@bar");
-        var context = StaticDataContext.empty()
+        var context = MutableDataContext.create()
                 .set("foo", 4)
                 .set("bar", org.formula.parse.Formula.parse("@foo"));
         assertResolvedValue(formula.resolve(context)).hasValue(4);
@@ -123,7 +123,7 @@ class FormulaTest {
     @Test
     void modifierFormula() {
         var formula = org.formula.parse.Formula.parse("concat(if((floor(@test_score/2) - 5) > 0, '+', ''), floor(@test_score/2) - 5)");
-        var context = StaticDataContext.empty()
+        var context = MutableDataContext.create()
                 .set("test_score", 12);
         assertResolvedValue(formula.resolve(context)).hasValue("+1");
     }
@@ -140,7 +140,7 @@ class FormulaTest {
     @Test
     void wildcardMin() {
         var formula = org.formula.parse.Formula.parse("min(@key_*)");
-        var context = StaticDataContext.empty()
+        var context = MutableDataContext.create()
                 .set("other", 2)
                 .set("key_1", 4)
                 .set("key_2", 3)
@@ -151,7 +151,7 @@ class FormulaTest {
     @Test
     void wildcardMax() {
         var formula = org.formula.parse.Formula.parse("max(@key_*)");
-        var context = StaticDataContext.empty()
+        var context = MutableDataContext.create()
                 .set("other", 2)
                 .set("key_1", 4)
                 .set("key_2", 3)
@@ -162,7 +162,7 @@ class FormulaTest {
     @Test
     void wildcardSum() {
         var formula = org.formula.parse.Formula.parse("sum(@key_*)");
-        var context = StaticDataContext.empty()
+        var context = MutableDataContext.create()
                 .set("other", 2)
                 .set("key_1", 4)
                 .set("key_2", 3)
@@ -173,38 +173,38 @@ class FormulaTest {
     @Test
     void anyFunction() {
         var formula = org.formula.parse.Formula.parse("any(@a, @b)");
-        assertResolvedValue(formula.resolve(StaticDataContext.empty().set("a", 0).set("b", 0))).hasValue(false);
-        assertResolvedValue(formula.resolve(StaticDataContext.empty().set("a", 0).set("b", 1))).hasValue(true);
-        assertResolvedValue(formula.resolve(StaticDataContext.empty().set("a", 1).set("b", 0))).hasValue(true);
-        assertResolvedValue(formula.resolve(StaticDataContext.empty().set("a", 1).set("b", 1))).hasValue(true);
+        assertResolvedValue(formula.resolve(MutableDataContext.create().set("a", 0).set("b", 0))).hasValue(false);
+        assertResolvedValue(formula.resolve(MutableDataContext.create().set("a", 0).set("b", 1))).hasValue(true);
+        assertResolvedValue(formula.resolve(MutableDataContext.create().set("a", 1).set("b", 0))).hasValue(true);
+        assertResolvedValue(formula.resolve(MutableDataContext.create().set("a", 1).set("b", 1))).hasValue(true);
     }
 
     @Test
     void allFunction() {
         var formula = org.formula.parse.Formula.parse("all(@a, @b)");
-        assertResolvedValue(formula.resolve(StaticDataContext.empty().set("a", 0).set("b", 0))).hasValue(false);
-        assertResolvedValue(formula.resolve(StaticDataContext.empty().set("a", 0).set("b", 1))).hasValue(false);
-        assertResolvedValue(formula.resolve(StaticDataContext.empty().set("a", 1).set("b", 0))).hasValue(false);
-        assertResolvedValue(formula.resolve(StaticDataContext.empty().set("a", 1).set("b", 1))).hasValue(true);
+        assertResolvedValue(formula.resolve(MutableDataContext.create().set("a", 0).set("b", 0))).hasValue(false);
+        assertResolvedValue(formula.resolve(MutableDataContext.create().set("a", 0).set("b", 1))).hasValue(false);
+        assertResolvedValue(formula.resolve(MutableDataContext.create().set("a", 1).set("b", 0))).hasValue(false);
+        assertResolvedValue(formula.resolve(MutableDataContext.create().set("a", 1).set("b", 1))).hasValue(true);
     }
 
     @Test
     void allWithNestedAny() {
         var formula = org.formula.parse.Formula.parse("all(@a, any(@b, @c), 1)");
-        assertResolvedValue(formula.resolve(StaticDataContext.empty().set("a", 0).set("b", 0).set("c", 0))).hasValue(false);
-        assertResolvedValue(formula.resolve(StaticDataContext.empty().set("a", 1).set("b", 0).set("c", 0))).hasValue(false);
-        assertResolvedValue(formula.resolve(StaticDataContext.empty().set("a", 1).set("b", 1).set("c", 0))).hasValue(true);
-        assertResolvedValue(formula.resolve(StaticDataContext.empty().set("a", 1).set("b", 0).set("c", 1))).hasValue(true);
-        assertResolvedValue(formula.resolve(StaticDataContext.empty().set("a", 1).set("b", 1).set("c", 1))).hasValue(true);
+        assertResolvedValue(formula.resolve(MutableDataContext.create().set("a", 0).set("b", 0).set("c", 0))).hasValue(false);
+        assertResolvedValue(formula.resolve(MutableDataContext.create().set("a", 1).set("b", 0).set("c", 0))).hasValue(false);
+        assertResolvedValue(formula.resolve(MutableDataContext.create().set("a", 1).set("b", 1).set("c", 0))).hasValue(true);
+        assertResolvedValue(formula.resolve(MutableDataContext.create().set("a", 1).set("b", 0).set("c", 1))).hasValue(true);
+        assertResolvedValue(formula.resolve(MutableDataContext.create().set("a", 1).set("b", 1).set("c", 1))).hasValue(true);
     }
 
     @Test
     void allWithNestedAnyDifferentOrder() {
         var formula = org.formula.parse.Formula.parse("all(any(@b, @c), @a, 1)");
-        assertResolvedValue(formula.resolve(StaticDataContext.empty().set("a", 0).set("b", 0).set("c", 0))).hasValue(false);
-        assertResolvedValue(formula.resolve(StaticDataContext.empty().set("a", 1).set("b", 0).set("c", 0))).hasValue(false);
-        assertResolvedValue(formula.resolve(StaticDataContext.empty().set("a", 1).set("b", 1).set("c", 0))).hasValue(true);
-        assertResolvedValue(formula.resolve(StaticDataContext.empty().set("a", 1).set("b", 0).set("c", 1))).hasValue(true);
-        assertResolvedValue(formula.resolve(StaticDataContext.empty().set("a", 1).set("b", 1).set("c", 1))).hasValue(true);
+        assertResolvedValue(formula.resolve(MutableDataContext.create().set("a", 0).set("b", 0).set("c", 0))).hasValue(false);
+        assertResolvedValue(formula.resolve(MutableDataContext.create().set("a", 1).set("b", 0).set("c", 0))).hasValue(false);
+        assertResolvedValue(formula.resolve(MutableDataContext.create().set("a", 1).set("b", 1).set("c", 0))).hasValue(true);
+        assertResolvedValue(formula.resolve(MutableDataContext.create().set("a", 1).set("b", 0).set("c", 1))).hasValue(true);
+        assertResolvedValue(formula.resolve(MutableDataContext.create().set("a", 1).set("b", 1).set("c", 1))).hasValue(true);
     }
 }

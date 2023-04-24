@@ -14,7 +14,10 @@ public class ShuntingYard implements Resolvable {
     @Override
     public ResolvedValue resolve(DataContext context) {
         Stack<Object> localStack = new Stack<>();
-        for (Object next : stack) {
+        Stack<Object> stack = new Stack<>();
+        this.stack.forEach(n -> stack.add(0, n));
+        while (!stack.isEmpty()) {
+            Object next = stack.pop();
             if (next instanceof OperatorFunction0 func) {
                 localStack.push(func.execute());
             } else if (next instanceof OperatorFunction1 func) {
@@ -39,8 +42,14 @@ public class ShuntingYard implements Resolvable {
                     params.add((ResolvedValue) checkedPopParameter(next, arity, localStack));
                 }
                 localStack.push(func.execute(params));
+            } else if (next instanceof Variable variable) {
+                stack.add(variable.get(context));
             } else if (next instanceof Comment comment) {
                 localStack.push(comment.fn().execute((ResolvedValue) localStack.pop(), comment.text()));
+            } else if (next instanceof ShuntingYard shuntingYard) {
+                for (int i = shuntingYard.stack.size() - 1; i >= 0; i--) {
+                    stack.push(shuntingYard.stack.get(i));
+                }
             } else {
                 while (next instanceof Resolvable resolvable) {
                     next = resolvable.resolve(context);

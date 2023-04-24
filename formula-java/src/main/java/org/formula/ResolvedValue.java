@@ -6,6 +6,9 @@ import java.util.Locale;
 import java.util.Objects;
 
 public abstract class ResolvedValue {
+    public static final ResolvedValue TRUE = of(true);
+    public static final ResolvedValue FALSE = of(false);
+    public static final ResolvedValue ZERO = of(0);
 
     public static ResolvedValue of(String value) {
         if (value == null) {

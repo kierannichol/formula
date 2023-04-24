@@ -68,7 +68,7 @@ public class ShuntingYardParser
     }
 
     public ShuntingYardParser Variable(string identifier, VariableResolver variableResolver) {
-        INodeExpression variableExpression = NodeExpression.Of(
+        var variableExpression = NodeExpression.Of(
                 NodeExpression.Term(identifier),
                 NodeExpression.Alpha,
                 NodeExpression.Optional(NodeExpression.Key)

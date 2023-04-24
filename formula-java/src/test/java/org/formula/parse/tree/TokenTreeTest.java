@@ -1,5 +1,6 @@
 package org.formula.parse.tree;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.formula.parse.tree.CharacterClass.ALPHA_CHARACTERS;
 import static org.formula.parse.tree.CharacterClass.DIGIT_CHARACTERS;
 import static org.formula.parse.tree.CharacterClass.WORD_CHARACTERS;
@@ -9,7 +10,6 @@ import static org.formula.parse.tree.NodeExpression.NUMBER;
 import static org.formula.parse.tree.NodeExpression.WORD;
 import static org.formula.parse.tree.NodeExpression.anyOf;
 import static org.formula.parse.tree.NodeExpression.literal;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;

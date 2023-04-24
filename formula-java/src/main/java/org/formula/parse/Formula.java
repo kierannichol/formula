@@ -8,7 +8,7 @@ import org.formula.parse.shuntingyard.Associativity;
 import org.formula.parse.shuntingyard.ShuntingYardParser;
 import org.formula.util.Ordinal;
 
-public class Formula implements Resolvable {
+public class Formula {
 
     private static final ShuntingYardParser PARSER = ShuntingYardParser.create()
             .operator("^", 4, Associativity.RIGHT, (a, b) -> ResolvedValue.of(Math.pow(a.asDecimal(), b.asDecimal())))
@@ -25,8 +25,8 @@ public class Formula implements Resolvable {
             .operator("!=", 3, Associativity.LEFT, (ResolvedValue a, ResolvedValue b) -> ResolvedValue.of(!a.equals(b)))
             .operator("AND", 1, Associativity.LEFT, (ResolvedValue a, ResolvedValue b) -> ResolvedValue.of(a.asBoolean() && b.asBoolean()))
             .operator("OR", 1, Associativity.LEFT, (ResolvedValue a, ResolvedValue b) -> ResolvedValue.of(a.asBoolean() || b.asBoolean()))
-            .term("true", () -> ResolvedValue.of(true))
-            .term("false", () -> ResolvedValue.of(false))
+            .term("true", () -> ResolvedValue.TRUE)
+            .term("false", () -> ResolvedValue.FALSE)
             .function("abs", (ResolvedValue a) -> ResolvedValue.of(Math.abs(a.asDecimal())))
             .function("min", (ResolvedValue a, ResolvedValue b) -> ResolvedValue.of(Math.min(a.asDecimal(), b.asDecimal())))
             .function("max", (ResolvedValue a, ResolvedValue b) -> ResolvedValue.of(Math.max(a.asDecimal(), b.asDecimal())))
@@ -38,37 +38,45 @@ public class Formula implements Resolvable {
             .function("ordinal", (ResolvedValue a) -> ResolvedValue.of(Ordinal.toString(a.asNumber())))
             .function("any", (List<ResolvedValue> values) -> ResolvedValue.of(values.stream().anyMatch(ResolvedValue::asBoolean)))
             .function("all", (List<ResolvedValue> values) -> ResolvedValue.of(values.stream().allMatch(ResolvedValue::asBoolean)))
-            .variable("@", DataContext::get)
-            .variable("@{", "}", DataContext::get)
-            .variable("min(@", ")", (context, key) -> context.find(key).reduce((a, b) -> a.asDecimal() < b.asDecimal() ? a : b).orElse(ResolvedValue.none()))
-            .variable("max(@", ")", (context, key) -> context.find(key).reduce((a, b) -> a.asDecimal() > b.asDecimal() ? a : b).orElse(ResolvedValue.none()))
-            .variable("sum(@", ")", (context, key) -> context.find(key).reduce((a, b) -> ResolvedValue.of(a.asDecimal() + b.asDecimal())).orElse(ResolvedValue.of(0)))
+            .variable("@", Formula::variableFn)
+            .variable("@{", "}", Formula::variableFn)
+            .variable("min(@", ")", Formula::minFn)
+            .variable("max(@", ")", Formula::maxFn)
+            .variable("sum(@", ")", Formula::sumFn)
             ;
 
-    private final Resolvable resolvable;
+    private static Resolvable variableFn(DataContext context, String key) {
+        return context.get(key).orElse(Resolvable.empty());
+    }
 
-    public static Formula parse(String formulaText) {
+    private static Resolvable minFn(DataContext context, String key) {
+        ResolvedValue resolved = context.search(key).reduce((a, b) -> a.asDecimal() < b.asDecimal() ? a : b)
+                .orElse(ResolvedValue.none());
+        return Resolvable.just(resolved);
+    }
+
+    private static Resolvable sumFn(DataContext context, String key) {
+        ResolvedValue resolved = context.search(key).reduce((a, b) -> ResolvedValue.of(a.asDecimal() + b.asDecimal()))
+                .orElse(ResolvedValue.of(0));
+        return Resolvable.just(resolved);
+    }
+
+    private static Resolvable maxFn(DataContext context, String key) {
+        ResolvedValue resolved = context.search(key).reduce((a, b) -> a.asDecimal() > b.asDecimal() ? a : b)
+                .orElse(ResolvedValue.none());
+        return Resolvable.just(resolved);
+    }
+
+    public static Resolvable parse(String formulaText) {
         if (formulaText.isBlank()) {
-            return new Formula(Resolvable.empty());
+            return Resolvable.empty();
         }
-        return new Formula(PARSER.parse(formulaText));
+        return PARSER.parse(formulaText);
     }
 
     public static String optimize(String formulaText) {
         return FormulaOptimizer.optimize(formulaText);
     }
 
-    @Override
-    public ResolvedValue resolve(DataContext context) {
-        return resolvable.resolve(context);
-    }
-
-    @Override
-    public ResolvedValue resolve() {
-        return resolvable.resolve();
-    }
-
-    private Formula(Resolvable resolvable) {
-        this.resolvable = resolvable;
-    }
+    private Formula() {}
 }

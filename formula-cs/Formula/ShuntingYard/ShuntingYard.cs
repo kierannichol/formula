@@ -6,7 +6,8 @@ public class ShuntingYard : IResolvable
     
     public ResolvedValue Resolve(IDataContext context) {
         var localStack = new Stack<object>();
-        foreach (var next in _stack)
+        var stack = new Stack<object>(_stack);
+        while (stack.TryPop(out var next))
         {
             switch (next)
             {
@@ -46,12 +47,21 @@ public class ShuntingYard : IResolvable
                     localStack.Push(func.Execute(parameters));
                     break;
                 }
+                case Variable variable:
+                    stack.Push(variable.Get(context));
+                    break;
                 case Comment comment:
                     localStack.Push(comment.Function((ResolvedValue) localStack.Pop(), comment.Text));
                     break;
+                case ShuntingYard shuntingYard:
+                    foreach (var otherNext in shuntingYard._stack)
+                    {
+                        stack.Push(otherNext);
+                    }
+                    break;
                 default:
                 {
-                    object resolved = next;
+                    var resolved = next;
                     while (resolved is IResolvable resolvable)
                     {
                         resolved = resolvable.Resolve(context);
@@ -72,8 +82,8 @@ public class ShuntingYard : IResolvable
         return stack.Pop();
     }
 
-    public ShuntingYard(IEnumerable<INode> stack) {
-        _stack = new Stack<INode>(stack);
+    public ShuntingYard(Stack<INode> stack) {
+        _stack = stack;
     }
 }
 

@@ -3,7 +3,7 @@ using Formula.ShuntingYard;
 
 namespace Formula;
 
-public class Formula : IResolvable
+public static class Formula
 {
     private static readonly ShuntingYardParser Parser = ShuntingYardParser.Create()
             .Operator("^", 4, Associativity.Right, (a, b) => ResolvedValue.Of(Math.Pow(a.AsDecimal(), b.AsDecimal())))
@@ -33,39 +33,23 @@ public class Formula : IResolvable
             .Function("ordinal", a => ResolvedValue.Of(Ordinal.ToString(a.AsNumber())))
             .Function("any", AnyFunction)
             .Function("all", AllFunction)
-            .Variable("@", (context, key) => context.Get(key))
-            .Variable("@{", "}", (context, key) => context.Get(key))
+            .Variable("@", FindVariable)
+            .Variable("@{", "}", FindVariable)
             .Variable("min(@", ")", MinFunction)
             .Variable("max(@", ")", MaxFunction)
             .Variable("sum(@", ")", SumFunction)
             ;
 
-    private readonly IResolvable _resolvable;
-
-    public static Formula Parse(string formulaText)
+    public static IResolvable Parse(string formulaText)
     {
         return formulaText.Length == 0 
-            ? new Formula(Resolvable.Empty) 
-            : new Formula(Parser.Parse(formulaText));
+            ? Resolvable.Empty 
+            : Parser.Parse(formulaText);
     }
 
     // public static string optimize(string formulaText) {
     //     return FormulaOptimizer.optimize(formulaText);
     // }
-
-    
-    public ResolvedValue Resolve(IDataContext context) {
-        return _resolvable.Resolve(context);
-    }
-
-    
-    public ResolvedValue Resolve() {
-        return _resolvable.Resolve();
-    }
-
-    private Formula(IResolvable resolvable) {
-        _resolvable = resolvable;
-    }
 
     private static ResolvedValue AnyFunction(IEnumerable<ResolvedValue> values)
     {
@@ -93,25 +77,30 @@ public class Formula : IResolvable
         return ResolvedValue.True;
     }
 
-    private static ResolvedValue SumFunction(IDataContext context, string key)
+    private static IResolvable FindVariable(IDataContext context, string key)
+    {
+        return context.TryPeek(key, out var found) ? found : Resolvable.Empty;
+    }
+
+    private static IResolvable SumFunction(IDataContext context, string key)
     {
         ResolvedValue Add(ResolvedValue a, ResolvedValue b) => ResolvedValue.Of(a.AsDecimal() + b.AsDecimal());
         FindAndReduce(context, key, Add, ResolvedValue.Zero, out var reduced);
-        return reduced;
+        return Resolvable.Just(reduced);
     }
     
-    private static ResolvedValue MaxFunction(IDataContext context, string key)
+    private static IResolvable MaxFunction(IDataContext context, string key)
     {
         ResolvedValue Max(ResolvedValue a, ResolvedValue b) => a.AsDecimal() > b.AsDecimal() ? a : b;
         FindAndReduce(context, key, Max, ResolvedValue.Zero, out var reduced);
-        return reduced;
+        return Resolvable.Just(reduced);
     }
     
-    private static ResolvedValue MinFunction(IDataContext context, string key)
+    private static IResolvable MinFunction(IDataContext context, string key)
     {
         var maxValue = ResolvedValue.Of(int.MaxValue);
         ResolvedValue Min(ResolvedValue a, ResolvedValue b) => a.AsDecimal() < b.AsDecimal() ? a : b;
-        return FindAndReduce(context, key, Min, maxValue, out var reduced) > 0 ? reduced : ResolvedValue.None;
+        return FindAndReduce(context, key, Min, maxValue, out var reduced) > 0 ? Resolvable.Just(reduced) : Resolvable.Empty;
     }
 
     private static int FindAndReduce<T>(IDataContext context, string pattern,

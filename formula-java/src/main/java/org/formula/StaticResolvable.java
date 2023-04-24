@@ -23,4 +23,9 @@ public class StaticResolvable implements Resolvable {
     private StaticResolvable(ResolvedValue resolved) {
         this.resolved = resolved;
     }
+
+    @Override
+    public String toString() {
+        return resolved.toString();
+    }
 }

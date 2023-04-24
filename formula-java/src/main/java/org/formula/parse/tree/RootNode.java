@@ -1,16 +1,16 @@
 package org.formula.parse.tree;
 
-import java.util.stream.Stream;
+import java.util.List;
 
 public class RootNode<T> extends Node<T> {
 
-    public Stream<TokenMatch<T>> walk(String text, int startIndex) {
-        return walk(text, startIndex, startIndex);
+    public void walk(String text, int startIndex, List<TokenMatch<T>> matches) {
+        walk(text, startIndex, startIndex, matches);
     }
 
     @Override
-    public Stream<TokenMatch<T>> walk(String text, int startIndex, int currentIndex) {
-        return walkChildren(text, startIndex, currentIndex);
+    public void walk(String text, int startIndex, int currentIndex, List<TokenMatch<T>> matches) {
+        walkChildren(text, startIndex, currentIndex, matches);
     }
 
     @Override

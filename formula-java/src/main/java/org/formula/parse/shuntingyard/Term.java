@@ -1,6 +1,5 @@
 package org.formula.parse.shuntingyard;
 
-import java.util.Optional;
 import org.formula.QuotedTextResolvedValue;
 import org.formula.Resolvable;
 import org.formula.ResolvedValue;
@@ -38,10 +37,11 @@ public record Term(ResolvedValue value, String prefix, String suffix) implements
 
     @Override
     public ResolvedValue resolve(DataContext context) {
-        return Optional.ofNullable(value)
-                .map(value -> prefix != null && suffix != null
-                        ? QuotedTextResolvedValue.of(value, prefix, suffix)
-                        : value)
-                .orElse(ResolvedValue.none());
+        if (value == null) {
+            return ResolvedValue.none();
+        }
+        return (prefix != null || suffix != null)
+                ? QuotedTextResolvedValue.of(value, prefix, suffix)
+                : value;
     }
 }

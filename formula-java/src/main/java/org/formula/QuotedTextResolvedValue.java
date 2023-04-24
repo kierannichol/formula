@@ -15,8 +15,8 @@ public class QuotedTextResolvedValue extends ResolvedValue {
 
     private QuotedTextResolvedValue(ResolvedValue text, String startQuote, String endQuote) {
         this.text = text;
-        this.startQuote = startQuote;
-        this.endQuote = endQuote;
+        this.startQuote = startQuote != null ? startQuote : "";
+        this.endQuote = endQuote != null ? endQuote : "";
     }
 
     @Override

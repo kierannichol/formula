@@ -1,13 +1,11 @@
 package org.formula.parse.shuntingyard;
 
 import org.formula.Resolvable;
-import org.formula.ResolvedValue;
 import org.formula.context.DataContext;
 
-public record Variable(String key, Resolver resolver) implements Resolvable, Node {
+public record Variable(String key, VariableResolver variableResolver) implements Node {
 
-    @Override
-    public ResolvedValue resolve(DataContext context) {
-        return resolver.resolve(context, key);
+    public Resolvable get(DataContext context) {
+        return variableResolver.resolve(context, key);
     }
 }

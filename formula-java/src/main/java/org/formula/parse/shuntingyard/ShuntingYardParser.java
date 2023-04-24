@@ -76,18 +76,18 @@ public class ShuntingYardParser implements Parser {
         return this;
     }
 
-    public ShuntingYardParser variable(String idenfifier, Resolver resolver) {
+    public ShuntingYardParser variable(String idenfifier, VariableResolver variableResolver) {
         NodeExpression variableExpression = NodeExpression.of(
                 NodeExpression.term(idenfifier),
                 NodeExpression.ALPHA,
                 NodeExpression.optional(NodeExpression.KEY)
         );
         tokenTree.add(variableExpression,
-                key -> new Variable(key, (context, k) -> resolver.resolve(context, k.substring(idenfifier.length()))));
+                key -> new Variable(key, (context, k) -> variableResolver.resolve(context, k.substring(idenfifier.length()))));
         return this;
     }
 
-    public ShuntingYardParser variable(String prefix, String suffix, Resolver resolver) {
+    public ShuntingYardParser variable(String prefix, String suffix, VariableResolver variableResolver) {
         NodeExpression variableExpression = NodeExpression.of(
                 NodeExpression.term(prefix),
                 NodeExpression.ALPHA,
@@ -95,7 +95,7 @@ public class ShuntingYardParser implements Parser {
                 NodeExpression.term(suffix)
         );
         tokenTree.add(variableExpression,
-                key -> new Variable(key, (context, k) -> resolver.resolve(context,
+                key -> new Variable(key, (context, k) -> variableResolver.resolve(context,
                         k.substring(prefix.length(), k.length() - suffix.length()))));
         return this;
     }

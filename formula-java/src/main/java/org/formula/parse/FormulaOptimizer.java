@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.formula.QuotedTextResolvedValue;
+import org.formula.Resolvable;
 import org.formula.ResolvedValue;
 import org.formula.parse.shuntingyard.Associativity;
 import org.formula.parse.shuntingyard.OperatorFunction1;
@@ -44,11 +45,11 @@ class FormulaOptimizer {
             .function("ordinal", opFn1("ordinal(%s)"::formatted))
             .function("any", AnyFunction::new)
             .function("all", AllFunction::new)
-            .variable("@", (context, key) -> ResolvedValue.of("@%s".formatted(key)))
-            .variable("@{", "}", (context, key) -> ResolvedValue.of("@{%s}".formatted(key)))
-            .variable("min(@", ")", (context, key) -> ResolvedValue.of("min(@%s)".formatted(key)))
-            .variable("max(@", ")", (context, key) -> ResolvedValue.of("max(@%s)".formatted(key)))
-            .variable("sum(@", ")", (context, key) -> ResolvedValue.of("sum(@%s)".formatted(key)))
+            .variable("@", (context, key) -> Resolvable.just("@%s".formatted(key)))
+            .variable("@{", "}", (context, key) -> Resolvable.just("@{%s}".formatted(key)))
+            .variable("min(@", ")", (context, key) -> Resolvable.just("min(@%s)".formatted(key)))
+            .variable("max(@", ")", (context, key) -> Resolvable.just("max(@%s)".formatted(key)))
+            .variable("sum(@", ")", (context, key) -> Resolvable.just("sum(@%s)".formatted(key)))
             .comment("[", "]", (subject, comment) -> QuotedTextResolvedValue.of(subject, "", comment))
             ;
 

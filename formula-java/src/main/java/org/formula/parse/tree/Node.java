@@ -2,7 +2,6 @@ package org.formula.parse.tree;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 public abstract class Node<T> {
     protected List<Node<T>> children;
@@ -20,14 +19,13 @@ public abstract class Node<T> {
         return child;
     }
 
-    public abstract Stream<TokenMatch<T>> walk(String text, int startIndex, int currentIndex);
+    public abstract void walk(String text, int startIndex, int currentIndex, List<TokenMatch<T>> matches);
 
-    protected Stream<TokenMatch<T>> walkChildren(String text, int startIndex, int currentIndex) {
+    protected void walkChildren(String text, int startIndex, int currentIndex, List<TokenMatch<T>> matches) {
         if (children == null) {
-            return Stream.empty();
+            return;
         }
 
-        return children.stream()
-                .flatMap(child -> child.walk(text, startIndex, currentIndex));
+        children.forEach(child -> child.walk(text, startIndex, currentIndex, matches));
     }
 }

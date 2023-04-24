@@ -1,15 +1,14 @@
 package org.formula.parse.tree;
 
+import java.util.List;
 import java.util.Objects;
-import java.util.stream.Stream;
-import org.formula.util.StreamUtils;
 
 public class AnyUntilNode<T> extends MappableNode<T> {
     private final String closeSequence;
     private final String escapeSequence;
 
     @Override
-    public Stream<TokenMatch<T>> walk(String text, int startIndex, int currentIndex) {
+    public void walk(String text, int startIndex, int currentIndex, List<TokenMatch<T>> matches) {
         for (; currentIndex < text.length(); currentIndex++) {
             for (int i = 0; i < closeSequence.length(); i++) {
                 if (text.charAt(currentIndex + i) != closeSequence.charAt(i)) {
@@ -19,20 +18,20 @@ public class AnyUntilNode<T> extends MappableNode<T> {
                     break;
                 }
                 if (i == closeSequence.length() - 1) {
-                    var matches = walkChildren(text, startIndex, currentIndex);
+                    walkChildren(text, startIndex, currentIndex, matches);
                     if (mapper == null || currentIndex <= startIndex) {
-                        return matches;
+                        return;
                     }
                     var match = new TokenMatch<>(text, startIndex, currentIndex, mapper);
-                    return StreamUtils.defaultIfEmpty(matches,
-                            () -> match);
+                    matches.add(match);
+                    return;
                 }
             }
         }
 
-        return this.mapper != null && currentIndex == text.length()
-                ? Stream.of(new TokenMatch<>(text, startIndex, currentIndex, this.mapper))
-                : Stream.empty();
+        if (this.mapper != null && currentIndex == text.length()) {
+            matches.add(new TokenMatch<>(text, startIndex, currentIndex, this.mapper));
+        }
     }
 
     private boolean isEscaped(String text, int index) {

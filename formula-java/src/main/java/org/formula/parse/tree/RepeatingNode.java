@@ -1,8 +1,7 @@
 package org.formula.parse.tree;
 
+import java.util.List;
 import java.util.Objects;
-import java.util.stream.Stream;
-import org.formula.util.StreamUtils;
 
 public class RepeatingNode<T> extends MatcherNode<T> {
     private final int minLength;
@@ -15,7 +14,7 @@ public class RepeatingNode<T> extends MatcherNode<T> {
     }
 
     @Override
-    public Stream<TokenMatch<T>> walk(String text, int startIndex, int currentIndex) {
+    public void walk(String text, int startIndex, int currentIndex, List<TokenMatch<T>> matches) {
         int minLength = this.minLength;
         int maxLength = calculateMaxLength(text, currentIndex);
         int length = 0;
@@ -30,16 +29,16 @@ public class RepeatingNode<T> extends MatcherNode<T> {
         }
 
         if (length < minLength) {
-            return Stream.empty();
+            return;
         }
 
-        var matches = walkChildren(text, startIndex, currentIndex);
+        walkChildren(text, startIndex, currentIndex, matches);
         if (length > maxLength || mapper == null) {
-            return matches;
+            return;
         }
 
         TokenMatch<T> match = new TokenMatch<>(text, startIndex, currentIndex, mapper);
-        return StreamUtils.defaultIfEmpty(matches, () -> match);
+        matches.add(match);
     }
 
     @Override
