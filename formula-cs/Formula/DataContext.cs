@@ -2,8 +2,8 @@ namespace Formula;
 
 public interface IDataContext
 {
-    bool TryPeek(string key, out IResolvable resolvable);
-    ResolvedValue Get(string key);
+    bool TryGet(string key, out IResolvable resolvable);
+    ResolvedValue Resolve(string key);
     IEnumerable<string> Keys();
 }
 
@@ -23,7 +23,7 @@ public class DataContext : IDataContext
         _data = new Dictionary<string, IResolvable>(values);
     }
 
-    public bool TryPeek(string key, out IResolvable resolvable)
+    public bool TryGet(string key, out IResolvable resolvable)
     {
         if (_data.TryGetValue(key, out var found))
         {
@@ -34,7 +34,7 @@ public class DataContext : IDataContext
         return false;
     }
 
-    public ResolvedValue Get(string key)
+    public ResolvedValue Resolve(string key)
     {
         return _data.TryGetValue(key, out var found) 
             ? found.Resolve(this) 
@@ -81,13 +81,13 @@ public class DataContext : IDataContext
 
 internal class EmptyDataContext : IDataContext
 {
-    public bool TryPeek(string key, out IResolvable resolvable)
+    public bool TryGet(string key, out IResolvable resolvable)
     {
         resolvable = Resolvable.Empty;
         return false;
     }
 
-    public ResolvedValue Get(string key)
+    public ResolvedValue Resolve(string key)
     {
         return ResolvedValue.None;
     }

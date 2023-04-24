@@ -79,7 +79,7 @@ public static class Formula
 
     private static IResolvable FindVariable(IDataContext context, string key)
     {
-        return context.TryPeek(key, out var found) ? found : Resolvable.Empty;
+        return context.TryGet(key, out var found) ? found : Resolvable.Empty;
     }
 
     private static IResolvable SumFunction(IDataContext context, string key)
@@ -114,7 +114,7 @@ public static class Formula
         foreach (var key in context.Keys())
         {
             if (!Predicate(key)) continue;
-            reduced = reduceFunction(reduced, context.Get(key));
+            reduced = reduceFunction(reduced, context.Resolve(key));
             count++;
         }
 
