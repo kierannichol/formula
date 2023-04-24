@@ -36,9 +36,6 @@ abstract class OperatorFunction implements Node {
   public readonly name: string;
   public readonly operands: number;
   private readonly fn: OperandFunction<ResolvedValue>;
-
-  abstract get associativity(): Associativity;
-
   protected constructor(name: string, operands: number, fn: OperandFunction<ResolvedValue>) {
     this.name = name;
     this.operands = operands;
@@ -64,10 +61,6 @@ abstract class OperatorFunction implements Node {
 class Function extends OperatorFunction {
   constructor(name: string, operands: number, fn: OperandFunction<ResolvedValue>) {
     super(name, operands, fn);
-  }
-
-  get associativity(): Associativity {
-    return Associativity.Left;
   }
 }
 
@@ -316,35 +309,36 @@ export class ShuntingYard extends Resolvable {
   }
 
   resolve(context: DataContext = DataContext.Empty): ResolvedValue|undefined {
-    let stack: OperatorStack = [];
-    for (let i = 0; i < this.stack.length; i++) {
-      let next = this.stack[i];
+    let localStack: OperatorStack = [];
+    let stack: OperatorStack = [...this.stack];
+    while (stack.length > 0) {
+      let next = stack.shift();
 
       if (next instanceof OperatorFunction) {
         let func = next;
         if (func.operands === 0) {
-          stack.push(func.execute());
+          localStack.push(func.execute());
         }
         else if (func.operands === 1) {
-          let x = stack.pop() as ResolvedValue;
+          let x = localStack.pop() as ResolvedValue;
           if (x === undefined) throw new ResolveError(`Error executing function, ${func.name}, because parameter was undefined`);
-          stack.push(func.execute(x));
+          localStack.push(func.execute(x));
         }
         else if (func.operands === 2) {
-          let b = stack.pop() as ResolvedValue;
-          let a = stack.pop() as ResolvedValue;
+          let b = localStack.pop() as ResolvedValue;
+          let a = localStack.pop() as ResolvedValue;
           if (a === undefined) throw new ResolveError(`Error executing function, ${func.name}, because first parameter was undefined`);
           if (b === undefined) throw new ResolveError(`Error executing function, ${func.name}, because second parameter was undefined`);
-          stack.push(func.execute(a, b));
+          localStack.push(func.execute(a, b));
         }
         else if (func.operands === 3) {
-          let c = stack.pop() as ResolvedValue;
-          let b = stack.pop() as ResolvedValue;
-          let a = stack.pop() as ResolvedValue;
+          let c = localStack.pop() as ResolvedValue;
+          let b = localStack.pop() as ResolvedValue;
+          let a = localStack.pop() as ResolvedValue;
           if (a === undefined) throw new ResolveError(`Error executing function, ${func.name}, because first parameter was undefined`);
           if (b === undefined) throw new ResolveError(`Error executing function, ${func.name}, because second parameter was undefined`);
           if (c === undefined) throw new ResolveError(`Error executing function, ${func.name}, because third parameter was undefined`);
-          stack.push(func.execute(a, b, c));
+          localStack.push(func.execute(a, b, c));
         }
         else {
           throw new Error("Unsupported number of operands: " + func.operands);
@@ -355,29 +349,41 @@ export class ShuntingYard extends Resolvable {
       if (next instanceof VarargsFunction) {
         let func = next;
         let params: ResolvedValue[] = [];
-        let paramCount = stack.pop() as number;
+        let paramCount = localStack.pop() as number;
         while (paramCount-- > 0) {
-          params.push(stack.pop() as ResolvedValue);
+          params.push(localStack.pop() as ResolvedValue);
         }
-        stack.push(func.execute(params));
+        localStack.push(func.execute(params));
         continue;
       }
 
       if (next instanceof Comment) {
-        stack.push(next.fn(stack.pop() as ResolvedValue, next.comment));
+        localStack.push(next.fn(localStack.pop() as ResolvedValue, next.comment));
         continue;
       }
 
-      if (next instanceof Variable || next instanceof Term) {
+      if (next instanceof Term) {
         next = next.resolve(context);
-        while (next instanceof Resolvable) {
-          next = next.resolve(context);
+      }
+
+      if (next instanceof Variable) {
+        next = next.resolve(context);
+        if (next instanceof ShuntingYard) {
+          const nextStack = next.stack;
+          for (let i = nextStack.length - 1; i >= 0; i--) {
+            stack.unshift(nextStack[i]);
+          }
+          continue;
         }
       }
 
-      stack.push(next);
+      while (next instanceof Resolvable) {
+        next = next.resolve(context);
+      }
+
+      localStack.push(next);
     }
 
-    return stack.pop() as ResolvedValue;
+    return localStack.pop() as ResolvedValue;
   }
 }

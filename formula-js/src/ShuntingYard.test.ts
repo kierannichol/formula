@@ -19,7 +19,7 @@ const parser = ShuntingYard.parser()
   .operator('OR', 1, Associativity.Left, 2, (a:ResolvedValue, b:ResolvedValue) => ResolvedValue.of(a.asBoolean() || b.asBoolean()))
   .term('true', () => ResolvedValue.of(true))
   .term('false', () => ResolvedValue.of(false))
-  .variable('@', '',(state, key) => state.get(key));
+  .variable('@', '',(state, key) => state.resolve(key));
 
 test('basic addition', () => {
   expect(parser.parse("5 + 3")?.resolve(DataContext.Empty)?.asNumber()).toBe(8);

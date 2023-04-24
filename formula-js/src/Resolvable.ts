@@ -11,7 +11,7 @@ export abstract class Resolvable {
   }
 
   abstract asFormula(): string;
-  abstract resolve(context: DataContext): ResolvedValue;
+  abstract resolve(context?: DataContext): ResolvedValue;
 
   map(fn: (resolved: ResolvedValue) => ResolvedValue): Resolvable {
     return new Resolvable.MappedResolvable(this, fn);

@@ -4,7 +4,8 @@ import {ResolvedValue} from "./ResolvedValue";
 export type DataContextState = { [key:string]:string|number|boolean|Resolvable; };
 
 export interface DataContext {
-  get(key: string): ResolvedValue|undefined;
+  get(key: string): Resolvable|undefined;
+  resolve(key: string): ResolvedValue|undefined;
   find(pattern: string): ResolvedValue[];
   keys(): string[];
 }
@@ -27,7 +28,11 @@ export interface MutableDataContext extends DataContext {
 
 class EmptyDataContext implements DataContext {
 
-  get(key: string): undefined {
+  get(key: string): Resolvable | undefined {
+    return undefined;
+  }
+
+  resolve(key: string): undefined {
     return undefined;
   }
 
@@ -53,7 +58,15 @@ class StaticDataContext implements MutableDataContext {
   constructor(private readonly state: DataContextState) {
   }
 
-  get(key: string): ResolvedValue|undefined {
+  get(key: string): Resolvable | undefined {
+    const result: string|number|boolean|Resolvable|undefined = this.state[key];
+    if (result instanceof Resolvable) {
+      return result;
+    }
+    return Resolvable.just(result);
+  }
+
+  resolve(key: string): ResolvedValue|undefined {
     const result: string|number|boolean|Resolvable|undefined = this.state[key];
     if (result instanceof Resolvable) {
       return result.resolve(this);
@@ -77,7 +90,7 @@ class StaticDataContext implements MutableDataContext {
     const regex = new RegExp(this.escapeRegExp(pattern).replace(/\\\*/g, ".*?"));
     return this.keys()
         .filter((key: string) => regex.test(key))
-        .map(key => this.get(key))
+        .map(key => this.resolve(key))
         .filter(value => value !== undefined)
         .map(value => value as ResolvedValue);
   }
@@ -98,7 +111,15 @@ export class StaticImmutableDataContext implements ImmutableDataContext {
   constructor(private readonly state: DataContextState = {}) {
   }
 
-  get(key: string): ResolvedValue|undefined {
+  get(key: string): Resolvable | undefined {
+    const result: string|number|boolean|Resolvable|undefined = this.state[key];
+    if (result instanceof Resolvable) {
+      return result;
+    }
+    return Resolvable.just(result);
+  }
+
+  resolve(key: string): ResolvedValue|undefined {
     const result: string|number|boolean|Resolvable|undefined = this.state[key];
     if (result instanceof Resolvable) {
       return result.resolve(this);
@@ -121,7 +142,7 @@ export class StaticImmutableDataContext implements ImmutableDataContext {
     const regex = new RegExp(pattern.replace(/\\\*/, ".*?"));
     return this.keys()
         .filter((key: string) => regex.test(key))
-        .map(key => this.get(key))
+        .map(key => this.resolve(key))
         .filter(value => value !== undefined)
         .map(value => value as ResolvedValue);
   }

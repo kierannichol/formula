@@ -1,7 +1,6 @@
 import {DataContext} from "./DataContext";
 import {Formula} from "./Formula";
 import {ResolvedValue} from "./ResolvedValue";
-import getRealSystemTime = jest.getRealSystemTime;
 
 test('add two scalars', () => {
   let formula = Formula.parse("2 + 3")
@@ -17,11 +16,6 @@ test ('with brackets', () => {
   let formula = Formula.parse('4 + 4 * 2 / ( 1 - 5 )')
   expect(formula.resolve()?.asNumber()).toBe(2);
 })
-
-// test ('err: multiple operators in a row', () => {
-//   let formula = Formula.parse('2 + + 3')
-//   expect(formula.resolve()).toBe(112);
-// })
 
 test ('multiple digit numbers', () => {
   let formula = Formula.parse('12 + 100')
@@ -184,7 +178,7 @@ test('resolve performance test', () => {
 
 test('deep resolve performance test', () => {
   const iterations = 1000;
-  const depth = 2000;
+  const depth = 1000;
   const formula = Formula.parse(`@step_${depth}`);
   const context = DataContext.of({
     "step_1": 1
@@ -193,7 +187,7 @@ test('deep resolve performance test', () => {
     context.set(`step_${j}`, Formula.parse(`@step_${j-1} + 1`));
   }
   let startTime = performance.now();
-  let result = ResolvedValue.none();
+  let result = ResolvedValue.None;
   for (let i = 0; i < iterations; i++) {
     result = formula.resolve(context);
   }

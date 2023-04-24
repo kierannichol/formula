@@ -1,10 +1,9 @@
-import {DataContext} from "./DataContext";
 import {FormulaOptimizer} from "./FormulaOptimizer";
 import {Resolvable} from "./Resolvable";
 import {ResolvedValue} from "./ResolvedValue";
 import {Associativity, ShuntingYard} from "./ShuntingYard";
 
-export class Formula extends Resolvable {
+export class Formula {
 
   private static Parser = ShuntingYard.parser()
     .operator('^', 4, Associativity.Right, 2, (a: ResolvedValue, b: ResolvedValue) => ResolvedValue.of(Math.pow(a.asNumber(), b.asNumber())))
@@ -37,36 +36,21 @@ export class Formula extends Resolvable {
     .variable('@', '', (state, key) => state.get(key))
     .variable('min(@', ')', (state, key) => Formula.noneIfEmpty(state.find(key)).reduce((a, b) => a.asNumber() < b.asNumber() ? a : b))
     .variable('max(@', ')', (state, key) => Formula.noneIfEmpty(state.find(key)).reduce((a, b) => a.asNumber() > b.asNumber() ? a : b))
-    .variable('sum(@', ')', (state, key) => state.find(key).reduce((a, b) => ResolvedValue.of(a.asNumber() + b.asNumber()), ResolvedValue.none()));
+    .variable('sum(@', ')', (state, key) => state.find(key).reduce((a, b) => ResolvedValue.of(a.asNumber() + b.asNumber()), ResolvedValue.None));
 
-  static parse(formula: string|Resolvable): Formula {
-    if (formula instanceof Formula) {
+  static parse(formula: string|Resolvable): Resolvable {
+    if (formula instanceof Resolvable) {
       return formula;
     }
-    if (formula instanceof Resolvable) {
-      return new Formula(formula);
-    }
-    return new Formula(this.Parser.parse(formula));
+    return this.Parser.parse(formula);
   }
 
   static optimize(formula: string): string {
     return FormulaOptimizer.optimize(formula);
   }
 
-  resolve(context?: DataContext | undefined): ResolvedValue | undefined {
-    return this.resolvable.resolve(context);
-  }
-
-  asFormula(): string {
-    return this.resolvable.asFormula();
-  }
-
-  private constructor(private readonly resolvable: Resolvable) {
-    super();
-  }
-
   private static noneIfEmpty(array: ResolvedValue[]): ResolvedValue[] {
-    return array.length > 0 ? array : [ ResolvedValue.none() ];
+    return array.length > 0 ? array : [ ResolvedValue.None ];
   }
 }
 

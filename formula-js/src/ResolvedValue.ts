@@ -40,6 +40,36 @@ class TextValue implements ResolvedValue {
   }
 }
 
+class NumberValue implements ResolvedValue {
+  constructor(private readonly value:number) {
+  }
+
+  asText(): string {
+    return this.value.toString();
+  }
+
+  asNumber(): number {
+    return this.value;
+  }
+
+  asBoolean(): boolean {
+    return this.value > 0;
+  }
+
+  equals(other: ResolvedValue): boolean {
+    return other instanceof NumberValue
+        && this.value === other.value;
+  }
+
+  toString(): string {
+    return this.asText();
+  }
+
+  map(fn: (value: ResolvedValue) => ResolvedValue): ResolvedValue {
+    return fn(this);
+  }
+}
+
 class BooleanValue implements ResolvedValue {
 
   constructor(private readonly value:boolean) {
@@ -102,6 +132,7 @@ class NullValue implements ResolvedValue {
 export abstract class ResolvedValue {
   static readonly True: ResolvedValue = new BooleanValue(true);
   static readonly False: ResolvedValue = new BooleanValue(false);
+  static readonly None: ResolvedValue = NullValue.Instance;
 
   static of(value: string | number | boolean): ResolvedValue {
     if (value === undefined) {
@@ -111,13 +142,11 @@ export abstract class ResolvedValue {
     if (typeof value === 'string') {
       return new TextValue(value);
     }
-    if (typeof value === 'boolean') {
-      return new TextValue(value ? 'true' : 'false')
+    if (typeof value === 'number') {
+      return new NumberValue(value);
     }
-    return new TextValue(value.toString())
-  }
-
-  static none(): ResolvedValue {
-    return NullValue.Instance;
+    if (typeof value === 'boolean') {
+      return value ? ResolvedValue.True : ResolvedValue.False;
+    }
   }
 }

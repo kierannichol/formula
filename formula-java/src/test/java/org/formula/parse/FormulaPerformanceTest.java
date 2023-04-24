@@ -13,8 +13,7 @@ public class FormulaPerformanceTest {
     @Test
     void parsePerformance() {
         var startTime = System.nanoTime();
-        for (var i = 0; i < ITERATIONS; i++)
-        {
+        for (var i = 0; i < ITERATIONS; i++) {
             Formula.parse(FORMULA_TEXT);
         }
         var endTime = System.nanoTime();
@@ -33,13 +32,11 @@ public class FormulaPerformanceTest {
                 .set("sigma", Formula.parse("@alpha AND @beta"))
                 .set("omega", "12");
 
-        for (var j = 0; j < 20000; j++)
-        {
+        for (var j = 0; j < 20000; j++) {
             context.set("key_"+j, "value_"+j);
         }
         var startTime = System.nanoTime();
-        for (var i = 0; i < ITERATIONS; i++)
-        {
+        for (var i = 0; i < ITERATIONS; i++) {
             formula.resolve(context);
         }
         var endTime = System.nanoTime();
@@ -54,14 +51,12 @@ public class FormulaPerformanceTest {
         var formula = Formula.parse("@step_" + depth);
         var context = MutableDataContext.create()
                 .set("step_1", 1);
-        for (var j = 2; j <= depth; j++)
-        {
+        for (var j = 2; j <= depth; j++) {
             context = context.set("step_"+j, Formula.parse("@step_%d + 1".formatted(j - 1)));
         }
         var startTime = System.nanoTime();
         var result = ResolvedValue.none();
-        for (var i = 0; i < ITERATIONS; i++)
-        {
+        for (var i = 0; i < ITERATIONS; i++) {
             result = formula.resolve(context);
         }
         var endTime = System.nanoTime();
