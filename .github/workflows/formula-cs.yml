@@ -16,8 +16,7 @@ on:
       - 'formula-cs/**'
 
 jobs:
-  build:
-
+  ci:
     runs-on: ubuntu-latest
     defaults:
       run:

@@ -23,7 +23,7 @@ permissions:
   contents: read
 
 jobs:
-  test:
+  ci:
     runs-on: ubuntu-latest
 
     steps:
@@ -38,7 +38,7 @@ jobs:
       with:
         arguments: build --scan
         build-root-directory: ./formula-java
-    - name: Run unit tests
+    - name: Test
       uses: gradle/gradle-build-action@v2
       with:
         arguments: test
