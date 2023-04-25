@@ -1,6 +1,7 @@
 # Formula
 
 [![formula-java](https://github.com/kierannichol/formula/actions/workflows/formula-java.yml/badge.svg?branch=main)](https://github.com/kierannichol/formula/actions/workflows/formula-java.yml)
+[![formula-js](https://github.com/kierannichol/formula/actions/workflows/formula-js.yml/badge.svg?branch=main)](https://github.com/kierannichol/formula/actions/workflows/formula-js.yml)
 
 ## What this is trying to solve
 
