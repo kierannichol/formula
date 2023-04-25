@@ -30,6 +30,11 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
+    - name: Build
+      uses: gradle/gradle-build-action@v2
+      with:
+        arguments: build --scan
+        build-root-directory: ./formula-java
     - name: Run unit tests
       uses: gradle/gradle-build-action@v2
       with:
