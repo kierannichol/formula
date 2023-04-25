@@ -157,7 +157,7 @@ export class FormulaOptimizer {
   .variable('min(@', ')', (state, key) => ResolvedValue.of(`min(@${key})`))
   .variable('max(@', ')', (state, key) => ResolvedValue.of(`max(@${key})`))
   .variable('sum(@', ')', (state, key) => ResolvedValue.of(`sum(@${key})`))
-  .comment('[', ']', (subject, comment) => new QuotedTextResolvedValue(subject, "", comment))
+  .comment('[', ']', (comment, subject) => new QuotedTextResolvedValue(subject, "", `[${comment}]`))
 
   static optimize(formula: string): string {
     const resolved = this.Parser.parse(formula).resolve();

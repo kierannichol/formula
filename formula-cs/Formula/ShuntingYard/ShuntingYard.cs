@@ -246,20 +246,8 @@ public readonly record struct Operator2
     }
 }
 
-public record struct Operator3
-    (string Name, int Precedence, Associativity Associativity, Func<ResolvedValue, ResolvedValue, ResolvedValue, ResolvedValue> Function) : IOperator,
-        IOperatorFunction3
-{
-    public ResolvedValue Execute(ResolvedValue a1, ResolvedValue a2, ResolvedValue a3)
-    {
-        return Function(a1, a2, a3);
-    }
-    
-    public override string ToString()
-    {
-        return Name;
-    }
-}
+public readonly record struct BiOperator
+    (string Name, Operator1 UnaryOperator, Operator2 BinaryOperator) : INode;
 
 internal class ResolveException : Exception
 {

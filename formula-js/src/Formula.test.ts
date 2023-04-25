@@ -59,6 +59,24 @@ test ('signed()', () => {
   expect(Formula.parse('signed(-3)').resolve()?.asNumber()).toBe(-3);
 })
 
+test ('negative integers', () => {
+  expect(Formula.parse('-4').resolve()?.asNumber()).toBe(-4);
+  expect(Formula.parse('1-4').resolve()?.asNumber()).toBe(-3);
+  expect(Formula.parse('(1)-4').resolve()?.asNumber()).toBe(-3);
+  expect(Formula.parse('1-(4)').resolve()?.asNumber()).toBe(-3);
+  expect(Formula.parse('(1-4)').resolve()?.asNumber()).toBe(-3);
+})
+
+test ('trailing minus integer', () => {
+  let formula = Formula.parse('(5)-1');
+  expect(formula.resolve()?.asNumber()).toBe(4);
+})
+
+test ('multiply negative integer', () => {
+  let formula = Formula.parse('5*-2');
+  expect(formula.resolve()?.asNumber()).toBe(-10);
+})
+
 test ('simple variable', () => {
   let formula = Formula.parse('@foo');
   let context = DataContext.of({ 'foo': 12 });
@@ -139,6 +157,11 @@ test ('sum(a:wildcard:b)', () => {
     // 'base:second:target': 1,
   });
   expect(formula.resolve(context)?.asNumber()).toBe(1);
+})
+
+test ('with comment', () => {
+  let formula = Formula.parse('(4[Four] + 2[Two])')
+  expect(formula.resolve()?.asNumber()).toBe(6);
 })
 
 test('parse performance test', () => {

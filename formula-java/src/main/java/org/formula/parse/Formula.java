@@ -5,6 +5,8 @@ import org.formula.Resolvable;
 import org.formula.ResolvedValue;
 import org.formula.context.DataContext;
 import org.formula.parse.shuntingyard.Associativity;
+import org.formula.parse.shuntingyard.Operator1;
+import org.formula.parse.shuntingyard.Operator2;
 import org.formula.parse.shuntingyard.ShuntingYardParser;
 import org.formula.util.Ordinal;
 
@@ -15,7 +17,9 @@ public class Formula {
             .operator("*", 3, Associativity.LEFT, (a, b) -> ResolvedValue.of(a.asDecimal() * b.asDecimal()))
             .operator("/", 3, Associativity.LEFT, (a, b) -> ResolvedValue.of(a.asDecimal() / b.asDecimal()))
             .operator("+", 2, Associativity.LEFT, (a, b) -> ResolvedValue.of(a.asDecimal() + b.asDecimal()))
-            .operator("-", 2, Associativity.LEFT, (a, b) -> ResolvedValue.of(a.asDecimal() - b.asDecimal()))
+            .biOperator("-",
+                    new Operator1("-", 4, Associativity.LEFT, a -> ResolvedValue.of(-a.asDecimal())),
+                    new Operator2("-", 2, Associativity.LEFT, (a, b) -> ResolvedValue.of(a.asDecimal() - b.asDecimal())))
             .operator("!", 2, Associativity.LEFT, (ResolvedValue a) -> ResolvedValue.of(!a.asBoolean()))
             .operator("<", 3, Associativity.LEFT, (ResolvedValue a, ResolvedValue b) -> ResolvedValue.of(a.asDecimal() < b.asDecimal()))
             .operator("<=", 3, Associativity.LEFT, (ResolvedValue a, ResolvedValue b) -> ResolvedValue.of(a.asDecimal() <= b.asDecimal()))

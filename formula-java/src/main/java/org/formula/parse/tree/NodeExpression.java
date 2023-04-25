@@ -10,7 +10,7 @@ public interface NodeExpression {
 
     NodeExpression DIGIT = anyOf(DIGIT_CHARACTERS);
     NodeExpression DIGITS = anyOf(DIGIT_CHARACTERS).repeats(1);
-    NodeExpression INTEGER = of(just('-').optional(), DIGITS);
+    NodeExpression INTEGER = DIGITS;
     NodeExpression DECIMAL = of(INTEGER, just('.'), DIGITS);
     NodeExpression NUMBER = of(INTEGER, optional(just('.'), DIGITS));
     NodeExpression ALPHA = anyOf(ALPHA_CHARACTERS);

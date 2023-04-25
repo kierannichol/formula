@@ -10,12 +10,12 @@ test('all', () => {
   expect(formula).toBe("all(any(@a,@b),@c,@d,@e,@f)");
 });
 
-test('bracketAdd', () => {
+test('bracket adding', () => {
   let formula = Formula.optimize("@a + (@b + @c)")
   expect(formula).toBe("@a+@b+@c");
 });
 
-test('keepsRequiredBrackets', () => {
+test('keeps required brackets', () => {
   expect(Formula.optimize("@a * (@b + @c + @d)/2")).toBe("@a*(@b+@c+@d)/2");
   expect(Formula.optimize("@a - (@b / @c)")).toBe("@a-(@b/@c)");
   expect(Formula.optimize("@a < (@b - @c)")).toBe("@a<(@b-@c)");

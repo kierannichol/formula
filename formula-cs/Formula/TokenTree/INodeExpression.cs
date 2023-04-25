@@ -11,7 +11,7 @@ public static class NodeExpression
 {
     public static readonly INodeExpression Digit = AnyOf(DigitCharacters);
     public static readonly INodeExpression Digits = AnyOf(DigitCharacters).Repeats(1);
-    public static readonly INodeExpression Integer = Of(Just('-').Optional(), Digits);
+    public static readonly INodeExpression Integer = Digits;
     public static readonly INodeExpression Key = AnyOf(WordCharacters + ":.#*").Repeats(1);
     public static readonly INodeExpression Word = AnyOf(WordCharacters).Repeats(1);
     public static readonly INodeExpression Alpha = AnyOf(AlphaCharacters);

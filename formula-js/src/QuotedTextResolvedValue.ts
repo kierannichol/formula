@@ -4,7 +4,7 @@ export class QuotedTextResolvedValue implements ResolvedValue {
 
   constructor(private readonly value: ResolvedValue,
               private readonly prefix: string,
-              private readonly suffix) {
+              private readonly suffix: string) {
   }
 
   asBoolean(): boolean {

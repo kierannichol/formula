@@ -82,6 +82,11 @@ class Operator extends OperatorFunction {
   }
 }
 
+class BiOperator implements Node {
+  constructor(public readonly unary: Operator, public readonly binary: Operator) {
+  }
+}
+
 class Variable implements Node {
   constructor(public readonly key: string,
               private readonly resolver: (context: DataContext, key: string) => ResolvedValue|Resolvable|undefined) {}
@@ -96,7 +101,12 @@ class Variable implements Node {
 }
 
 class Comment implements Node {
-  constructor(public readonly comment: string, public readonly fn: (subject: ResolvedValue, comment: string) => ResolvedValue|Resolvable|undefined) {}
+  constructor(private readonly text: string,
+              private readonly decorator: (text: string, value: ResolvedValue) => ResolvedValue) {}
+
+  apply(previous: ResolvedValue) {
+    return this.decorator(this.text, previous);
+  }
 }
 
 class Term implements Node {
@@ -132,6 +142,16 @@ export class ShuntingYardParser implements Parser {
     return this;
   }
 
+  biOperator(symbol: string,
+             unaryPrecedence: number, unaryAssociativity: Associativity, unaryFn: OneOperandFunction<ResolvedValue>,
+             binaryPrecedence: number, binaryAssociativity: Associativity, binaryFn: TwoOperandFunction<ResolvedValue>) {
+    this.parser.add(symbol, _ => new BiOperator(
+        new Operator(symbol, unaryPrecedence, unaryAssociativity, 1, unaryFn),
+        new Operator(symbol, binaryPrecedence, binaryAssociativity, 2, binaryFn)
+    ));
+    return this;
+  }
+
   intOperator(symbol: string, precedence: number, associativity: Associativity, operands: number, fn: OperandFunction<number>) {
     return this.operator(symbol, precedence, associativity, operands, mapIntFunction(operands, fn));
   }
@@ -164,9 +184,9 @@ export class ShuntingYardParser implements Parser {
     return this;
   }
 
-  comment(prefix: string, suffix: string, fn: (subject: ResolvedValue, comment: string) => ResolvedValue|Resolvable|undefined) {
-    this.parser.add([ literal(prefix, suffix, "\\"+prefix) ],
-        token => new Comment(token, fn));
+  comment(prefix: string, suffix: string, decorator: (text: string, value: ResolvedValue) => ResolvedValue = (text, value) => value) {
+    this.parser.add(literal(prefix, suffix),
+        key => new Comment(key.substring(prefix.length, key.length - suffix.length), decorator));
     return this;
   }
 
@@ -189,10 +209,21 @@ export class ShuntingYardParser implements Parser {
 
     const tokens = this.parser.parse(formula);
 
-    for (let token of tokens) {
+    for (let i = 0; i < tokens.length; i++) {
+      let token = tokens[i];
+      let previous = i > 0 ? tokens[i-1] : undefined;
+
+      if (token instanceof BiOperator) {
+        let operator = token;
+        token = operator.binary;
+        if (!previous || previous instanceof Operator || previous === '(' || previous === ',') {
+          token = operator.unary;
+        }
+      }
+
       if (token instanceof Operator) {
         let operator = token;
-        let top = operatorStack[operatorStack.length-1];
+        let top = operatorStack.at(-1);
         if (top instanceof Operator) {
           if ((operator.precedence < top.precedence)
               || (operator.associativity === Associativity.Left
@@ -223,12 +254,12 @@ export class ShuntingYardParser implements Parser {
         continue;
       }
 
-      if (token instanceof Comment) {
+      if (token instanceof Term) {
         outputBuffer.push(token);
         continue;
       }
 
-      if (token instanceof Term) {
+      if (token instanceof Comment) {
         outputBuffer.push(token);
         continue;
       }
@@ -262,7 +293,7 @@ export class ShuntingYardParser implements Parser {
             outputBuffer.push(next);
           }
 
-          if (operatorStack[operatorStack.length-1] instanceof Function) {
+          if (operatorStack.at(-1) instanceof Function) {
             const paramCount = arityStack.pop();
             const func = operatorStack.pop() as Function;
             if (paramCount !== func.operands) {
@@ -270,7 +301,7 @@ export class ShuntingYardParser implements Parser {
             }
             outputBuffer.push(func);
           }
-          else if (operatorStack[operatorStack.length-1] instanceof VarargsFunction) {
+          else if (operatorStack.at(-1) instanceof VarargsFunction) {
             outputBuffer.push(arityStack.pop());
             outputBuffer.push(operatorStack.pop());
           }
@@ -358,7 +389,8 @@ export class ShuntingYard extends Resolvable {
       }
 
       if (next instanceof Comment) {
-        localStack.push(next.fn(localStack.pop() as ResolvedValue, next.comment));
+        const previous = localStack.pop();
+        localStack.push(next.apply(previous as ResolvedValue));
         continue;
       }
 

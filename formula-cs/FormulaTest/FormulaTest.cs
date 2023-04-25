@@ -78,6 +78,25 @@ public class FormulaTest
         AssertResolvedValue(Formula.Parse("signed(3)")).HasValue(3);
         AssertResolvedValue(Formula.Parse("signed(-3)")).HasValue(-3);
     }
+    
+    [Test]
+    public void NegativeIntegers() {
+        AssertResolvedValue(Formula.Parse("-4")).HasValue(-4);
+        AssertResolvedValue(Formula.Parse("1-4")).HasValue(-3);
+        AssertResolvedValue(Formula.Parse("(1)-4")).HasValue(-3);
+        AssertResolvedValue(Formula.Parse("1-(4)")).HasValue(-3);
+        AssertResolvedValue(Formula.Parse("(1-4)")).HasValue(-3);
+    }
+    
+    [Test]
+    public void TrailingMinusInteger() {
+        AssertResolvedValue(Formula.Parse("(5)-1")).HasValue(4);
+    }
+    
+    [Test]
+    public void MultiplyNegativeInteger() {
+        AssertResolvedValue(Formula.Parse("5*-2")).HasValue(-10);
+    }
 
     [Test]
     public void SimpleVariableFunction() {

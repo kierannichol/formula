@@ -2,6 +2,7 @@ package org.formula.parse.shuntingyard;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Stack;
 import java.util.function.Supplier;
 import org.formula.Resolvable;
@@ -12,6 +13,8 @@ import org.formula.parse.tree.TokenTree;
 import org.formula.util.Lambda2;
 
 public class ShuntingYardParser implements Parser {
+    private static final Literal OPEN_BRACKET = Literal.of("(");
+    private static final Literal COMMA = Literal.of(",");
 
     private final TokenTree<Node> tokenTree;
 
@@ -33,9 +36,8 @@ public class ShuntingYardParser implements Parser {
                         quote -> Term.of(quote.substring(1, quote.length() - 1), "'", "'"));
     }
 
-    public ShuntingYardParser operator(String symbol, int precedence, Associativity associativity,
-            OperatorFunction0 fn) {
-        tokenTree.add(symbol, token -> new Operator0(symbol, precedence, associativity, fn));
+    public ShuntingYardParser biOperator(String symbol, Operator1 unaryOperator, Operator2 binaryOperator) {
+        tokenTree.add(symbol, token -> new BiOperatorFunction(symbol, unaryOperator, binaryOperator));
         return this;
     }
 
@@ -120,7 +122,19 @@ public class ShuntingYardParser implements Parser {
 
         List<Node> tokens = tokenTree.parse(text);
 
-        for (Node token : tokens) {
+        for (int i = 0; i < tokens.size(); i++) {
+            Node token = tokens.get(i);
+            Node previous = i > 0 ? tokens.get(i-1) : null;
+
+            if (token instanceof BiOperatorFunction func) {
+                token = func.binaryOperator();
+                if (previous == null || previous instanceof Operator
+                        || Objects.equals(previous, OPEN_BRACKET)
+                        || Objects.equals(previous, COMMA)) {
+                    token = func.unaryOperator();
+                }
+            }
+
             if (token instanceof Operator operator) {
                 if (operatorStack.size() > 0) {
                     Node top = operatorStack.peek();
