@@ -20,6 +20,9 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./formula-js
 
     steps:
     - uses: actions/checkout@v3
