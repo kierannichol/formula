@@ -6,12 +6,12 @@ on:
   push:
     branches: [ "main" ]
     paths:
-      - '.github/workflows/**'
+      - '.github/workflows/formula-js.yml'
       - 'formula-js/**'
   pull_request:
     branches: [ "main" ]
     paths:
-      - '.github/workflows/**'
+      - '.github/workflows/formula-js.yml'
       - 'formula-js/**'
 
 permissions:

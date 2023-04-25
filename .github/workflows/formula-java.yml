@@ -11,12 +11,12 @@ on:
   push:
     branches: [ "main" ]
     paths:
-      - '.github/workflows/**'
+      - '.github/workflows/formula-java.yml'
       - 'formula-java/**'
   pull_request:
     branches: [ "main" ]
     paths:
-      - '.github/workflows/**'
+      - '.github/workflows/formula-java.yml'
       - 'formula-java/**'
 
 permissions:
