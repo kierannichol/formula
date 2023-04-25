@@ -1,7 +1,8 @@
 # Formula
 
-[![formula-java](https://github.com/kierannichol/formula/actions/workflows/formula-java.yml/badge.svg?branch=main)](https://github.com/kierannichol/formula/actions/workflows/formula-java.yml)
-[![formula-js](https://github.com/kierannichol/formula/actions/workflows/formula-js.yml/badge.svg?branch=main)](https://github.com/kierannichol/formula/actions/workflows/formula-js.yml)
+[![Javascript](https://github.com/kierannichol/formula/actions/workflows/formula-js.yml/badge.svg?branch=main)](https://github.com/kierannichol/formula/actions/workflows/formula-js.yml)
+[![Java](https://github.com/kierannichol/formula/actions/workflows/formula-java.yml/badge.svg?branch=main)](https://github.com/kierannichol/formula/actions/workflows/formula-java.yml)
+[![C#](https://github.com/kierannichol/formula/actions/workflows/formula-cs.yml/badge.svg?branch=main)](https://github.com/kierannichol/formula/actions/workflows/formula-cs.yml)
 
 ## What this is trying to solve
 
