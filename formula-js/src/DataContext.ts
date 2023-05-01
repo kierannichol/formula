@@ -6,7 +6,6 @@ export type DataContextState = { [key:string]:string|number|boolean|Resolvable; 
 
 export interface DataContext {
   get(key: string): Resolvable|undefined;
-  resolve(key: string): ResolvedValue|undefined;
   keys(): string[];
 }
 
@@ -32,11 +31,15 @@ class EmptyDataContext implements DataContext {
     return undefined;
   }
 
-  resolve(key: string): undefined {
+  resolve(key: string): ResolvedValue | undefined {
     return undefined;
   }
 
   keys(): string[] {
+    return [];
+  }
+
+  find(pattern: string): ResolvedValueWithId[] {
     return [];
   }
 }
@@ -46,6 +49,14 @@ export class DataContext {
 
   static of(state: DataContextState): MutableDataContext {
     return new StaticDataContext(state);
+  }
+
+  public resolve(key: string): ResolvedValue|undefined {
+    return this.get(key).resolve(this);
+  }
+
+  public find(pattern: string): ResolvedValueWithId[] {
+    return DataContextUtils.find(this, pattern);
   }
 }
 
@@ -71,8 +82,9 @@ export class DataContextUtils {
   }
 }
 
-class StaticDataContext implements MutableDataContext {
+class StaticDataContext extends DataContext implements MutableDataContext {
   constructor(private readonly state: DataContextState) {
+    super();
   }
 
   get(key: string): Resolvable | undefined {
@@ -111,8 +123,9 @@ class StaticDataContext implements MutableDataContext {
   }
 }
 
-export class StaticImmutableDataContext implements ImmutableDataContext {
+export class StaticImmutableDataContext extends DataContext implements ImmutableDataContext {
   constructor(private readonly state: DataContextState = {}) {
+    super();
   }
 
   get(key: string): Resolvable | undefined {
