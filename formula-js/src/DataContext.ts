@@ -1,12 +1,12 @@
 import {Resolvable} from "./Resolvable";
 import {ResolvedValue} from "./ResolvedValue";
+import {ResolvedValueWithId} from "./ResolvedValueWithId";
 
 export type DataContextState = { [key:string]:string|number|boolean|Resolvable; };
 
 export interface DataContext {
   get(key: string): Resolvable|undefined;
   resolve(key: string): ResolvedValue|undefined;
-  find(pattern: string): ResolvedValue[];
   keys(): string[];
 }
 
@@ -39,11 +39,6 @@ class EmptyDataContext implements DataContext {
   keys(): string[] {
     return [];
   }
-
-  find(pattern: string): ResolvedValue[] {
-    return [];
-  }
-
 }
 
 export class DataContext {
@@ -51,6 +46,28 @@ export class DataContext {
 
   static of(state: DataContextState): MutableDataContext {
     return new StaticDataContext(state);
+  }
+}
+
+export class DataContextUtils {
+
+  static find(context: DataContext, pattern: string): ResolvedValueWithId[] {
+    const regex = new RegExp(this.escapeRegExp(pattern).replace(/\\\*/g, ".*?"));
+    return context.keys()
+    .filter((key: string) => regex.test(key))
+    .map(key => {
+      const value = context.resolve(key);
+      if (value === undefined) {
+        return undefined;
+      }
+      return new ResolvedValueWithId(key, value);
+    })
+    .filter(value => value !== undefined)
+    .map(value => value as ResolvedValueWithId);
+  }
+
+  private static escapeRegExp(expression: string) {
+    return expression.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
 }
 
@@ -84,19 +101,6 @@ class StaticDataContext implements MutableDataContext {
 
   keys(): string[] {
     return Object.keys(this.state);
-  }
-
-  find(pattern: string): ResolvedValue[] {
-    const regex = new RegExp(this.escapeRegExp(pattern).replace(/\\\*/g, ".*?"));
-    return this.keys()
-        .filter((key: string) => regex.test(key))
-        .map(key => this.resolve(key))
-        .filter(value => value !== undefined)
-        .map(value => value as ResolvedValue);
-  }
-
-  private escapeRegExp(expression: string) {
-    return expression.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
 
   rename(key: string, to: string): void {
@@ -136,14 +140,5 @@ export class StaticImmutableDataContext implements ImmutableDataContext {
 
   keys(): string[] {
     return Object.keys(this.state);
-  }
-
-  find(pattern: string): ResolvedValue[] {
-    const regex = new RegExp(pattern.replace(/\\\*/, ".*?"));
-    return this.keys()
-        .filter((key: string) => regex.test(key))
-        .map(key => this.resolve(key))
-        .filter(value => value !== undefined)
-        .map(value => value as ResolvedValue);
   }
 }

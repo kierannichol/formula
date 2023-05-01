@@ -1,3 +1,4 @@
+import {DataContext, DataContextUtils} from "./DataContext";
 import {FormulaOptimizer} from "./FormulaOptimizer";
 import {Resolvable} from "./Resolvable";
 import {ResolvedValue} from "./ResolvedValue";
@@ -36,9 +37,9 @@ export class Formula {
     .varargsFunction('any', args => ResolvedValue.of(args.some(arg => arg.asBoolean())))
     .varargsFunction('all', args => ResolvedValue.of(args.every(arg => arg.asBoolean())))
     .variable('@', '', (state, key) => state.get(key))
-    .variable('min(@', ')', (state, key) => Formula.noneIfEmpty(state.find(key)).reduce((a, b) => a.asNumber() < b.asNumber() ? a : b))
-    .variable('max(@', ')', (state, key) => Formula.noneIfEmpty(state.find(key)).reduce((a, b) => a.asNumber() > b.asNumber() ? a : b))
-    .variable('sum(@', ')', (state, key) => state.find(key).reduce((a, b) => ResolvedValue.of(a.asNumber() + b.asNumber()), ResolvedValue.None))
+    .variable('min(@', ')', Formula.minFn)
+    .variable('max(@', ')', Formula.maxFn)
+    .variable('sum(@', ')', Formula.sumFn)
     .comment('[', ']')
   ;
 
@@ -55,6 +56,18 @@ export class Formula {
 
   private static noneIfEmpty(array: ResolvedValue[]): ResolvedValue[] {
     return array.length > 0 ? array : [ ResolvedValue.None ];
+  }
+
+  private static minFn(state: DataContext, key: string) {
+    return Formula.noneIfEmpty(DataContextUtils.find(state, key)).reduce((a, b) => a.asNumber() < b.asNumber() ? a : b);
+  }
+
+  private static maxFn(state: DataContext, key: string) {
+    return Formula.noneIfEmpty(DataContextUtils.find(state, key)).reduce((a, b) => a.asNumber() > b.asNumber() ? a : b);
+  }
+
+  private static sumFn(state: DataContext, key: string) {
+    return DataContextUtils.find(state, key).reduce((a, b) => ResolvedValue.of(a.asNumber() + b.asNumber()), ResolvedValue.None);
   }
 }
 
