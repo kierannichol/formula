@@ -47,7 +47,7 @@ public class FormulaPerformanceTest {
 
     @Test
     void deepResolvePerformance() {
-        final int depth = 1000;
+        final int depth = 10000;
         var formula = Formula.parse("@step_" + depth);
         var context = MutableDataContext.create()
                 .set("step_1", 1);

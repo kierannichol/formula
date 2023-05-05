@@ -78,14 +78,14 @@ public class ShuntingYardParser implements Parser {
         return this;
     }
 
-    public ShuntingYardParser variable(String idenfifier, VariableResolver variableResolver) {
+    public ShuntingYardParser variable(String identifier, VariableResolver variableResolver) {
         NodeExpression variableExpression = NodeExpression.of(
-                NodeExpression.term(idenfifier),
+                NodeExpression.term(identifier),
                 NodeExpression.ALPHA,
                 NodeExpression.optional(NodeExpression.KEY)
         );
         tokenTree.add(variableExpression,
-                key -> new Variable(key, (context, k) -> variableResolver.resolve(context, k.substring(idenfifier.length()))));
+                key -> new Variable(key, (context, k) -> variableResolver.resolve(context, k.substring(identifier.length()))));
         return this;
     }
 

@@ -46,12 +46,8 @@ public class ShuntingYard implements Resolvable {
                 stack.addFirst(variable.get(context));
             } else if (next instanceof Comment comment) {
                 localStack.addFirst(comment.fn().execute((ResolvedValue) localStack.removeFirst(), comment.text()));
-            } else if (next instanceof ShuntingYard shuntingYard) {
-                for (int i = shuntingYard.stack.size() - 1; i >= 0; i--) {
-                    stack.addFirst(shuntingYard.stack.get(i));
-                }
             } else {
-                while (next instanceof Resolvable resolvable) {
+                if (next instanceof Resolvable resolvable) {
                     next = resolvable.resolve(context);
                 }
                 localStack.addFirst(next);

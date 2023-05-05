@@ -2,7 +2,6 @@ package org.formula.context;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Stream;
 import org.formula.Resolvable;
 import org.formula.ResolvedValue;
@@ -15,15 +14,13 @@ class StaticDataContext implements MutableDataContext {
     }
 
     @Override
-    public Optional<Resolvable> get(String key) {
-        return Optional.ofNullable(data.get(key));
-    }
+    public ResolvedValue get(String key) {
+        Resolvable resolvable = data.get(key);
+        if (resolvable == null) {
+            return ResolvedValue.none();
+        }
 
-    @Override
-    public ResolvedValue resolve(String key) {
-        return Optional.ofNullable(data.get(key))
-                .map(resolvable -> resolvable.resolve(this))
-                .orElse(ResolvedValue.none());
+        return resolvable.resolve(this);
     }
 
     @Override

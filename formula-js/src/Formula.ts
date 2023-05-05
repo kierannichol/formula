@@ -1,4 +1,4 @@
-import {DataContext, DataContextUtils} from "./DataContext";
+import {DataContext} from "./DataContext";
 import {FormulaOptimizer} from "./FormulaOptimizer";
 import {Resolvable} from "./Resolvable";
 import {ResolvedValue} from "./ResolvedValue";
@@ -59,15 +59,15 @@ export class Formula {
   }
 
   private static minFn(state: DataContext, key: string) {
-    return Formula.noneIfEmpty(DataContextUtils.find(state, key)).reduce((a, b) => a.asNumber() < b.asNumber() ? a : b);
+    return Formula.noneIfEmpty(state.search(key)).reduce((a, b) => a.asNumber() < b.asNumber() ? a : b);
   }
 
   private static maxFn(state: DataContext, key: string) {
-    return Formula.noneIfEmpty(DataContextUtils.find(state, key)).reduce((a, b) => a.asNumber() > b.asNumber() ? a : b);
+    return Formula.noneIfEmpty(state.search(key)).reduce((a, b) => a.asNumber() > b.asNumber() ? a : b);
   }
 
   private static sumFn(state: DataContext, key: string) {
-    return DataContextUtils.find(state, key).reduce((a, b) => ResolvedValue.of(a.asNumber() + b.asNumber()), ResolvedValue.None);
+    return state.search(key).reduce((a, b) => ResolvedValue.of(a.asNumber() + b.asNumber()), ResolvedValue.None);
   }
 }
 

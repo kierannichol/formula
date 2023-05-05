@@ -6,7 +6,9 @@ export type DataContextState = { [key:string]:string|number|boolean|Resolvable; 
 
 export interface DataContext {
   get(key: string): Resolvable|undefined;
+  resolve(key: string): ResolvedValue | undefined;
   keys(): string[];
+  search(pattern: string): ResolvedValueWithId[];
 }
 
 export interface ImmutableDataContext extends DataContext {
@@ -39,7 +41,7 @@ class EmptyDataContext implements DataContext {
     return [];
   }
 
-  find(pattern: string): ResolvedValueWithId[] {
+  search(pattern: string): ResolvedValueWithId[] {
     return [];
   }
 }
@@ -50,17 +52,24 @@ export class DataContext {
   static of(state: DataContextState): MutableDataContext {
     return new StaticDataContext(state);
   }
-
-  public resolve(key: string): ResolvedValue|undefined {
-    return this.get(key).resolve(this);
-  }
-
-  public find(pattern: string): ResolvedValueWithId[] {
-    return DataContextUtils.find(this, pattern);
-  }
 }
 
-export class DataContextUtils {
+export abstract class BaseDataContext implements DataContext {
+
+  public resolve(key: string): ResolvedValue|undefined {
+    return this.get(key)?.resolve(this);
+  }
+
+  public search(pattern: string): ResolvedValueWithId[] {
+    return DataContextUtils.find(this, pattern);
+  }
+
+  abstract get(key: string): Resolvable | undefined;
+
+  abstract keys(): string[];
+}
+
+class DataContextUtils {
 
   static find(context: DataContext, pattern: string): ResolvedValueWithId[] {
     const regex = new RegExp(this.escapeRegExp(pattern).replace(/\\\*/g, ".*?"));
@@ -82,7 +91,7 @@ export class DataContextUtils {
   }
 }
 
-class StaticDataContext extends DataContext implements MutableDataContext {
+class StaticDataContext extends BaseDataContext implements MutableDataContext {
   constructor(private readonly state: DataContextState) {
     super();
   }
@@ -123,7 +132,7 @@ class StaticDataContext extends DataContext implements MutableDataContext {
   }
 }
 
-export class StaticImmutableDataContext extends DataContext implements ImmutableDataContext {
+export class StaticImmutableDataContext extends BaseDataContext implements ImmutableDataContext {
   constructor(private readonly state: DataContextState = {}) {
     super();
   }

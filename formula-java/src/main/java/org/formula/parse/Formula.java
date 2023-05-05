@@ -49,26 +49,23 @@ public class Formula {
             .variable("sum(@", ")", Formula::sumFn)
             ;
 
-    private static Resolvable variableFn(DataContext context, String key) {
-        return context.get(key).orElse(Resolvable.empty());
+    private static ResolvedValue variableFn(DataContext context, String key) {
+        return context.get(key);
     }
 
-    private static Resolvable minFn(DataContext context, String key) {
-        ResolvedValue resolved = context.search(key).reduce((a, b) -> a.asDecimal() < b.asDecimal() ? a : b)
+    private static ResolvedValue minFn(DataContext context, String key) {
+        return context.search(key).reduce((a, b) -> a.asDecimal() < b.asDecimal() ? a : b)
                 .orElse(ResolvedValue.none());
-        return Resolvable.just(resolved);
     }
 
-    private static Resolvable sumFn(DataContext context, String key) {
-        ResolvedValue resolved = context.search(key).reduce((a, b) -> ResolvedValue.of(a.asDecimal() + b.asDecimal()))
+    private static ResolvedValue sumFn(DataContext context, String key) {
+        return context.search(key).reduce((a, b) -> ResolvedValue.of(a.asDecimal() + b.asDecimal()))
                 .orElse(ResolvedValue.of(0));
-        return Resolvable.just(resolved);
     }
 
-    private static Resolvable maxFn(DataContext context, String key) {
-        ResolvedValue resolved = context.search(key).reduce((a, b) -> a.asDecimal() > b.asDecimal() ? a : b)
+    private static ResolvedValue maxFn(DataContext context, String key) {
+        return context.search(key).reduce((a, b) -> a.asDecimal() > b.asDecimal() ? a : b)
                 .orElse(ResolvedValue.none());
-        return Resolvable.just(resolved);
     }
 
     public static Resolvable parse(String formulaText) {
