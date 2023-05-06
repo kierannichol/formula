@@ -11,7 +11,7 @@ export abstract class Resolvable {
   }
 
   abstract asFormula(): string;
-  abstract resolve(context?: DataContext): ResolvedValue;
+  abstract resolve(context?: DataContext): ResolvedValue|undefined;
 
   map(fn: (resolved: ResolvedValue) => ResolvedValue): Resolvable {
     return new Resolvable.MappedResolvable(this, fn);
@@ -22,7 +22,7 @@ export abstract class Resolvable {
       super();
     }
 
-    resolve(context?: DataContext): ResolvedValue | undefined {
+    resolve(context?: DataContext): ResolvedValue {
       return this.resolved;
     }
 
@@ -37,7 +37,7 @@ export abstract class Resolvable {
       super();
     }
 
-    resolve(context?: DataContext): ResolvedValue | undefined {
+    resolve(context?: DataContext): ResolvedValue {
       return this.mapFn(this.resolvable.resolve(context));
     }
 
@@ -48,4 +48,5 @@ export abstract class Resolvable {
 
   static readonly True: Resolvable = new Resolvable.StaticResolvable(ResolvedValue.True);
   static readonly False: Resolvable = new Resolvable.StaticResolvable(ResolvedValue.False);
+  static readonly None: Resolvable = new Resolvable.StaticResolvable(ResolvedValue.None);
 }

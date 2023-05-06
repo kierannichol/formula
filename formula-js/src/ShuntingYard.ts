@@ -91,8 +91,8 @@ class Variable implements Node {
   constructor(public readonly key: string,
               private readonly resolver: (context: DataContext, key: string) => ResolvedValue|Resolvable|undefined) {}
 
-  resolve(context: DataContext) {
-    return this.resolver(context, this.key);
+  resolve(context: DataContext): ResolvedValue|Resolvable {
+    return this.resolver(context, this.key) ?? ResolvedValue.None;
   }
 
   public toString(): string {
@@ -170,14 +170,7 @@ export class ShuntingYardParser implements Parser {
     return this.function(name, operands, mapIntFunction(operands, fn));
   }
 
-  // variable(identifier: string, extractor: (context: DataContext, key: string) => ResolvedValue|Resolvable|undefined) {
-  //   this.parser.add([ term(identifier), alpha, optional(key) ],
-  //           key => new Variable(key, (context: DataContext, key: string) =>
-  //               extractor(context, key.substring(identifier.length))));
-  //   return this;
-  // }
-
-  variable(prefix: string, suffix: string, extractor: (context: DataContext, key: string) => ResolvedValue|Resolvable|undefined) {
+  variable(prefix: string, suffix: string, extractor: (context: DataContext, key: string) => ResolvedValue|Resolvable) {
     this.parser.add([ term(prefix), alpha, optional(key), term(suffix) ],
         key => new Variable(key, (context: DataContext, key: string) =>
             extractor(context, key.substring(prefix.length, key.length - suffix.length))));
@@ -352,23 +345,23 @@ export class ShuntingYard extends Resolvable {
         }
         else if (func.operands === 1) {
           let x = localStack.pop() as ResolvedValue;
-          if (x === undefined) throw new ResolveError(`Error executing function, ${func.name}, because parameter was undefined`);
+          if (x === undefined) throw new ResolveError(`Error executing function "${func.name}" in "${this.asFormula()}" because parameter was undefined`);
           localStack.push(func.execute(x));
         }
         else if (func.operands === 2) {
           let b = localStack.pop() as ResolvedValue;
           let a = localStack.pop() as ResolvedValue;
-          if (a === undefined) throw new ResolveError(`Error executing function, ${func.name}, because first parameter was undefined`);
-          if (b === undefined) throw new ResolveError(`Error executing function, ${func.name}, because second parameter was undefined`);
+          if (a === undefined) throw new ResolveError(`Error executing function "${func.name}" in "${this.asFormula()}" because first parameter was undefined`);
+          if (b === undefined) throw new ResolveError(`Error executing function "${func.name}" in "${this.asFormula()}" because second parameter was undefined`);
           localStack.push(func.execute(a, b));
         }
         else if (func.operands === 3) {
           let c = localStack.pop() as ResolvedValue;
           let b = localStack.pop() as ResolvedValue;
           let a = localStack.pop() as ResolvedValue;
-          if (a === undefined) throw new ResolveError(`Error executing function, ${func.name}, because first parameter was undefined`);
-          if (b === undefined) throw new ResolveError(`Error executing function, ${func.name}, because second parameter was undefined`);
-          if (c === undefined) throw new ResolveError(`Error executing function, ${func.name}, because third parameter was undefined`);
+          if (a === undefined) throw new ResolveError(`Error executing function "${func.name}" in "${this.asFormula()}" because first parameter was undefined`);
+          if (b === undefined) throw new ResolveError(`Error executing function "${func.name}" in "${this.asFormula()}" because second parameter was undefined`);
+          if (c === undefined) throw new ResolveError(`Error executing function "${func.name}" in "${this.asFormula()}" because third parameter was undefined`);
           localStack.push(func.execute(a, b, c));
         }
         else {

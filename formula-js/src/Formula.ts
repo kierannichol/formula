@@ -36,7 +36,8 @@ export class Formula {
     .function('ordinal', 1, (a: ResolvedValue) => ResolvedValue.of(ordinal(a.asNumber())))
     .varargsFunction('any', args => ResolvedValue.of(args.some(arg => arg.asBoolean())))
     .varargsFunction('all', args => ResolvedValue.of(args.every(arg => arg.asBoolean())))
-    .variable('@', '', (state, key) => state.get(key))
+    .variable('@', '', Formula.variableFn)
+    .variable('@{', '}', Formula.variableFn)
     .variable('min(@', ')', Formula.minFn)
     .variable('max(@', ')', Formula.maxFn)
     .variable('sum(@', ')', Formula.sumFn)
@@ -55,7 +56,11 @@ export class Formula {
   }
 
   private static noneIfEmpty(array: ResolvedValue[]): ResolvedValue[] {
-    return array.length > 0 ? array : [ ResolvedValue.None ];
+    return array.length > 0 ? array : [];
+  }
+
+  private static variableFn(state: DataContext, key: string) {
+    return state.get(key);
   }
 
   private static minFn(state: DataContext, key: string) {
@@ -63,7 +68,7 @@ export class Formula {
   }
 
   private static maxFn(state: DataContext, key: string) {
-    return Formula.noneIfEmpty(state.search(key)).reduce((a, b) => a.asNumber() > b.asNumber() ? a : b);
+    return Formula.noneIfEmpty(state.search(key)).reduce((a, b) => a.asNumber() > b.asNumber() ? a : b, ResolvedValue.None);
   }
 
   private static sumFn(state: DataContext, key: string) {

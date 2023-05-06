@@ -89,6 +89,12 @@ test ('variable math', () => {
   expect(formula.resolve(context)?.asNumber()).toBe(3);
 })
 
+test ('math with undefined variable', () => {
+  expect(Formula.parse('@foo + 1').resolve()?.asNumber()).toBe(1);
+  expect(Formula.parse('1 + @foo').resolve()?.asNumber()).toBe(1);
+  expect(Formula.parse('@foo + @bar').resolve()?.asNumber()).toBe(0);
+})
+
 test ('variable references formula', () => {
   let formula = Formula.parse('@bar');
   let context = DataContext.of({
@@ -162,6 +168,11 @@ test ('sum(a:wildcard:b)', () => {
 test ('with comment', () => {
   let formula = Formula.parse('(4[Four] + 2[Two])')
   expect(formula.resolve()?.asNumber()).toBe(6);
+})
+
+test ('zero not same as undefined', () => {
+  let formula = Formula.parse('0')
+  expect(formula.resolve()?.asText()).toBe('0');
 })
 
 test('parse performance test', () => {
