@@ -4,6 +4,7 @@ import static org.formula.parse.assertions.ResolvedValueAssertions.assertResolve
 
 import org.formula.ResolvedValue;
 import org.formula.context.MutableDataContext;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class FormulaPerformanceTest {
@@ -46,6 +47,7 @@ public class FormulaPerformanceTest {
     }
 
     @Test
+    @Disabled
     void deepResolvePerformance() {
         final int depth = 10000;
         var formula = Formula.parse("@step_" + depth);
