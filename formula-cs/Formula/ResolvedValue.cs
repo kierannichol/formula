@@ -76,6 +76,16 @@ public class QuotedTextResolvedValue : ResolvedValue
         return _text.AsBoolean();
     }
     
+    public override bool Equals(object? obj)
+    {
+        return _text.Equals(obj);
+    }
+
+    public override int GetHashCode()
+    {
+        return _text.GetHashCode();
+    }
+
     private QuotedTextResolvedValue(ResolvedValue value, string startQuote, string endQuote)
     {
         _text = value;

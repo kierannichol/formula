@@ -115,6 +115,17 @@ test ('else formula', () => {
   expect(formula.resolve(context)?.asText()).toBe('+2');
 })
 
+test ('equals formula', () => {
+  expect(Formula.parse('5==5').resolve()?.asBoolean()).toBe(true);
+  expect(Formula.parse('5==6').resolve()?.asBoolean()).toBe(false);
+  expect(Formula.parse('5=="5"').resolve()?.asBoolean()).toBe(true);
+  expect(Formula.parse('5==@five').resolve(DataContext.of({'five':5}))?.asBoolean()).toBe(true);
+  expect(Formula.parse('5==@five').resolve(DataContext.of({'five':'5'}))?.asBoolean()).toBe(true);
+  expect(Formula.parse('"ABC"=="ABC"').resolve()?.asBoolean()).toBe(true);
+  expect(Formula.parse('"ABC"=="XYZ"').resolve()?.asBoolean()).toBe(false);
+  expect(Formula.parse('"10"==10').resolve()?.asBoolean()).toBe(true);
+})
+
 test ('modifier formula', () => {
   let formula = Formula.parse(`concat(if((floor(@test_score/2) - 5) > 0, "+", ""), floor(@test_score/2) - 5))`);
   let context = DataContext.of({

@@ -222,4 +222,22 @@ public class FormulaTest
         AssertResolvedValue(formula.Resolve(new DataContext().Set("a", 1).Set("b", 0).Set("c", 1))).HasValue(true);
         AssertResolvedValue(formula.Resolve(new DataContext().Set("a", 1).Set("b", 1).Set("c", 1))).HasValue(true);
     }
+
+    [Test]
+    public void NumberEquals()
+    {
+        AssertResolvedValue(Formula.Parse("5==5").Resolve()).HasValue(true);
+        AssertResolvedValue(Formula.Parse("5==6").Resolve()).HasValue(false);
+        AssertResolvedValue(Formula.Parse("5==@five").Resolve(new DataContext().Set("five", 5))).HasValue(true);
+        AssertResolvedValue(Formula.Parse("5==@five").Resolve(new DataContext().Set("five", "5"))).HasValue(true);
+    }
+    
+    [Test]
+    public void TextEquals()
+    {
+        AssertResolvedValue(Formula.Parse("'ABC'=='ABC'").Resolve()).HasValue(true);
+        AssertResolvedValue(Formula.Parse("'ABC'=='XYZ'").Resolve()).HasValue(false);
+        AssertResolvedValue(Formula.Parse("'5'==@five").Resolve(new DataContext().Set("five", 5))).HasValue(true);
+        AssertResolvedValue(Formula.Parse("'5'==@five").Resolve(new DataContext().Set("five", "5"))).HasValue(true);
+    }
 }

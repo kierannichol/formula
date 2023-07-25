@@ -47,4 +47,21 @@ public class QuotedTextResolvedValue extends ResolvedValue {
     public String toString() {
         return asQuotedText();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ResolvedValue that)) {
+            return false;
+        }
+
+        return text.equals(that);
+    }
+
+    @Override
+    public int hashCode() {
+        return text.hashCode();
+    }
 }

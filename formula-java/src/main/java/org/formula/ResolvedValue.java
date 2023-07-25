@@ -69,12 +69,12 @@ public abstract class ResolvedValue {
             if (this == o) {
                 return true;
             }
-            if (o == null || getClass() != o.getClass()) {
+            if (!(o instanceof ResolvedValue that)) {
                 return false;
             }
 
-            TextResolvedValue that = (TextResolvedValue) o;
-            return Objects.equals(value, that.value);
+            String thatValue = that.asText();
+            return Objects.equals(value, thatValue);
         }
 
         @Override
@@ -120,12 +120,12 @@ public abstract class ResolvedValue {
             if (this == o) {
                 return true;
             }
-            if (o == null || getClass() != o.getClass()) {
+            if (!(o instanceof ResolvedValue that)) {
                 return false;
             }
 
-            NumberResolvedValue that = (NumberResolvedValue) o;
-            return Objects.equals(value, that.value);
+            int thatValue = that.asNumber();
+            return Objects.equals(value, thatValue);
         }
 
         @Override
@@ -173,12 +173,12 @@ public abstract class ResolvedValue {
             if (this == o) {
                 return true;
             }
-            if (o == null || getClass() != o.getClass()) {
+            if (!(o instanceof ResolvedValue that)) {
                 return false;
             }
 
-            DecimalResolvedValue that = (DecimalResolvedValue) o;
-            return Objects.equals(value, that.value);
+            double thatValue = that.asDecimal();
+            return Objects.equals(value, thatValue);
         }
 
         @Override
@@ -224,7 +224,11 @@ public abstract class ResolvedValue {
             if (this == o) {
                 return true;
             }
-            return o != null && getClass() == o.getClass();
+            if (!(o instanceof ResolvedValue that)) {
+                return false;
+            }
+
+            return that.asBoolean();
         }
 
         @Override
@@ -269,7 +273,11 @@ public abstract class ResolvedValue {
             if (this == o) {
                 return true;
             }
-            return o != null && getClass() == o.getClass();
+            if (!(o instanceof ResolvedValue that)) {
+                return false;
+            }
+
+            return !that.asBoolean();
         }
 
         @Override

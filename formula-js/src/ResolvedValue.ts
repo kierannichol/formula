@@ -27,8 +27,7 @@ class TextValue implements ResolvedValue {
   }
 
   equals(other: ResolvedValue): boolean {
-    return other instanceof TextValue
-        && this.value === other.value;
+    return this.value === other.asText();
   }
 
   toString(): string {
@@ -57,8 +56,7 @@ class NumberValue implements ResolvedValue {
   }
 
   equals(other: ResolvedValue): boolean {
-    return other instanceof NumberValue
-        && this.value === other.value;
+    return this.value === other.asNumber();
   }
 
   toString(): string {
@@ -92,8 +90,7 @@ class BooleanValue implements ResolvedValue {
   }
 
   equals(other: ResolvedValue): boolean {
-    return other instanceof BooleanValue
-        && this.value === other.value;
+    return this.value === other.asBoolean();
   }
 
   toString(): string {
