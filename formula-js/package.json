@@ -11,6 +11,7 @@
     "./dist"
   ],
   "scripts": {
+    "prebuild": "rimraf dist",
     "build": "rollup -c",
     "postbuild": "npm run pretify-dist",
     "tsc-release": "tsc --build tsconfig.json",
