@@ -1,7 +1,8 @@
 name: Publish formula-js package to GitHub Packages
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - '*'
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -25,6 +26,6 @@ jobs:
       - name: Build
         run: npm ci
       - name: Publish to GitHub Packages
-        run: npm version ${{ github.event.release.tag_name }} && npm publish
+        run: npm version ${{ github.ref_name }} && npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
