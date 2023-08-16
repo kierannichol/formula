@@ -24,12 +24,11 @@ jobs:
           # Defaults to the user or organization that owns the workflow file
           scope: '@kierannichol'
       - name: Build
-        run: npm ci
+        run: npm run prebuild
+          && npm run build
+          && npm run postbuild
       - name: Publish to GitHub Packages
         run: npm version ${{ github.ref_name }}
-          && npm prebuild
-          && npm build
-          && npm postbuild
           && npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
