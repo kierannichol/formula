@@ -20,6 +20,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
           bodyFile: "README.md"
-          tag: ${{ github.ref }}
-          name: ${{ github.ref }}
+          tag: ${{ github.ref_name }}
+          name: v${{ github.ref_name }}
           allowUpdates: true
