@@ -24,8 +24,7 @@ jobs:
           # Defaults to the user or organization that owns the workflow file
           scope: '@kierannichol'
       - name: Build
-        run: npm run prebuild
-          && npm run build
+        run: npm run build
           && npm run postbuild
       - name: Publish to GitHub Packages
         run: npm version ${{ github.ref_name }}
