@@ -25,7 +25,6 @@ jobs:
           scope: '@kierannichol'
       - name: Build
         run: npm run build
-          && npm run postbuild
       - name: Publish to GitHub Packages
         run: npm version ${{ github.ref_name }}
           && npm publish
