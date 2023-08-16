@@ -26,6 +26,10 @@ jobs:
       - name: Build
         run: npm ci
       - name: Publish to GitHub Packages
-        run: npm version ${{ github.ref_name }} && npm publish
+        run: npm version ${{ github.ref_name }} |
+          && npm prebuild |
+          && npm build |
+          && npm postbuild |
+          && npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
