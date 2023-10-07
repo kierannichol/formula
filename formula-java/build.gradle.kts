@@ -1,12 +1,30 @@
 plugins {
     id("java-library")
+    id("maven-publish")
 }
 
 group = "org.formula"
 version = "1.0-SNAPSHOT"
 
+java {
+    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_17
+}
+
 repositories {
     mavenCentral()
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "org.formula"
+            artifactId = "formula"
+            version = System.getenv("RELEASE_VERSION") ?: "1.0-SNAPSHOT"
+
+            from(components["java"])
+        }
+    }
 }
 
 dependencies {
