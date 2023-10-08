@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "org.formula"
-version = "1.0-SNAPSHOT"
+version = System.getenv("RELEASE_VERSION") ?: "1.0-SNAPSHOT"
 
 java {
     targetCompatibility = JavaVersion.VERSION_17
@@ -17,12 +17,19 @@ repositories {
 
 publishing {
     publications {
-        create<MavenPublication>("maven") {
-            groupId = "org.formula"
-            artifactId = "formula"
-            version = System.getenv("RELEASE_VERSION") ?: "1.0-SNAPSHOT"
-
+        create<MavenPublication>("gpr") {
             from(components["java"])
+        }
+    }
+
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/kierannichol/formula")
+            credentials {
+                username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_USERNAME")
+                password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+            }
         }
     }
 }

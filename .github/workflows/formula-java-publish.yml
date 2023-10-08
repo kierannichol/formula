@@ -20,5 +20,6 @@ jobs:
           arguments: publish
           build-root-directory: ./formula-java
         env:
+          GITHUB_USERNAME: kierannichol
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RELEASE_VERSION: ${{ github.event.release.tag_name }}
