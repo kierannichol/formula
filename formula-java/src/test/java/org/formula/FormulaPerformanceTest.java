@@ -1,8 +1,7 @@
-package org.formula.parse;
+package org.formula;
 
 import static org.formula.parse.assertions.ResolvedValueAssertions.assertResolvedValue;
 
-import org.formula.ResolvedValue;
 import org.formula.context.MutableDataContext;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;

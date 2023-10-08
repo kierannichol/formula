@@ -1,9 +1,8 @@
-package org.formula.parse;
+package org.formula;
 
 import java.util.List;
-import org.formula.Resolvable;
-import org.formula.ResolvedValue;
 import org.formula.context.DataContext;
+import org.formula.optimize.FormulaOptimizer;
 import org.formula.parse.shuntingyard.Associativity;
 import org.formula.parse.shuntingyard.Operator1;
 import org.formula.parse.shuntingyard.Operator2;
@@ -47,6 +46,7 @@ public class Formula {
             .variable("min(@", ")", Formula::minFn)
             .variable("max(@", ")", Formula::maxFn)
             .variable("sum(@", ")", Formula::sumFn)
+            .comment("[", "]", (value, comment) -> NamedResolvedValue.of(value, comment.substring(1, comment.length() - 1), "[", "]"))
             ;
 
     private static ResolvedValue variableFn(DataContext context, String key) {

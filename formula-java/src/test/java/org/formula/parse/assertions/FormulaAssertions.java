@@ -1,9 +1,13 @@
 package org.formula.parse.assertions;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.formula.parse.assertions.ResolvedValueAssertions.assertResolvedValue;
+import static org.junit.jupiter.api.Assertions.fail;
 
+import org.formula.NamedResolvedValue;
+import org.formula.ResolvedValue;
 import org.formula.context.DataContext;
-import org.formula.parse.Formula;
+import org.formula.Formula;
 
 public class FormulaAssertions {
     private final String formula;
@@ -34,6 +38,16 @@ public class FormulaAssertions {
 
     public FormulaAssertions resolvesTo(boolean expected) {
         assertResolvedValue(Formula.parse(formula).resolve(context)).hasValue(expected);
+        return this;
+    }
+
+    public FormulaAssertions isNamed(String expected) {
+        ResolvedValue resolved = Formula.parse(formula).resolve(context);
+        if (resolved instanceof NamedResolvedValue namedValue) {
+            assertThat(namedValue.asName()).isEqualTo(expected);
+            return this;
+        }
+        fail("ResolvedValue was not a NamedResolvedValue");
         return this;
     }
 

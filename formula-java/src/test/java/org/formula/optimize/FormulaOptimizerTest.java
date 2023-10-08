@@ -1,4 +1,4 @@
-package org.formula.parse;
+package org.formula.optimize;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

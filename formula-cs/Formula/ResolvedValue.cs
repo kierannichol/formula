@@ -94,6 +94,63 @@ public class QuotedTextResolvedValue : ResolvedValue
     }
 }
 
+public class NamedResolvedValue : ResolvedValue
+{
+    private readonly ResolvedValue _value;
+    private readonly string _name;
+
+    public static NamedResolvedValue Of(string text, string name)
+    {
+        return Of(ResolvedValue.Of(text), name);
+    }
+    
+    public static NamedResolvedValue Of(ResolvedValue value, string name)
+    {
+        return new NamedResolvedValue(value, name);
+    }
+
+    public override string AsText()
+    {
+        return _value.AsText();
+    }
+
+    public string AsName()
+    {
+        return _name;
+    }
+
+    public override int AsNumber()
+    {
+        return _value.AsNumber();
+    }
+
+    public override double AsDecimal()
+    {
+        return _value.AsDecimal();
+    }
+
+    public override bool AsBoolean()
+    {
+        return _value.AsBoolean();
+    }
+    
+    public override bool Equals(object? obj)
+    {
+        return _value.Equals(obj);
+    }
+
+    public override int GetHashCode()
+    {
+        return _value.GetHashCode();
+    }
+
+    private NamedResolvedValue(ResolvedValue value, string name)
+    {
+        _value = value;
+        _name = name;
+    }
+}
+
 internal class TextResolvedValue : ResolvedValue
 {
     private static readonly string[] FalseStringValues = { "false", "no", "0", "" };

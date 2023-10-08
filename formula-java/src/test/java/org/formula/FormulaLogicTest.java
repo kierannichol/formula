@@ -1,6 +1,6 @@
-package org.formula.parse;
+package org.formula;
 
-import static org.formula.parse.Formula.parse;
+import static org.formula.Formula.parse;
 import static org.formula.parse.assertions.ResolvedValueAssertions.assertResolvedValue;
 
 import org.formula.context.MutableDataContext;

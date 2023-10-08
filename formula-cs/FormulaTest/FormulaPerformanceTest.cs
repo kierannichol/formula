@@ -19,7 +19,7 @@ public class FormulaPerformanceTest
         var total = endTime - startTime;
         var average = total / Iterations;
         
-        Console.WriteLine($"Parse Average: {average.TotalMicroseconds} µs");
+        Console.WriteLine($"Parse Average: {average.TotalMilliseconds} ms");
     }
     
     [Test]
@@ -47,7 +47,7 @@ public class FormulaPerformanceTest
         var total = endTime - startTime;
         var average = total / Iterations;
         
-        Console.WriteLine($"Resolve Average: {average.TotalMicroseconds} µs");
+        Console.WriteLine($"Resolve Average: {average.TotalMilliseconds} ms");
     }
     
     [Test]
@@ -72,6 +72,6 @@ public class FormulaPerformanceTest
         var total = endTime - startTime;
         var average = total / Iterations;
         
-        Console.WriteLine($"Deep Resolve Average: {average.TotalMicroseconds} µs");
+        Console.WriteLine($"Deep Resolve Average: {average.TotalMilliseconds} ms");
     }
 }

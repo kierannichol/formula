@@ -49,10 +49,6 @@ public static class Formula
             : Parser.Parse(formulaText);
     }
 
-    // public static string optimize(string formulaText) {
-    //     return FormulaOptimizer.optimize(formulaText);
-    // }
-
     private static ResolvedValue AnyFunction(IEnumerable<ResolvedValue> values)
     {
         foreach (var value in values)
@@ -110,7 +106,6 @@ public static class Formula
     {
         var formatted = pattern.Replace("*", ".*");
         var regex = new Regex($"^{formatted}$");
-        bool Predicate(string key) => regex.IsMatch(key);
         reduced = initialValue;
         var count = 0;
         foreach (var key in context.Keys())
@@ -121,5 +116,6 @@ public static class Formula
         }
 
         return count;
+        bool Predicate(string key) => regex.IsMatch(key);
     }
 }

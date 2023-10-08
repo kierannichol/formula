@@ -2,9 +2,9 @@ using System.Text.RegularExpressions;
 
 namespace Formula;
 
-public static partial class Ordinal
+public static class Ordinal
 {
-    private static readonly Regex Pattern = OrdinalRegex();
+    private static readonly Regex Pattern = new(@"^(\\d+)(?:th|st|nd|rd)?$");
     private static readonly string[] Suffixes = { "th", "st", "nd", "rd" };
 
     public static string ToString(int n) {
@@ -26,7 +26,4 @@ public static partial class Ordinal
         }
         return null;
     }
-
-    [GeneratedRegex("^(\\\\d+)(?:th|st|nd|rd)?$")]
-    private static partial Regex OrdinalRegex();
 }

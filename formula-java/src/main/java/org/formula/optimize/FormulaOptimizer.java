@@ -1,10 +1,10 @@
-package org.formula.parse;
+package org.formula.optimize;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.formula.NamedResolvedValue;
 import org.formula.QuotedTextResolvedValue;
-import org.formula.Resolvable;
 import org.formula.ResolvedValue;
 import org.formula.parse.shuntingyard.Associativity;
 import org.formula.parse.shuntingyard.OperatorFunction1;
@@ -15,7 +15,7 @@ import org.formula.util.Lambda1;
 import org.formula.util.Lambda2;
 import org.formula.util.Lambda3;
 
-class FormulaOptimizer {
+public class FormulaOptimizer {
 
     private static final ShuntingYardParser PARSER = ShuntingYardParser.create()
             .operator("^", 4, Associativity.RIGHT, opFn2((a, b) -> a + "^" + b))
@@ -50,7 +50,7 @@ class FormulaOptimizer {
             .variable("min(@", ")", (context, key) -> ResolvedValue.of("min(@%s)".formatted(key)))
             .variable("max(@", ")", (context, key) -> ResolvedValue.of("max(@%s)".formatted(key)))
             .variable("sum(@", ")", (context, key) ->ResolvedValue.of("sum(@%s)".formatted(key)))
-            .comment("[", "]", (subject, comment) -> QuotedTextResolvedValue.of(subject, "", comment))
+            .comment("[", "]", (value, comment) -> NamedResolvedValue.of(value, comment.substring(1, comment.length() - 1), "[", "]"))
             ;
 
     public static String optimize(String formulaText) {
@@ -64,6 +64,9 @@ class FormulaOptimizer {
     private static String format(ResolvedValue value) {
         if (value instanceof QuotedTextResolvedValue quoted) {
             return quoted.asQuotedText();
+        }
+        if (value instanceof NamedResolvedValue named) {
+            return named.toString();
         }
         return value.asText();
     }
@@ -89,10 +92,6 @@ class FormulaOptimizer {
             this.operator = operator;
             this.a = a;
             this.b = b;
-        }
-
-        public String operator() {
-            return this.operator;
         }
 
         @Override

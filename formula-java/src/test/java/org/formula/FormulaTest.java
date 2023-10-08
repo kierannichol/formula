@@ -1,6 +1,6 @@
-package org.formula.parse;
+package org.formula;
 
-import static org.formula.parse.Formula.*;
+import static org.formula.Formula.*;
 import static org.formula.parse.assertions.FormulaAssertions.assertFormula;
 import static org.formula.parse.assertions.ResolvedValueAssertions.assertResolvedValue;
 
@@ -226,5 +226,10 @@ class FormulaTest {
         assertResolvedValue(formula.resolve(MutableDataContext.create().set("a", 1).set("b", 1).set("c", 0))).hasValue(true);
         assertResolvedValue(formula.resolve(MutableDataContext.create().set("a", 1).set("b", 0).set("c", 1))).hasValue(true);
         assertResolvedValue(formula.resolve(MutableDataContext.create().set("a", 1).set("b", 1).set("c", 1))).hasValue(true);
+    }
+
+    @Test
+    void namedFormula() {
+        assertFormula("(false)[Never True]").isNamed("Never True");
     }
 }

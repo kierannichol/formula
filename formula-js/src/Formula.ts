@@ -3,6 +3,7 @@ import {FormulaOptimizer} from "./FormulaOptimizer";
 import {Resolvable} from "./Resolvable";
 import {ResolvedValue} from "./ResolvedValue";
 import {Associativity, ShuntingYard} from "./ShuntingYard";
+import {NamedResolvedValue} from "./NamedResolvedValue";
 
 export class Formula {
 
@@ -41,7 +42,7 @@ export class Formula {
     .variable('min(@', ')', Formula.minFn)
     .variable('max(@', ')', Formula.maxFn)
     .variable('sum(@', ')', Formula.sumFn)
-    .comment('[', ']')
+    .comment('[', ']', (text, value) => new NamedResolvedValue(value, text))
   ;
 
   static parse(formula: string|Resolvable): Resolvable {
