@@ -186,6 +186,11 @@ test ('zero not same as undefined', () => {
   expect(formula.resolve()?.asText()).toBe('0');
 })
 
+test ('null is same as undefined', () => {
+  let formula = Formula.parse('null')
+  expect(formula.resolve()?.asText()).toBe("");
+})
+
 test('parse performance test', () => {
   const iterations = 1000;
   let startTime = performance.now();

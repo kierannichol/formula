@@ -24,6 +24,7 @@ public static class Formula
             .Operator("OR", 1, Associativity.Left, (a, b) => ResolvedValue.Of(a.AsBoolean() || b.AsBoolean()))
             .Term("true", () => ResolvedValue.Of(true))
             .Term("false", () => ResolvedValue.Of(false))
+            .Term("null", () => ResolvedValue.None)
             .Function("abs", a => ResolvedValue.Of(Math.Abs(a.AsDecimal())))
             .Function("min", (a, b) => ResolvedValue.Of(Math.Min(a.AsDecimal(), b.AsDecimal())))
             .Function("max", (a, b) => ResolvedValue.Of(Math.Max(a.AsDecimal(), b.AsDecimal())))

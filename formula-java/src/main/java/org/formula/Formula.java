@@ -30,6 +30,7 @@ public class Formula {
             .operator("OR", 1, Associativity.LEFT, (ResolvedValue a, ResolvedValue b) -> ResolvedValue.of(a.asBoolean() || b.asBoolean()))
             .term("true", () -> ResolvedValue.TRUE)
             .term("false", () -> ResolvedValue.FALSE)
+            .term("null", ResolvedValue::none)
             .function("abs", (ResolvedValue a) -> ResolvedValue.of(Math.abs(a.asDecimal())))
             .function("min", (ResolvedValue a, ResolvedValue b) -> ResolvedValue.of(Math.min(a.asDecimal(), b.asDecimal())))
             .function("max", (ResolvedValue a, ResolvedValue b) -> ResolvedValue.of(Math.max(a.asDecimal(), b.asDecimal())))

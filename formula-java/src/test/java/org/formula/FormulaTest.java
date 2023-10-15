@@ -127,6 +127,12 @@ class FormulaTest {
     }
 
     @Test
+    void nullSameAsUndefined() {
+        var formula = parse("null");
+        assertResolvedValue(formula.resolve()).hasNoValue();
+    }
+
+    @Test
     void ifFormula() {
         var formula = parse("if(-2 < 0, 'A', 'B')");
         var context = DataContext.EMPTY;

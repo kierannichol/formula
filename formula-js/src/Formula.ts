@@ -26,6 +26,7 @@ export class Formula {
     .operator('OR', 1, Associativity.Left, 2, (a:ResolvedValue, b:ResolvedValue) => ResolvedValue.of(a.asBoolean() || b.asBoolean()))
     .term('true', () => ResolvedValue.of(true))
     .term('false', () => ResolvedValue.of(false))
+    .term('null', () => ResolvedValue.None)
     .function('abs', 1, (a: ResolvedValue) => ResolvedValue.of(Math.abs(a.asNumber())))
     .function('min', 2, (a: ResolvedValue, b: ResolvedValue) => ResolvedValue.of(Math.min(a.asNumber(), b.asNumber())))
     .function('max', 2, (a: ResolvedValue, b: ResolvedValue) => ResolvedValue.of(Math.max(a.asNumber(), b.asNumber())))

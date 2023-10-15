@@ -240,4 +240,10 @@ public class FormulaTest
         AssertResolvedValue(Formula.Parse("'5'==@five").Resolve(new DataContext().Set("five", 5))).HasValue(true);
         AssertResolvedValue(Formula.Parse("'5'==@five").Resolve(new DataContext().Set("five", "5"))).HasValue(true);
     }
+
+    [Test]
+    public void NullSameAsUndefined()
+    {
+        AssertResolvedValue(Formula.Parse("null").Resolve()).HasNoValue();
+    }
 }

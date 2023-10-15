@@ -42,7 +42,7 @@ public class ResolvedValueAssertions {
     }
 
     public ResolvedValueAssertions hasNoValue() {
-        assertThat(value).isNotEqualTo(ResolvedValue.none());
+        assertThat(value).isEqualTo(ResolvedValue.none());
         return this;
     }
 

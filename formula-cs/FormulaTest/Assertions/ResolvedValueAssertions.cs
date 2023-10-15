@@ -37,7 +37,7 @@ public class ResolvedValueAssertions
     }
 
     public ResolvedValueAssertions HasNoValue() {
-        Assert.That(_value, Is.Not.EqualTo(ResolvedValue.None));
+        Assert.That(_value, Is.EqualTo(ResolvedValue.None));
         return this;
     }
 
