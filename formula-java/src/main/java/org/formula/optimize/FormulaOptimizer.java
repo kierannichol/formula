@@ -34,6 +34,7 @@ public class FormulaOptimizer {
             .operator("OR", 1, Associativity.LEFT, (a, b) -> new AnyFunction(List.of(b, a)))
             .term("true", () -> ResolvedValue.of("true"))
             .term("false", () -> ResolvedValue.of("false"))
+            .term("null", () -> ResolvedValue.of("null"))
             .function("abs", opFn1("abs(%s)"::formatted))
             .function("min", opFn2("min(%s,%s)"::formatted))
             .function("max", opFn2("max(%s,%s)"::formatted))

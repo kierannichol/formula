@@ -141,6 +141,7 @@ export class FormulaOptimizer {
   .operator('OR', 1, Associativity.Left, 2, (a, b) => new OptimizedAnyFunction([b, a]))
   .term('true', () => ResolvedValue.of('true'))
   .term('false', () => ResolvedValue.of('false'))
+  .term('null', () => ResolvedValue.of('null'))
   .function('abs', 1, passthroughFn('abs'))
   .function('min', 2, passthroughFn('min'))
   .function('max', 2, passthroughFn('max'))

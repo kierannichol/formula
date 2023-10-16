@@ -22,6 +22,7 @@ public class FormulaOptimizer
             .Operator("OR", 1, Associativity.Left, (a, b) => new AnyFunction(new List<ResolvedValue>(new[] {b, a})))
             .Term("true", () => ResolvedValue.Of("true"))
             .Term("false", () => ResolvedValue.Of("false"))
+            .Term("null", () => ResolvedValue.Of("null"))
             .Function("abs", OpFn1(a => $"abs({a})"))
             .Function("min", OpFn2((a, b) => $"min({a},{b})"))
             .Function("max", OpFn2((a, b) => $"max({a},{b})"))
