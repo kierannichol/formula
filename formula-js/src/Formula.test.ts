@@ -1,6 +1,7 @@
 import {DataContext} from "./DataContext";
 import {Formula} from "./Formula";
 import {ResolvedValue} from "./ResolvedValue";
+import {Resolvable} from "./Resolvable";
 
 test('add two scalars', () => {
   let formula = Formula.parse("2 + 3")
@@ -189,6 +190,27 @@ test ('zero not same as undefined', () => {
 test ('null is same as undefined', () => {
   let formula = Formula.parse('null')
   expect(formula.resolve()?.asText()).toBe("");
+})
+
+test ('addition of nulls is also null', () => {
+  let context = DataContext.of({
+    'none': Resolvable.None,
+  });
+  expect(Formula.parse('@none+@none').resolve(context)?.asText()).toBe("");
+})
+
+test ('sum of nulls is also null', () => {
+  let context = DataContext.of({
+    'none': Resolvable.None,
+  });
+  expect(Formula.parse('sum(@none)').resolve(context)?.asText()).toBe("");
+})
+
+test ('addition of null and number = number', () => {
+  let context = DataContext.of({
+    'none': Resolvable.None,
+  });
+  expect(Formula.parse('@none+3').resolve(context)?.asText()).toBe("3");
 })
 
 test('parse performance test', () => {

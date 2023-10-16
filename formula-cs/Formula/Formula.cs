@@ -83,16 +83,24 @@ public static class Formula
 
     private static IResolvable SumFunction(IDataContext context, string key)
     {
-        ResolvedValue Add(ResolvedValue a, ResolvedValue b) => ResolvedValue.Of(a.AsDecimal() + b.AsDecimal());
-        FindAndReduce(context, key, Add, ResolvedValue.Zero, out var reduced);
+        FindAndReduce(context, key, AddFunction, ResolvedValue.Zero, out var reduced);
         return Resolvable.Just(reduced);
+    }
+
+    private static ResolvedValue AddFunction(ResolvedValue a, ResolvedValue b)
+    {
+        if (a.Equals(ResolvedValue.None) && b.Equals(ResolvedValue.None))
+        {
+            return ResolvedValue.None;
+        }
+        return ResolvedValue.Of(a.AsDecimal() + b.AsDecimal());
     }
     
     private static IResolvable MaxFunction(IDataContext context, string key)
     {
-        ResolvedValue Max(ResolvedValue a, ResolvedValue b) => a.AsDecimal() > b.AsDecimal() ? a : b;
-        FindAndReduce(context, key, Max, ResolvedValue.Zero, out var reduced);
+        FindAndReduce(context, key, Max, ResolvedValue.None, out var reduced);
         return Resolvable.Just(reduced);
+        ResolvedValue Max(ResolvedValue a, ResolvedValue b) => a.AsDecimal() > b.AsDecimal() ? a : b;
     }
     
     private static IResolvable MinFunction(IDataContext context, string key)

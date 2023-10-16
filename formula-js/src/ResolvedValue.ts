@@ -113,7 +113,7 @@ class NullValue implements ResolvedValue {
     return '';
   }
 
-  map(fn: (value: ResolvedValue) => ResolvedValue): ResolvedValue {
+  map(_: (value: ResolvedValue) => ResolvedValue): ResolvedValue {
     return this;
   }
 

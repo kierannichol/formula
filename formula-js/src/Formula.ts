@@ -14,7 +14,7 @@ export class Formula {
     .operator('^', 4, Associativity.Right, 2, (a: ResolvedValue, b: ResolvedValue) => ResolvedValue.of(Math.pow(a.asNumber(), b.asNumber())))
     .operator('*', 3, Associativity.Left, 2, (a: ResolvedValue, b: ResolvedValue) => ResolvedValue.of(a.asNumber() * b.asNumber()))
     .operator('/', 3, Associativity.Left, 2, (a: ResolvedValue, b: ResolvedValue) => ResolvedValue.of(a.asNumber() / b.asNumber()))
-    .operator('+', 2, Associativity.Left, 2, (a: ResolvedValue, b: ResolvedValue) => ResolvedValue.of(a.asNumber() + b.asNumber()))
+    .operator('+', 2, Associativity.Left, 2, Formula.addFn)
     .operator('!', 2, Associativity.Left, 1, (a:ResolvedValue) => ResolvedValue.of(!a.asBoolean()))
     .operator('<', 3, Associativity.Left, 2, (a:ResolvedValue, b:ResolvedValue) => ResolvedValue.of(a.asNumber() < b.asNumber()))
     .operator('<=', 3, Associativity.Left, 2, (a:ResolvedValue, b:ResolvedValue) => ResolvedValue.of(a.asNumber() <= b.asNumber()))
@@ -74,7 +74,12 @@ export class Formula {
   }
 
   private static sumFn(state: DataContext, key: string) {
-    return state.search(key).reduce((a, b) => ResolvedValue.of(a.asNumber() + b.asNumber()), ResolvedValue.None);
+    return state.search(key).reduce((a, b) => Formula.addFn(a, b), ResolvedValue.None);
+  }
+
+  private static addFn(a: ResolvedValue, b: ResolvedValue): ResolvedValue {
+    if ((a ?? ResolvedValue.None).equals(ResolvedValue.None) && (b ?? ResolvedValue.None).equals(ResolvedValue.None)) return ResolvedValue.None;
+    return ResolvedValue.of(a.asNumber() + b.asNumber());
   }
 }
 

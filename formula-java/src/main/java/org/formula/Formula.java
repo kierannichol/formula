@@ -15,7 +15,7 @@ public class Formula {
             .operator("^", 4, Associativity.RIGHT, (a, b) -> ResolvedValue.of(Math.pow(a.asDecimal(), b.asDecimal())))
             .operator("*", 3, Associativity.LEFT, (a, b) -> ResolvedValue.of(a.asDecimal() * b.asDecimal()))
             .operator("/", 3, Associativity.LEFT, (a, b) -> ResolvedValue.of(a.asDecimal() / b.asDecimal()))
-            .operator("+", 2, Associativity.LEFT, (a, b) -> ResolvedValue.of(a.asDecimal() + b.asDecimal()))
+            .operator("+", 2, Associativity.LEFT, Formula::addFn)
             .biOperator("-",
                     new Operator1("-", 4, Associativity.LEFT, a -> ResolvedValue.of(-a.asDecimal())),
                     new Operator2("-", 2, Associativity.LEFT, (a, b) -> ResolvedValue.of(a.asDecimal() - b.asDecimal())))
@@ -60,13 +60,20 @@ public class Formula {
     }
 
     private static ResolvedValue sumFn(DataContext context, String key) {
-        return context.search(key).reduce((a, b) -> ResolvedValue.of(a.asDecimal() + b.asDecimal()))
+        return context.search(key).reduce(Formula::addFn)
                 .orElse(ResolvedValue.of(0));
     }
 
     private static ResolvedValue maxFn(DataContext context, String key) {
         return context.search(key).reduce((a, b) -> a.asDecimal() > b.asDecimal() ? a : b)
                 .orElse(ResolvedValue.none());
+    }
+
+    private static ResolvedValue addFn(ResolvedValue a, ResolvedValue b) {
+        if (a.equals(ResolvedValue.none()) && b.equals(ResolvedValue.none())) {
+            return ResolvedValue.none();
+        }
+        return ResolvedValue.of(a.asDecimal() + b.asDecimal());
     }
 
     public static Resolvable parse(String formulaText) {
