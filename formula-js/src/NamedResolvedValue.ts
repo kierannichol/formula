@@ -30,4 +30,8 @@ export class NamedResolvedValue implements ResolvedValue {
     return this.value.equals(other);
   }
 
+  hasValue(): boolean {
+    return this.value.hasValue();
+  }
+
 }

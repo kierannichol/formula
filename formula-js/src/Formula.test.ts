@@ -210,7 +210,7 @@ test ('addition of null and number = number', () => {
   let context = DataContext.of({
     'none': Resolvable.None,
   });
-  expect(Formula.parse('@none+3').resolve(context)?.asText()).toBe("3");
+  expect(Formula.parse('3+@none').resolve(context)?.asText()).toBe("3");
 })
 
 test('parse performance test', () => {

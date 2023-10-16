@@ -33,6 +33,8 @@ public abstract class ResolvedValue
     public abstract int AsNumber();
     public abstract double AsDecimal();
     public abstract bool AsBoolean();
+
+    public virtual bool HasValue => true;
 }
 
 public class QuotedTextResolvedValue : ResolvedValue
@@ -51,6 +53,8 @@ public class QuotedTextResolvedValue : ResolvedValue
         return new QuotedTextResolvedValue(value, startQuote, endQuote);
     }
 
+    public override bool HasValue => _text.HasValue;
+    
     public override string AsText()
     {
         return _text.AsText();
@@ -108,6 +112,8 @@ public class NamedResolvedValue : ResolvedValue
     {
         return new NamedResolvedValue(value, name);
     }
+    
+    public override bool HasValue => _value.HasValue;
 
     public override string AsText()
     {
@@ -193,7 +199,7 @@ internal class TextResolvedValue : ResolvedValue
 
     public override bool Equals(object? obj)
     {
-        return obj is ResolvedValue other && _value.Equals(other.AsText());
+        return obj is ResolvedValue { HasValue: true } other && _value.Equals(other.AsText());
     }
 
     public override int GetHashCode()
@@ -238,7 +244,7 @@ internal class NumericResolvedValue : ResolvedValue
 
     public override bool Equals(object? obj)
     {
-        return obj is ResolvedValue other && _value == other.AsNumber();
+        return obj is ResolvedValue { HasValue: true } other && _value == other.AsNumber();
     }
 
     public override int GetHashCode()
@@ -283,7 +289,7 @@ internal class DecimalResolvedValue : ResolvedValue
 
     public override bool Equals(object? obj)
     {
-        return obj is ResolvedValue other && Math.Abs(_value - other.AsDecimal()) < 0.01;
+        return obj is ResolvedValue { HasValue: true } other && Math.Abs(_value - other.AsDecimal()) < 0.01;
     }
 
     public override int GetHashCode()
@@ -331,7 +337,7 @@ internal class BooleanResolvedValue : ResolvedValue
 
     public override bool Equals(object? obj)
     {
-        return obj is ResolvedValue other && _value == other.AsBoolean();
+        return obj is ResolvedValue { HasValue: true } other && _value == other.AsBoolean();
     }
 
     public override int GetHashCode()
@@ -347,6 +353,8 @@ internal class BooleanResolvedValue : ResolvedValue
 
 internal class NoResolvedValue : ResolvedValue
 {
+    public override bool HasValue => false;
+    
     public override string AsText()
     {
         return "";

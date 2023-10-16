@@ -31,4 +31,8 @@ export class QuotedTextResolvedValue implements ResolvedValue {
     return this.value.equals(other);
   }
 
+  hasValue(): boolean {
+    return this.value.hasValue();
+  }
+
 }

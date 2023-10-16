@@ -40,6 +40,10 @@ public abstract class ResolvedValue {
     public abstract double asDecimal();
     public abstract boolean asBoolean();
 
+    public boolean hasValue() {
+        return true;
+    }
+
     private static class TextResolvedValue extends ResolvedValue {
         private static final List<String> FALSE_STRING_VALUES = List.of("false", "no", "0", "");
         private final String value;
@@ -74,7 +78,7 @@ public abstract class ResolvedValue {
             }
 
             String thatValue = that.asText();
-            return Objects.equals(value, thatValue);
+            return that.hasValue() && Objects.equals(value, thatValue);
         }
 
         @Override
@@ -125,7 +129,7 @@ public abstract class ResolvedValue {
             }
 
             int thatValue = that.asNumber();
-            return Objects.equals(value, thatValue);
+            return that.hasValue() && Objects.equals(value, thatValue);
         }
 
         @Override
@@ -178,7 +182,7 @@ public abstract class ResolvedValue {
             }
 
             double thatValue = that.asDecimal();
-            return Objects.equals(value, thatValue);
+            return that.hasValue() && Objects.equals(value, thatValue);
         }
 
         @Override
@@ -228,7 +232,7 @@ public abstract class ResolvedValue {
                 return false;
             }
 
-            return that.asBoolean();
+            return this.hasValue() && that.asBoolean();
         }
 
         @Override
@@ -277,7 +281,7 @@ public abstract class ResolvedValue {
                 return false;
             }
 
-            return !that.asBoolean();
+            return this.hasValue() && !that.asBoolean();
         }
 
         @Override
@@ -314,6 +318,11 @@ public abstract class ResolvedValue {
 
         @Override
         public boolean asBoolean() {
+            return false;
+        }
+
+        @Override
+        public boolean hasValue() {
             return false;
         }
 

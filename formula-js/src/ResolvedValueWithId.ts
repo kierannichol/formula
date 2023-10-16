@@ -18,6 +18,10 @@ export class ResolvedValueWithId extends ResolvedValue {
     return this.value.asText();
   }
 
+  hasValue(): boolean {
+    return this.value.hasValue();
+  }
+
   equals(other: ResolvedValue): boolean {
     return this.value.equals(other);
   }

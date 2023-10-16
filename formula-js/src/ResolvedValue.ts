@@ -5,6 +5,8 @@ export interface ResolvedValue {
 
   asBoolean(): boolean;
 
+  hasValue(): boolean;
+
   equals(other: ResolvedValue): boolean;
 
   map(fn: (value: ResolvedValue) => ResolvedValue): ResolvedValue;
@@ -27,7 +29,7 @@ class TextValue implements ResolvedValue {
   }
 
   equals(other: ResolvedValue): boolean {
-    return this.value === other.asText();
+    return other.hasValue() && this.value === other.asText();
   }
 
   toString(): string {
@@ -36,6 +38,10 @@ class TextValue implements ResolvedValue {
 
   map(fn: (value: ResolvedValue) => ResolvedValue): ResolvedValue {
     return fn(this);
+  }
+
+  hasValue(): boolean {
+    return true;
   }
 }
 
@@ -56,7 +62,7 @@ class NumberValue implements ResolvedValue {
   }
 
   equals(other: ResolvedValue): boolean {
-    return this.value === other.asNumber();
+    return other.hasValue() && this.value === other.asNumber();
   }
 
   toString(): string {
@@ -65,6 +71,10 @@ class NumberValue implements ResolvedValue {
 
   map(fn: (value: ResolvedValue) => ResolvedValue): ResolvedValue {
     return fn(this);
+  }
+
+  hasValue(): boolean {
+    return true;
   }
 }
 
@@ -89,8 +99,12 @@ class BooleanValue implements ResolvedValue {
     return fn(this);
   }
 
+  hasValue(): boolean {
+    return true;
+  }
+
   equals(other: ResolvedValue): boolean {
-    return this.value === other.asBoolean();
+    return other.hasValue() && this.value === other.asBoolean();
   }
 
   toString(): string {
@@ -117,8 +131,12 @@ class NullValue implements ResolvedValue {
     return this;
   }
 
+  hasValue(): boolean {
+    return false;
+  }
+
   equals(other: ResolvedValue): boolean {
-    return other instanceof NullValue;
+    return !other.hasValue();
   }
 
   toString(): string {
