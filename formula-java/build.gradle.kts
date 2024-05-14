@@ -40,6 +40,12 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
 }
 
+tasks.processTestResources {
+    from("../formula-test") {
+        include("*.csv")
+    }
+}
+
 tasks.getByName<Test>("test") {
     useJUnitPlatform()
 }

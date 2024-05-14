@@ -129,12 +129,26 @@ public class FormulaOptimizer {
 
         private AnyFunction(List<ResolvedValue> values) {
             this.values = new ArrayList<>();
+            boolean hasFalse = false;
             for (ResolvedValue next : values) {
                 if (next instanceof AnyFunction anyFn) {
                     this.values.addAll(0, anyFn.values);
                     continue;
                 }
+                if (next.equals(ResolvedValue.FALSE)) {
+                    hasFalse = true;
+                    continue;
+                }
+                if (next.equals(ResolvedValue.TRUE)) {
+                    this.values.clear();
+                    this.values.add(ResolvedValue.TRUE);
+                    return;
+                }
                 this.values.add(0, next);
+            }
+
+            if (this.values.isEmpty()) {
+                this.values.add(ResolvedValue.of(!hasFalse));
             }
         }
 
@@ -159,7 +173,19 @@ public class FormulaOptimizer {
                     this.values.addAll(0, allFn.values);
                     continue;
                 }
+                if (next.equals(ResolvedValue.TRUE)) {
+                    continue;
+                }
+                if (next.equals(ResolvedValue.FALSE)) {
+                    this.values.clear();
+                    this.values.add(ResolvedValue.FALSE);
+                    return;
+                }
                 this.values.add(0, next);
+            }
+
+            if (this.values.isEmpty()) {
+                this.values.add(ResolvedValue.TRUE);
             }
         }
 

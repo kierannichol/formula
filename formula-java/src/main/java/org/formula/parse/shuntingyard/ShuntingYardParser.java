@@ -136,7 +136,7 @@ public class ShuntingYardParser implements Parser {
             }
 
             if (token instanceof Operator operator) {
-                if (operatorStack.size() > 0) {
+                if (!operatorStack.isEmpty()) {
                     Node top = operatorStack.peek();
                     if (top instanceof Operator topOperator) {
                         if ((operator.precedence() < topOperator.precedence())
@@ -182,7 +182,7 @@ public class ShuntingYardParser implements Parser {
                         break;
                     case ",":
                         arityStack.push(arityStack.pop() + 1);
-                        while (operatorStack.size() > 0) {
+                        while (!operatorStack.isEmpty()) {
                             Node next = operatorStack.pop();
                             if (next.equals(Literal.of("("))) {
                                 operatorStack.push(next);
@@ -195,7 +195,7 @@ public class ShuntingYardParser implements Parser {
                         operatorStack.push(token);
                         break;
                     case ")":
-                        while (operatorStack.size() > 0) {
+                        while (!operatorStack.isEmpty()) {
                             var next = operatorStack.pop();
                             if (next.equals(Literal.of("("))) {
                                 break;
@@ -203,9 +203,11 @@ public class ShuntingYardParser implements Parser {
                             outputBuffer.push(next);
                         }
 
-                        if (operatorStack.size() > 0 && operatorStack.peek() instanceof Function) {
+                        if (!operatorStack.isEmpty() && operatorStack.peek() instanceof Function) {
                             if (operatorStack.peek() instanceof FunctionN) {
-                                outputBuffer.push(new Arity(arityStack.pop()));
+                                int arity = arityStack.pop();
+                                arity = previous.equals(Literal.of("(")) ? 0 : arity;
+                                outputBuffer.push(new Arity(arity));
                             }
                             outputBuffer.push(operatorStack.pop());
                         }
@@ -216,7 +218,7 @@ public class ShuntingYardParser implements Parser {
             }
         }
 
-        while (operatorStack.size() > 0) {
+        while (!operatorStack.isEmpty()) {
             outputBuffer.push(operatorStack.pop());
         }
         return new ShuntingYard(Arrays.asList(outputBuffer.toArray()));

@@ -295,7 +295,9 @@ export class ShuntingYardParser implements Parser {
             outputBuffer.push(func);
           }
           else if (operatorStack.at(-1) instanceof VarargsFunction) {
-            outputBuffer.push(arityStack.pop());
+            let arity = arityStack.pop();
+            arity = previous === '(' ? 0 : arity;
+            outputBuffer.push(arity);
             outputBuffer.push(operatorStack.pop());
           }
           break;

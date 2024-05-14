@@ -1,0 +1,18 @@
+Display Name | Given Formula | Optimized Formula
+any: reduce empty to true | any() | true
+any: flatten nested | any(any(@a, any(@b, @c)), @d) | any(@a,@b,@c,@d)
+any: remove false values | any(@a, false, @b, @c, false) | any(@a,@b,@c)
+any: reduce single variable | any(@a) |@a
+any: reduce all false to just false | any(false, false, false) |false
+all: reduce empty to true|all()|true
+all: flatten nested|all(any(@a, all(@b)), @c, all(@d AND @e), @f)|all(any(@a,@b),@c,@d,@e,@f)
+all: remove true values|all(@a, true, @b, @c, true)|all(@a,@b,@c)
+all: reduce single variable |all(@a)|@a
+all: reduce any false to just false |all(@a, false, @b)|false
+all: reduce all true to just true|all(true, true, true)|true
+bracket addition|@a + (@b + @c)|@a+@b+@c
+keeps required brackets (division)|@a * (@b + @c + @d)/2|@a*(@b+@c+@d)/2
+keeps required brackets (order of operation)|@a - (@b / @c)|@a-(@b/@c)
+keeps required brackets (logic)|@a < (@b - @c)|@a<(@b-@c)
+literals|"testing"|"testing"
+comments|(@a+@b)[testing]|(@a+@b)[testing]

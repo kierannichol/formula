@@ -237,7 +237,9 @@ public class ShuntingYardParser
                         {
                             if (operatorStack.Peek() is FunctionN)
                             {
-                                outputBuffer.Push(new Arity(arityStack.Pop()));
+                                var arity = arityStack.Pop();
+                                arity = previous != null && previous.Equals(new Literal("(")) ? 0 : arity;
+                                outputBuffer.Push(new Arity(arity));
                             }
 
                             outputBuffer.Push(operatorStack.Pop());

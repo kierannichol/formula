@@ -35,13 +35,30 @@ class OptimizedAnyFunction extends AbstractOptimizedFunction {
   constructor(values: ResolvedValue[]) {
     super();
     this.values = [];
+    let hasTrue = false;
+    let hasFalse = false;
     values.forEach(next => {
       if (next instanceof OptimizedAnyFunction) {
         this.values.unshift(...next.values);
         return;
       }
+      if (next === ResolvedValue.False) {
+        hasFalse = true;
+        return;
+      }
+      if (next === ResolvedValue.True) {
+        hasTrue = true;
+        return;
+      }
       this.values.unshift(next);
     });
+
+    if (hasTrue) {
+      this.values = [ResolvedValue.True];
+    }
+    if (this.values.length === 0) {
+      this.values = [hasFalse ? ResolvedValue.False : ResolvedValue.True];
+    }
   }
 
   asText(): string {
@@ -58,13 +75,28 @@ class OptimizedAllFunction extends AbstractOptimizedFunction {
   constructor(values: ResolvedValue[]) {
     super();
     this.values = [];
+    let hasFalse = false;
     values.forEach(next => {
       if (next instanceof OptimizedAllFunction) {
         this.values.unshift(...next.values);
         return;
       }
+      if (next === ResolvedValue.True) {
+        return;
+      }
+      if (next === ResolvedValue.False) {
+        hasFalse = true;
+        return;
+      }
       this.values.unshift(next);
     });
+
+    if (hasFalse) {
+      this.values = [ResolvedValue.False];
+    }
+    if (this.values.length === 0) {
+      this.values = [ResolvedValue.True];
+    }
   }
 
   asText(): string {
@@ -139,8 +171,8 @@ export class FormulaOptimizer {
   .operator('!=', 3, Associativity.Left, 2, opFn((a, b) => `${a}!=${b}`))
   .operator('AND', 1, Associativity.Left, 2, (a, b) => new OptimizedAllFunction([b, a]))
   .operator('OR', 1, Associativity.Left, 2, (a, b) => new OptimizedAnyFunction([b, a]))
-  .term('true', () => ResolvedValue.of('true'))
-  .term('false', () => ResolvedValue.of('false'))
+  .term('true', () => ResolvedValue.of(true))
+  .term('false', () => ResolvedValue.of(false))
   .term('null', () => ResolvedValue.of('null'))
   .function('abs', 1, passthroughFn('abs'))
   .function('min', 2, passthroughFn('min'))

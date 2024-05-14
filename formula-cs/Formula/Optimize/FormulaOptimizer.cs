@@ -122,13 +122,32 @@ public class FormulaOptimizer
 
         internal AnyFunction(List<ResolvedValue> values) {
             _values = new List<ResolvedValue>();
+            var hasFalse = false;
             foreach (var next in values) 
             {
                 if (next is AnyFunction anyFn) {
                     _values.InsertRange(0, anyFn._values);
                     continue;
                 }
+
+                if (next.Equals(False))
+                {
+                    hasFalse = true;
+                    continue;
+                }
+
+                if (next.Equals(True))
+                {
+                    _values.Clear();
+                    _values.Add(True);
+                    return;
+                }
                 _values.Insert(0, next);
+            }
+
+            if (_values.Count == 0)
+            {
+                _values.Add(hasFalse ? False : True);
             }
         }
         
@@ -167,7 +186,24 @@ public class FormulaOptimizer
                     _values.InsertRange(0, allFn._values);
                     continue;
                 }
+
+                if (next.Equals(True))
+                {
+                    continue;
+                }
+
+                if (next.Equals(False))
+                {
+                    _values.Clear();
+                    _values.Add(False);
+                    return;
+                }
                 _values.Insert(0, next);
+            }
+
+            if (_values.Count == 0)
+            {
+                _values.Add(True);
             }
         }
         

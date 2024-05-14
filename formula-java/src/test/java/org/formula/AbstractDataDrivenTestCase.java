@@ -1,6 +1,4 @@
-package org.formula.optimize;
-
-import static org.assertj.core.api.Assertions.assertThat;
+package org.formula;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -12,12 +10,16 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 
-public class FormulaOptimizerTest {
+public abstract class AbstractDataDrivenTestCase {
+
+    protected abstract String getDataResourceName();
+
+    protected abstract void test(String given, String expected);
 
     @TestFactory
     @DisplayName("data-driven test cases")
     Stream<DynamicTest> dataDrivenTestCases() {
-        InputStream is = ClassLoader.getSystemResourceAsStream("optimize-test-cases.csv");
+        InputStream is = ClassLoader.getSystemResourceAsStream(getDataResourceName());
         assert is != null;
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
         return reader.lines()
@@ -29,8 +31,7 @@ public class FormulaOptimizerTest {
                     String expected = parts.get(2);
 
                     return DynamicTest.dynamicTest(displayName, () -> {
-                        var optimized = FormulaOptimizer.optimize(given);
-                        assertThat(optimized).isEqualTo(expected);
+                        test(given, expected);
                     });
                 });
     }
