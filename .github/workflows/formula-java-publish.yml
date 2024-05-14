@@ -23,4 +23,4 @@ jobs:
         env:
           GITHUB_USERNAME: kierannichol
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RELEASE_VERSION: ${{ github.event.release.tag_name }}
+          RELEASE_VERSION: ${{ github.ref_name }}
