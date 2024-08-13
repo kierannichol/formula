@@ -4,11 +4,23 @@
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
+        <compositeConfiguration>
+          <compositeBuild compositeDefinitionSource="SCRIPT">
+            <builds>
+              <build path="$PROJECT_DIR$/java/buildSrc" name="buildSrc">
+                <projects>
+                  <project path="$PROJECT_DIR$/java/buildSrc" />
+                </projects>
+              </build>
+            </builds>
+          </compositeBuild>
+        </compositeConfiguration>
         <option name="externalProjectPath" value="$PROJECT_DIR$/java" />
         <option name="gradleJvm" value="zulu-17" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/java" />
+            <option value="$PROJECT_DIR$/java/buildSrc" />
             <option value="$PROJECT_DIR$/java/formula-java" />
             <option value="$PROJECT_DIR$/java/jackson-dataformat-formula" />
           </set>

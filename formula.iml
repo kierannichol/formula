@@ -2,7 +2,12 @@
 <module type="GENERAL_MODULE" version="4">
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
-    <content url="file://$MODULE_DIR$" />
+    <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/formula-cs/Formula/bin" />
+      <excludeFolder url="file://$MODULE_DIR$/formula-cs/Formula/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/formula-cs/FormulaTest/bin" />
+      <excludeFolder url="file://$MODULE_DIR$/formula-cs/FormulaTest/obj" />
+    </content>
     <orderEntry type="jdk" jdkName="17" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>

@@ -1,4 +1,4 @@
 rootProject.name = "formula-java"
 
-include(":formula-java", ":jackson-dataformat-formula")
+include("formula-java", "jackson-dataformat-formula")
 

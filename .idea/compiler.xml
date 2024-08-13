@@ -5,6 +5,8 @@
       <module name="formula-java.java-runner" target="17" />
       <module name="formula-java.java-runner.main" target="17" />
       <module name="formula-java.java-runner.test" target="17" />
+      <module name="formula-java.main" target="17" />
+      <module name="formula-java.test" target="17" />
       <module name="jackson-dataformat-formula" target="17" />
       <module name="jackson-dataformat-formula.main" target="17" />
       <module name="jackson-dataformat-formula.test" target="17" />
