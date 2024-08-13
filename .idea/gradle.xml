@@ -4,12 +4,13 @@
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
-        <option name="distributionType" value="DEFAULT_WRAPPED" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$/formula-java" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/java" />
         <option name="gradleJvm" value="zulu-17" />
         <option name="modules">
           <set>
-            <option value="$PROJECT_DIR$/formula-java" />
+            <option value="$PROJECT_DIR$/java" />
+            <option value="$PROJECT_DIR$/java/formula-java" />
+            <option value="$PROJECT_DIR$/java/jackson-dataformat-formula" />
           </set>
         </option>
       </GradleProjectSettings>

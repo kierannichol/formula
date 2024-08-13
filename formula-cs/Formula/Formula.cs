@@ -41,6 +41,7 @@ public static class Formula
             .Variable("min(@", ")", MinFunction)
             .Variable("max(@", ")", MaxFunction)
             .Variable("sum(@", ")", SumFunction)
+            .Comment("[", "]", (value, comment) => NamedResolvedValue.Of(value, comment.Substring(1, comment.Length - 2)))
             ;
 
     public static IResolvable Parse(string formulaText)

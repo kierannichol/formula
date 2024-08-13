@@ -45,4 +45,14 @@ public class ResolvedValueAssertions
     {
         _value = value;
     }
+
+    public void HasName(string expectedName)
+    {
+        if (_value is not NamedResolvedValue named)
+        {
+            Assert.Fail("Resolved value was not named");
+            return;
+        }
+        Assert.That(named.AsName(), Is.EqualTo(expectedName));
+    }
 }

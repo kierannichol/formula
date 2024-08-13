@@ -19,7 +19,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           arguments: publish
-          build-root-directory: ./formula-java
+          build-root-directory: ./java/formula-java
         env:
           GITHUB_USERNAME: kierannichol
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

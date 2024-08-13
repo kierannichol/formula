@@ -347,23 +347,23 @@ export class ShuntingYard extends Resolvable {
         }
         else if (func.operands === 1) {
           let x = localStack.pop() as ResolvedValue;
-          if (x === undefined) throw new ResolveError(`Error executing function "${func.name}" in "${this.asFormula()}" because parameter was undefined`);
+          if (x === undefined) throw new ResolveError(`Missing parameter #1 for "${func.name}"`);
           localStack.push(func.execute(x));
         }
         else if (func.operands === 2) {
           let b = localStack.pop() as ResolvedValue;
           let a = localStack.pop() as ResolvedValue;
-          if (a === undefined) throw new ResolveError(`Error executing function "${func.name}" in "${this.asFormula()}" because first parameter was undefined`);
-          if (b === undefined) throw new ResolveError(`Error executing function "${func.name}" in "${this.asFormula()}" because second parameter was undefined`);
+          if (b === undefined) throw new ResolveError(`Missing parameter #1 for "${func.name}"`)
+          if (a === undefined) throw new ResolveError(`Missing parameter #2 for "${func.name}"`)
           localStack.push(func.execute(a, b));
         }
         else if (func.operands === 3) {
           let c = localStack.pop() as ResolvedValue;
           let b = localStack.pop() as ResolvedValue;
           let a = localStack.pop() as ResolvedValue;
-          if (a === undefined) throw new ResolveError(`Error executing function "${func.name}" in "${this.asFormula()}" because first parameter was undefined`);
-          if (b === undefined) throw new ResolveError(`Error executing function "${func.name}" in "${this.asFormula()}" because second parameter was undefined`);
-          if (c === undefined) throw new ResolveError(`Error executing function "${func.name}" in "${this.asFormula()}" because third parameter was undefined`);
+          if (c === undefined) throw new ResolveError(`Missing parameter #1 for "${func.name}"`)
+          if (b === undefined) throw new ResolveError(`Missing parameter #2 for "${func.name}"`)
+          if (a === undefined) throw new ResolveError(`Missing parameter #3 for "${func.name}"`)
           localStack.push(func.execute(a, b, c));
         }
         else {

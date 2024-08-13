@@ -237,7 +237,14 @@ public readonly record struct Operator2
 {
     public ResolvedValue Execute(ResolvedValue a1, ResolvedValue a2)
     {
-        return Function(a1, a2);
+        try
+        {
+            return Function(a1, a2);
+        }
+        catch (FormatException)
+        {
+            return ResolvedValue.NaN;
+        }
     }
 
     public override string ToString()

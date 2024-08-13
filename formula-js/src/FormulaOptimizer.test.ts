@@ -1,26 +1,26 @@
 import {Formula} from "./Formula";
+import path from "node:path";
+import fs from "node:fs";
 
-const fs = require("fs");
-const path = require("path");
+const YAML = require("yaml");
 
-const file = path.join(__dirname, "..", "..", "formula-test", "optimize-test-cases.csv");
-const content = fs.readFileSync(file, "utf8", function(err: any, data: any) {
-  return data;
-});
+const optimizeTestCasesPath = path.resolve(__dirname, '..', '..', 'formula-test', 'optimize-test-cases.yml');
+const optimizeTestCasesYaml = fs.readFileSync(optimizeTestCasesPath, "utf8");
 
-let index = 0;
-for (let row of content.split("\n")) {
-  if (index++ === 0) {
-    // Skip header line
-    continue;
-  }
-  const columns = row.split("|");
-  const displayName = columns[0].trim();
-  const given = columns[1].trim();
-  const expected = columns[2].trim();
+const optimizeTestCases = YAML.parse(optimizeTestCasesYaml);
 
-  test(displayName, () => {
-    let formula = Formula.optimize(given)
-    expect(formula).toBe(expected);
+optimizeTestCases.forEach(testCase => {
+
+  test(testCase.name, () => {
+    try {
+      let formula = Formula.optimize(testCase.formula);
+      expect(formula).toBe(testCase.expected_formula);
+    } catch (e) {
+      if (testCase.expected_error) {
+        expect(e.message).toBe(testCase.expected_error);
+        return;
+      }
+      throw e;
+    }
   });
-}
+});

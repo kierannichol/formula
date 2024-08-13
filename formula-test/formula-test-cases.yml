@@ -1,0 +1,243 @@
+- name: blank string
+  formula: ""
+  expected_number: 0
+  expected_text: ""
+- name: single positive number
+  formula: "9"
+  expected_number: 9
+  expected_text: "9"
+- name: single negative number
+  formula: "-9"
+  expected_number: -9
+  expected_text: "-9"
+- name: add two scalars
+  formula: "2 + 3"
+  expected_number: 5
+- name: exponents
+  formula: "2^3"
+  expected_number: 8
+- name: with brackets
+  formula: "4 + 4 * 2 / ( 1 - 5 )"
+  expected_number: 2
+- name: negative integer (-4)
+  formula: "-4"
+  expected_number: -4
+- name: negative integer (1-4)
+  formula: "1-4"
+  expected_number: -3
+- name: negative integer ((1)-4)
+  formula: "(1)-4"
+  expected_number: -3
+- name: negative integer (1-(4))
+  formula: "1-(4)"
+  expected_number: -3
+- name: negative integer ((1-4))
+  formula: "(1-4)"
+  expected_number: -3
+- name: trailing minus integer
+  formula: "(5)-1"
+  expected_number: 4
+- name: multiply negative integer
+  formula: "5*-2"
+  expected_number: -10
+- name: multiple digit numbers
+  formula: "12 + 100"
+  expected_number: 112
+- name: function on its own
+  formula: "abs(-2)"
+  expected_number: 2
+- name: function + number
+  formula: "abs(-2) + 3"
+  expected_number: 5
+- name: number + function
+  formula: "3 + abs(-2)"
+  expected_number: 5
+- name: number + function + number
+  formula: "3 + abs(-2) + 3"
+  expected_number: 8
+- name: function + function + function
+  formula: "max(2,3) + abs(-2) + max(1,3)"
+  expected_number: 8
+- name: function in brackets
+  formula: "(max(3,5))"
+  expected_number: 5
+- name: abs function
+  formula: "2 + abs(2 - 3) + 1"
+  expected_number: 4
+- name: min function
+  formula: "1 + min(4, 2)"
+  expected_number: 3
+- name: max function
+  formula: "1 + max(4, 2)"
+  expected_number: 5
+- name: complex max function
+  formula: "max(4 - 2, 2 / 2)"
+  expected_number: 2
+- name: floor function
+  formula: "1 + floor(2.9)"
+  expected_number: 3
+- name: ceil function
+  formula: "1 + ceil(2.9)"
+  expected_number: 4
+- name: signed(3) as string
+  formula: "signed(3)"
+  expected_text: "+3"
+- name: signed(-3) as string
+  formula: "signed(-3)"
+  expected_text: "-3"
+- name: signed(3) as integer
+  formula: "signed(3)"
+  expected_number: 3
+- name: signed(-3) as integer
+  formula: "signed(-3)"
+  expected_number: -3
+
+# Error Handling
+- name: string + number
+  formula: "\"Text\" + 5"
+  expected_number: NaN
+  expected_text: "NaN"
+- name: number + string
+  formula: "5 + \"Text\""
+  expected_number: NaN
+  expected_text: "NaN"
+- name: invalid syntax "!"
+  formula: "!"
+  expected_error: "Missing parameter #1 for \"!\""
+- name: invalid syntax "1 +"
+  formula: "1 +"
+  expected_error: "Missing parameter #2 for \"+\""
+- name: invalid syntax "+"
+  formula: "+"
+  expected_error: "Missing parameter #1 for \"+\""
+- name: function with 3 parameters missing 3rd
+  formula: ""
+
+- name: simple variable
+  formula: "@a"
+  data:
+    a: "5"
+  expected_number: 5
+- name: variable + variable
+  formula: "@a + @b"
+  data:
+    a: "5"
+    b: "2"
+  expected_number: 7
+- name: variable that references another variable
+  formula: "@a"
+  data:
+    a: "{@b}"
+    b: "2"
+  expected_number: 2
+
+- name: "all()"
+  formula: "all()"
+  expected_boolean: true
+- name: "all(true)"
+  formula: "all(true)"
+  expected_boolean: true
+- name: "all(true, true)"
+  formula: "all(true, true)"
+  expected_boolean: true
+- name: "all(true, false)"
+  formula: "all(true, false)"
+  expected_boolean: false
+- name: "all(false, false)"
+  formula: "all(false, false)"
+  expected_boolean: false
+- name: "all(with nested 'any')"
+  formula: "all(any(@b, @c), @a, 1)"
+  data:
+    a: true
+    b: false
+    c: true
+  expected_boolean: true
+
+- name: "any(empty)"
+  formula: "any()"
+  expected_boolean: false
+- name: "any(true)"
+  formula: "any(true)"
+  expected_boolean: true
+- name: "any(true, true)"
+  formula: "any(true, true)"
+  expected_boolean: true
+- name: "any(true, false)"
+  formula: "any(true, false)"
+  expected_boolean: true
+- name: "any(false, false)"
+  formula: "any(false, false)"
+  expected_boolean: false
+
+- name: named formula
+  formula: "(false)[Never True]"
+  expected_name: "Never True"
+
+- name: wildcard sum
+  formula: "sum(@key_*)"
+  data:
+    other: 2
+    key_1: 4
+    key_2: 3
+    key_3: 5
+  expected_number: 12
+
+- name: wildcard max
+  formula: "max(@key_*)"
+  data:
+    other: 2
+    key_1: 4
+    key_2: 3
+    key_3: 5
+  expected_number: 5
+
+- name: wildcard min
+  formula: "min(@key_*)"
+  data:
+    other: 2
+    key_1: 4
+    key_2: 3
+    key_3: 5
+  expected_number: 3
+
+- name: "ordinal: 0th"
+  formula: "ordinal(0)"
+  expected_text: "0th"
+- name: "ordinal: 1st"
+  formula: "ordinal(1)"
+  expected_text: "1st"
+- name: "ordinal: 2nd"
+  formula: "ordinal(2)"
+  expected_text: "2nd"
+- name: "ordinal: 3rd"
+  formula: "ordinal(3)"
+  expected_text: "3rd"
+- name: "ordinal: 4th"
+  formula: "ordinal(4)"
+  expected_text: "4th"
+- name: "ordinal: 5th"
+  formula: "ordinal(5)"
+  expected_text: "5th"
+- name: "ordinal: 6th"
+  formula: "ordinal(6)"
+  expected_text: "6th"
+- name: "ordinal: 7th"
+  formula: "ordinal(7)"
+  expected_text: "7th"
+- name: "ordinal: 8th"
+  formula: "ordinal(8)"
+  expected_text: "8th"
+- name: "ordinal: 9th"
+  formula: "ordinal(9)"
+  expected_text: "9th"
+- name: "ordinal: 10th"
+  formula: "ordinal(10)"
+  expected_text: "10th"
+
+- name: "if: when true"
+  formula: "if(-2 < 0, 'A', 'B')"
+  expected_text: "A"
+- name: "if: when false"
+  formula: "if(-2 > 0, 'A', 'B')"
+  expected_text: "B"

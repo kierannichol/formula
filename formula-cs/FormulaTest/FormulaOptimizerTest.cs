@@ -4,10 +4,10 @@ namespace FormulaTest;
 
 public class FormulaOptimizerTest
 {
-    [Test, TestCaseSource(typeof(DataDrivenTestCaseSource), nameof(DataDrivenTestCaseSource.GetTestCases))]
-    public void DataDrivenTestCases(DataDrivenTestCaseSource.Case data)
+    [Test, TestCaseSource(typeof(OptimizeTestCaseSource), nameof(OptimizeTestCaseSource.GetTestCases))]
+    public void DataDrivenTestCases(OptimizeTestCaseSource.Case data)
     {
-        var optimized = FormulaOptimizer.Optimize(data.Given);
-        Assert.That(optimized, Is.EqualTo(data.Expected));
+        var optimized = FormulaOptimizer.Optimize(data.Formula);
+        Assert.That(optimized, Is.EqualTo(data.ExpectedFormula));
     }
 }

@@ -12,12 +12,12 @@ on:
     branches: [ "main" ]
     paths:
       - '.github/workflows/formula-java.yml'
-      - 'formula-java/**'
+      - 'java/formula-java/**'
   pull_request:
     branches: [ "main" ]
     paths:
       - '.github/workflows/formula-java.yml'
-      - 'formula-java/**'
+      - 'java/formula-java/**'
 
 permissions:
   contents: read
@@ -37,12 +37,12 @@ jobs:
       uses: gradle/gradle-build-action@v2
       with:
         arguments: build --scan
-        build-root-directory: ./formula-java
+        build-root-directory: ./java/formula-java
     - name: Test
       uses: gradle/gradle-build-action@v2
       with:
         arguments: test
-        build-root-directory: ./formula-java
+        build-root-directory: ./java/formula-java
     - name: Upload build reports
       uses: actions/upload-artifact@v4
       if: success() || failure()
