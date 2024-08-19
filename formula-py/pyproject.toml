@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "formula"
+version = "0.1.0"
+description = ""
+authors = ["Kieran Nichol <knichol@popcap.com>"]
+readme = "README.md"
+packages = [{include = "formula"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+[tool.poetry.group.test.dependencies]
+pytest = "^8.3.2"
+PyYAML = "^6.0.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
