@@ -63,7 +63,7 @@ public abstract class ResolvedValue {
             try {
                 return Double.parseDouble(value);
             } catch (NumberFormatException e) {
-                return Double.NaN;
+                throw new ResolveException("Cannot convert '%s' to a number".formatted(value));
             }
         }
 

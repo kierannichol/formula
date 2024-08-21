@@ -43,7 +43,7 @@ def test_decimal_as_decimal():
 
 
 def test_decimal_as_text():
-    assert ResolvedValue(0.0).as_text() == '0.0'
+    assert ResolvedValue(0.0).as_text() == '0'
     assert ResolvedValue(5.2).as_text() == '5.2'
     assert ResolvedValue(-20.1).as_text() == '-20.1'
 

@@ -1,6 +1,7 @@
 package org.formula.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.formula.ResolvedValue;
@@ -16,6 +17,9 @@ public record FormulaTestCase(String name,
                               @JsonProperty("expected_name") String expectedName) {
 
     public void assertResult(ResolvedValue result) {
+        if (expectedError != null) {
+            fail("Expected error, but none occurred");
+        }
         if (expectedNumber != null && expectedNumber instanceof Integer i) {
             assertThat(result.asNumber()).isEqualTo(i);
         }

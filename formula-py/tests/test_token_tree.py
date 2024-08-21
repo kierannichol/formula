@@ -12,12 +12,12 @@ ALPHA = string.ascii_letters
 def test_single_node():
     assert (token_tree.create()
             .add_branch('A', lambda text: ResolvedValue(text))
-            .parse('A') == ResolvedValue('A'))
+            .parse('A') == [ResolvedValue('A')])
 
 
 def test_simple_chain():
     parser = token_tree.create().add_branch('ABC', lambda text: ResolvedValue(text))
-    assert parser.parse('ABC') == ResolvedValue('ABC')
+    assert parser.parse('ABC') == [ResolvedValue('ABC')]
     with pytest.raises(ValueError):
         parser.parse('A')
     with pytest.raises(ValueError):
@@ -30,8 +30,8 @@ def test_splitting_chain():
     parser = (token_tree.create()
               .add_branch('ABC', lambda text: ResolvedValue(text))
               .add_branch('A23', lambda text: ResolvedValue(text)))
-    assert parser.parse('ABC') == ResolvedValue('ABC')
-    assert parser.parse('A23') == ResolvedValue('A23')
+    assert parser.parse('ABC') == [ResolvedValue('ABC')]
+    assert parser.parse('A23') == [ResolvedValue('A23')]
 
 
 def test_multiple_tokens():
@@ -57,7 +57,7 @@ def test_any_of_chain():
               .add_branch([token_tree.any_of(DIGITS), token_tree.any_of(DIGITS)],
                           lambda text: ResolvedValue(text)))
 
-    assert parser.parse('13 25 36') == [ResolvedValue(15), ResolvedValue(25), ResolvedValue(36)]
+    assert parser.parse('13 25 36') == [ResolvedValue(13), ResolvedValue(25), ResolvedValue(36)]
 
 
 def test_repeated():
@@ -88,7 +88,6 @@ def test_optional_trailing_character():
 
 def test_optional_leading_character():
     parser = (token_tree.create()
-              .ignore_whitespace()
               .add_branch([token_tree.any_of('@').optional(),
                            token_tree.any_of(ALPHA).repeats(1),
                            token_tree.any_of(DIGITS).repeats(1)],
@@ -102,14 +101,20 @@ def test_optional_leading_character():
         parser.parse('@@A5')
 
 
+def test_parse_decimal():
+    parser = (token_tree.create()
+              .add_branch(token_tree.NUMBER, lambda text: ResolvedValue(text)))
+    assert parser.parse('3.14') == [ResolvedValue(3.14)]
+
+
 def test_number_token():
     parser = (token_tree.create()
               .add_branch(token_tree.NUMBER, lambda text: ResolvedValue(text)))
 
-    assert parser.parse('1') == ResolvedValue(1.0)
-    assert parser.parse('23') == ResolvedValue(23.0)
-    assert parser.parse('54890') == ResolvedValue(54890.0)
-    assert parser.parse('3.14') == ResolvedValue(3.14)
+    assert parser.parse('1') == [ResolvedValue(1)]
+    assert parser.parse('23') == [ResolvedValue(23)]
+    assert parser.parse('54890') == [ResolvedValue(54890)]
+    assert parser.parse('3.14') == [ResolvedValue(3.14)]
     with pytest.raises(ValueError):
         parser.parse('A')
     with pytest.raises(ValueError):
@@ -124,7 +129,8 @@ def test_expression_order():
     parser = (token_tree.create()
               .ignore_whitespace()
               .add_branch(token_tree.DECIMAL, lambda text: float(text))
-              .add_branch(token_tree.INTEGER, lambda text: str(text)))
+              .add_branch(token_tree.INTEGER, lambda text: str(text))
+              )
 
     assert parser.parse('123 3.14 5 0.2') == ["123", 3.14, "5", 0.2]
 

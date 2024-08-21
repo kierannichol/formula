@@ -1,10 +1,11 @@
-from typing import TypeAlias
 import re
+from typing import TypeAlias
 
-import formula
-from formula import ResolvedValue
+from formula.resolvable import Resolvable
+from formula.resolved_value import ResolvedValue
 
-DataContextStateValue: TypeAlias = str | int | float | bool | formula.Resolvable | None
+
+DataContextStateValue: TypeAlias = str | int | float | bool | Resolvable | None
 DataContextState: TypeAlias = dict[str, DataContextStateValue]
 
 
@@ -13,8 +14,10 @@ class DataContext:
         self._data = data
 
     def get(self, key: str) -> ResolvedValue:
+        if key not in self._data:
+            return ResolvedValue(None)
         value = self._data[key]
-        if isinstance(value, formula.Resolvable):
+        if isinstance(value, Resolvable):
             return value.resolve(self)
         return ResolvedValue(value)
 
@@ -25,10 +28,10 @@ class DataContext:
         self._data[key] = value
 
     def search(self, pattern: str) -> list[ResolvedValue]:
-        regex_pattern = pattern.replace('\\*', '.*')
+        regex_pattern = pattern.replace('*', '.*?')
         regex = re.compile(f"^{regex_pattern}$")
         for key in self._data:
-            value = self._data[key]
-            match = regex.search(value)
+            match = regex.search(key)
             if match is not None:
+                value = self._data[key]
                 yield ResolvedValue(value)

@@ -1,3 +1,5 @@
+import {ResolveError} from "./ResolveError";
+
 export interface ResolvedValue {
   asText(): string;
 
@@ -21,7 +23,11 @@ class TextValue implements ResolvedValue {
   }
 
   asNumber(): number {
-    return parseFloat(this.value);
+    let result = parseFloat(this.value);
+    if (Number.isNaN(result)) {
+      throw new ResolveError(`Cannot convert '${this.value}' to a number`)
+    }
+    return result;
   }
 
   asBoolean(): boolean {

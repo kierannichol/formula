@@ -1,19 +1,16 @@
 import enum
+import string
 from typing import Callable, List, Self, TypeAlias
 
 from formula.data_context import DataContext
 from formula.resolvable import Resolvable
+from formula.resolve_error import ResolveError
 from formula.resolved_value import ResolvedValue, QuotedTextResolvedValue
 from formula.token import token_tree
 
 _TokenMapper: TypeAlias = Callable[[list[ResolvedValue]], ResolvedValue]
 _DataResolver: TypeAlias = Callable[[DataContext], ResolvedValue]
 _VariableResolver: TypeAlias = Callable[[DataContext, str], ResolvedValue]
-
-
-class ResolveError(Exception):
-    def __init__(self, message: str):
-        self.message = message
 
 
 class Associativity(enum.IntEnum):
@@ -147,7 +144,7 @@ class ShuntingYard:
     @staticmethod
     def _checked_popped_param(func: any, index: int, stack: list):
         if len(stack) == 0:
-            raise ResolveError(f"Missing parameter ${index} for \"{func}\"")
+            raise ResolveError(f"Missing parameter #{index+1} for \"{func}\"")
         return stack.pop(0)
 
     @staticmethod
@@ -212,12 +209,32 @@ class ShuntingYardParser:
         self._parser.add_branch(token_tree.term(text), lambda _: Term(extractor))
         return self
 
+    def function_1(self, name, func: Callable[[ResolvedValue], ResolvedValue]) -> Self:
+        self._parser.add_branch(token_tree.term(name), lambda _: Function(name, 1, lambda x: func(x[0])))
+        return self
+
     def function_2(self, name, func: Callable[[ResolvedValue, ResolvedValue], ResolvedValue]) -> Self:
         self._parser.add_branch(token_tree.term(name), lambda _: Function(name, 2, lambda x: func(x[0], x[1])))
         return self
 
     def function_n(self, name, func: Callable[[list[ResolvedValue]], ResolvedValue]) -> Self:
         self._parser.add_branch(token_tree.term(name), lambda _: VarargsFunction(name, func))
+        return self
+
+    def variable(self, prefix: str, suffix: str, func: Callable[[DataContext, str], ResolvedValue]) -> Self:
+        self._parser.add_branch(
+            [
+                *token_tree.term(prefix),
+                token_tree.any_of(string.ascii_letters),
+                token_tree.optional(token_tree.KEY),
+                *token_tree.term(suffix)
+            ],
+            lambda key: Variable(key, lambda context, v_key: func(context, key[len(prefix):len(v_key) - len(suffix)])))
+        return self
+
+    def comment(self, prefix: str, suffix: str, func: Callable[[str, ResolvedValue], ResolvedValue]) -> Self:
+        self._parser.add_branch(token_tree.literal(prefix, suffix),
+                                lambda token: Comment(token[len(prefix):len(token) - len(suffix)], func))
         return self
 
     def decimal_function_1(self, name, func: Callable[[float], any]) -> Self:
@@ -307,4 +324,3 @@ class ShuntingYardParser:
             output_buffer.append(operator_stack.pop())
 
         return ShuntingYard(output_buffer, formula)
-

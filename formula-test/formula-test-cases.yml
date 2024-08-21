@@ -95,12 +95,10 @@
 # Error Handling
 - name: string + number
   formula: "\"Text\" + 5"
-  expected_number: NaN
-  expected_text: "NaN"
+  expected_error: "Cannot convert 'Text' to a number"
 - name: number + string
   formula: "5 + \"Text\""
-  expected_number: NaN
-  expected_text: "NaN"
+  expected_error: "Cannot convert 'Text' to a number"
 - name: invalid syntax "!"
   formula: "!"
   expected_error: "Missing parameter #1 for \"!\""

@@ -18,6 +18,10 @@ formulaTestCases.forEach(testCase => {
       let formula = Formula.parse(testCase.formula);
       let resolved = formula.resolve(toDataContext(testCase.data));
 
+      if (testCase.expected_error) {
+        fail("Expected error, but none occurred")
+      }
+
       if (testCase.expected_number) {
         const expected = (typeof testCase.expected_number === 'string'
             && testCase.expected_number.toLowerCase() === "nan")

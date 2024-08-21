@@ -3,8 +3,9 @@ from pathlib import Path
 import pytest
 import yaml
 
-from formula import formula
-from formula.data_context import DataContext
+import formula
+from formula import DataContext
+from formula.shunting_yard import ResolveError
 from tests.formula_test_case import FormulaTestCase
 
 FORMULA_TEST_CASES_PATH = Path(__file__).parent.parent.parent / "formula-test" / "formula-test-cases.yml"
@@ -19,13 +20,20 @@ def get_test_cases() -> None:
 
 @pytest.mark.parametrize("test_case", get_test_cases(), ids=lambda test_case: test_case.name)
 def test_formula(test_case: FormulaTestCase) -> None:
-    parsed = formula.parse(test_case.formula)
-    context = DataContext(test_case.data)
-    resolved = parsed.resolve(context)
-    if test_case.expected_text is not None:
-        assert resolved.as_text() == test_case.expected_text
-    if test_case.expected_number is not None:
-        assert resolved.as_number() == test_case.expected_number
-    if test_case.expected_boolean is not None:
-        assert resolved.as_boolean() == test_case.expected_boolean
+    try:
+        parsed = formula.parse(test_case.formula)
+        context = DataContext(test_case.data)
+        resolved = parsed.resolve(context)
+        if test_case.expected_text is not None:
+            assert resolved.as_text() == test_case.expected_text
+        if test_case.expected_number is not None:
+            assert resolved.as_number() == test_case.expected_number
+        if test_case.expected_boolean is not None:
+            assert resolved.as_boolean() == test_case.expected_boolean
+    except ResolveError as e:
+        if test_case.expected_error is not None:
+            assert e.message == test_case.expected_error
+        else:
+            raise e
+
 

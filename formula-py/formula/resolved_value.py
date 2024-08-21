@@ -1,3 +1,8 @@
+import math
+
+from formula.resolve_error import ResolveError
+
+
 class ResolvedValue:
     def __init__(self, value: str | int | float | bool | None) -> None:
         self.value: str | int | float | bool | None = value
@@ -11,14 +16,24 @@ class ResolvedValue:
             else:
                 return 'false'
         if isinstance(self.value, float):
+            if math.isnan(self.value):
+                return 'NaN'
             return f'{self.value:g}'
+        if isinstance(self.value, int) and math.isnan(self.value):
+            return 'NaN'
         return str(self.value)
 
     def as_number(self) -> int:
-        return int(self.value) if self.value is not None else 0
+        try:
+            return int(self.value) if self.value is not None else 0
+        except ValueError:
+            raise ResolveError(f"Cannot convert '{self.value}' to a number")
 
     def as_decimal(self) -> float:
-        return float(self.value) if self.value is not None else 0.0
+        try:
+            return float(self.value) if self.value is not None else 0.0
+        except ValueError:
+            raise ResolveError(f"Cannot convert '{self.value}' to a number")
 
     def as_boolean(self) -> bool:
         if self.value is None:
@@ -44,13 +59,27 @@ class ResolvedValue:
     def has_value(self) -> bool:
         return self.value is not None
 
-    def __eq__(self, __value):
-        return isinstance(__value, ResolvedValue) and self.value == __value.value
+    def __eq__(self, other_value):
+        if not isinstance(other_value, ResolvedValue):
+            return False
+        if isinstance(self.value, str):
+            return self.value == other_value.as_text()
+        if isinstance(self.value, int):
+            return self.value == other_value.as_number()
+        if isinstance(self.value, float):
+            return math.isclose(self.value, other_value.as_decimal())
+        if isinstance(self.value, bool):
+            return self.value == other_value.as_boolean()
+        return self.value == other_value.value
 
     def __hash__(self):
         return hash(self.value)
 
     def __repr__(self):
+        if self.value is None:
+            return 'null'
+        if isinstance(self.value, str):
+            return f"'{self.value}'"
         return str(self.value)
 
 
@@ -62,3 +91,12 @@ class QuotedTextResolvedValue(ResolvedValue):
 
     def as_quoted_text(self) -> str:
         return self.prefix + self.as_text() + self.suffix
+
+
+class NamedResolvedValue(ResolvedValue):
+    def __init__(self, value: ResolvedValue, name: str):
+        super().__init__(value.value)
+        self._name = name
+
+    def as_name(self) -> str:
+        return self._name
