@@ -1,5 +1,5 @@
 import formula.resolvable
-from formula.resolved_value import ResolvedValue
+from formula.resolved_value import resolved_value
 from formula.resolvable import Resolvable
 from formula.data_context import DataContext
 from formula.formula import Formula

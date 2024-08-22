@@ -1,18 +1,18 @@
 from typing import Callable
 
-from formula import ResolvedValue
-from formula.resolved_value import NamedResolvedValue, QuotedTextResolvedValue
+from formula import resolved_value
+from formula.resolved_value import NamedResolvedValue, QuotedTextResolvedValue, ResolvedValue
 from formula.shunting_yard import ShuntingYardParser, Associativity
 
 
 def optimize_formula(formula):
     optimized = __parser.parse(formula).resolve()
-    if isinstance(optimized, MathFunction):
+    if isinstance(optimized, _MathFunction):
         return optimized.as_text_no_brackets()
     return _format(optimized)
 
 
-def _format(value: ResolvedValue) -> str:
+def _format(value: resolved_value) -> str:
     if isinstance(value, QuotedTextResolvedValue):
         return value.as_quoted_text()
     if isinstance(value, NamedResolvedValue):
@@ -20,21 +20,20 @@ def _format(value: ResolvedValue) -> str:
     return value.as_text()
 
 
-def _op_fn1(func: Callable[[str], str]) -> Callable[[list[ResolvedValue]], ResolvedValue]:
-    return lambda p: ResolvedValue(func(_format(p[0])))
+def _op_fn1(func: Callable[[str], str]) -> Callable[[list[resolved_value]], resolved_value]:
+    return lambda p: resolved_value(func(_format(p[0])))
 
 
-def _op_fn2(func: Callable[[str, str], str]) -> Callable[[list[ResolvedValue]], ResolvedValue]:
-    return lambda p: ResolvedValue(func(_format(p[0]), _format(p[1])))
+def _op_fn2(func: Callable[[str, str], str]) -> Callable[[list[resolved_value]], resolved_value]:
+    return lambda p: resolved_value(func(_format(p[0]), _format(p[1])))
 
 
-def _op_fn3(func: Callable[[str, str, str], str]) -> Callable[[list[ResolvedValue]], ResolvedValue]:
-    return lambda p: ResolvedValue(func(_format(p[0]), _format(p[1]), _format(p[2])))
+def _op_fn3(func: Callable[[str, str, str], str]) -> Callable[[list[resolved_value]], resolved_value]:
+    return lambda p: resolved_value(func(_format(p[0]), _format(p[1]), _format(p[2])))
 
 
-class MathFunction(ResolvedValue):
-    def __init__(self, operator: str, a: ResolvedValue, b: ResolvedValue):
-        super().__init__(None)
+class _MathFunction(ResolvedValue):
+    def __init__(self, operator: str, a: resolved_value, b: resolved_value):
         self._operator = operator
         self._a = a
         self._b = b
@@ -45,8 +44,8 @@ class MathFunction(ResolvedValue):
     def as_text(self):
         return f"({self.as_text_no_brackets()})"
 
-    def _format(self, value: ResolvedValue) -> str:
-        if isinstance(value, MathFunction):
+    def _format(self, value: resolved_value) -> str:
+        if isinstance(value, _MathFunction):
             if (value._operator == '+' or value._operator == '-') and (self._operator == '+' or self._operator == '-'):
                 return value.as_text_no_brackets()
             if (value._operator == '*' or value._operator == '/') and (self._operator == '*' or self._operator == '/'):
@@ -57,25 +56,24 @@ class MathFunction(ResolvedValue):
         return f"{self._a}{self._operator}{self._b}"
 
 
-class AnyFunction(ResolvedValue):
-    def __init__(self, values: list[ResolvedValue]):
-        super().__init__(None)
+class _AnyFunction(ResolvedValue):
+    def __init__(self, values: list[resolved_value]):
         self._values = []
         has_false = False
         for value in values:
-            if isinstance(value, AnyFunction):
+            if isinstance(value, _AnyFunction):
                 self._values += value._values
                 continue
-            if value == ResolvedValue(False):
+            if value == resolved_value(False):
                 has_false = True
                 continue
-            if value == ResolvedValue(True):
+            if value == resolved_value(True):
                 self._values.clear()
                 self._values.append(value)
                 return
             self._values.append(value)
         if len(self._values) == 0:
-            self._values.append(ResolvedValue(not has_false))
+            self._values.append(resolved_value(not has_false))
 
     def as_text(self) -> str:
         if len(self._values) == 1:
@@ -86,23 +84,22 @@ class AnyFunction(ResolvedValue):
         return self.as_text()
 
 
-class AllFunction(ResolvedValue):
-    def __init__(self, values: list[ResolvedValue]):
-        super().__init__(None)
+class _AllFunction(ResolvedValue):
+    def __init__(self, values: list[resolved_value]):
         self._values = []
         for value in values:
-            if isinstance(value, AllFunction):
+            if isinstance(value, _AllFunction):
                 self._values += value._values
                 continue
-            if value == ResolvedValue(True):
+            if value == resolved_value(True):
                 continue
-            if value == ResolvedValue(False):
+            if value == resolved_value(False):
                 self._values.clear()
                 self._values.append(value)
                 return
             self._values.append(value)
         if len(self._values) == 0:
-            self._values.append(ResolvedValue(True))
+            self._values.append(resolved_value(True))
 
     def as_text(self) -> str:
         if len(self._values) == 1:
@@ -113,15 +110,12 @@ class AllFunction(ResolvedValue):
         return self.as_text()
 
 
-def _optimized_math_fn(operator: str) -> Callable[[list[ResolvedValue]], ResolvedValue]:
-    return _op
-
 __parser = (ShuntingYardParser()
             .operator('^', 4, Associativity.RIGHT, 2, _op_fn2(lambda a, b: f"{a}^{b}"))
-            .operator('*', 3, Associativity.LEFT, 2, lambda p: MathFunction('*', p[0], p[1]))
-            .operator('/', 3, Associativity.LEFT, 2, lambda p: MathFunction('/', p[0], p[1]))
-            .operator('+', 2, Associativity.LEFT, 2, lambda p: MathFunction('+', p[0], p[1]))
-            .operator('-', 2, Associativity.LEFT, 2, lambda p: MathFunction('-', p[0], p[1]))
+            .operator('*', 3, Associativity.LEFT, 2, lambda p: _MathFunction('*', p[0], p[1]))
+            .operator('/', 3, Associativity.LEFT, 2, lambda p: _MathFunction('/', p[0], p[1]))
+            .operator('+', 2, Associativity.LEFT, 2, lambda p: _MathFunction('+', p[0], p[1]))
+            .operator('-', 2, Associativity.LEFT, 2, lambda p: _MathFunction('-', p[0], p[1]))
             .operator('!', 2, Associativity.LEFT, 1, _op_fn1(lambda a: f"!{a}"))
             .operator('<', 3, Associativity.LEFT, 2, _op_fn2(lambda a, b: f"{a}<{b}"))
             .operator('<=', 3, Associativity.LEFT, 2, _op_fn2(lambda a, b: f"{a}<={b}"))
@@ -129,11 +123,11 @@ __parser = (ShuntingYardParser()
             .operator('>=', 3, Associativity.LEFT, 2, _op_fn2(lambda a, b: f"{a}>={b}"))
             .operator('==', 3, Associativity.LEFT, 2, _op_fn2(lambda a, b: f"{a}=={b}"))
             .operator('!=', 3, Associativity.LEFT, 2, _op_fn2(lambda a, b: f"{a}!={b}"))
-            .operator('AND', 1, Associativity.LEFT, 2, lambda p: AllFunction(p))
-            .operator('OR', 1, Associativity.LEFT, 2, lambda p: AnyFunction(p))
-            .term('true', lambda: ResolvedValue(True))
-            .term('false', lambda: ResolvedValue(False))
-            .term('null', lambda: ResolvedValue(None))
+            .operator('AND', 1, Associativity.LEFT, 2, lambda p: _AllFunction(p))
+            .operator('OR', 1, Associativity.LEFT, 2, lambda p: _AnyFunction(p))
+            .term('true', lambda: resolved_value(True))
+            .term('false', lambda: resolved_value(False))
+            .term('null', lambda: resolved_value(None))
             .function('abs', 1, _op_fn1(lambda a: f"abs({a})"))
             .function('min', 2, _op_fn2(lambda a, b: f"min({a},{b})"))
             .function('max', 2, _op_fn2(lambda a, b: f"max({a},{b})"))
@@ -143,11 +137,11 @@ __parser = (ShuntingYardParser()
             .function('if', 3, _op_fn3(lambda a, b, c: f"if({a},{b},{c})"))
             .function('concat', 2, _op_fn2(lambda a, b: f"concat({a},{b})"))
             .function('ordinal', 1, _op_fn1(lambda a: f"ordinal({a})"))
-            .function_n('any', lambda values: AnyFunction(values))
-            .function_n('all', lambda values: AllFunction(values))
-            .variable('@', '', lambda context, key: ResolvedValue(f"@{key}"))
-            .variable('@{', '}', lambda context, key: ResolvedValue(f"@{{{key}}}"))
-            .variable('min(@', ')', lambda context, key: ResolvedValue(f"min(@{key})"))
-            .variable('max(@', ')', lambda context, key: ResolvedValue(f"max(@{key})"))
-            .variable('sum(@', ')', lambda context, key: ResolvedValue(f"sum(@{key})"))
+            .function_n('any', lambda values: _AnyFunction(values))
+            .function_n('all', lambda values: _AllFunction(values))
+            .variable('@', '', lambda context, key: resolved_value(f"@{key}"))
+            .variable('@{', '}', lambda context, key: resolved_value(f"@{{{key}}}"))
+            .variable('min(@', ')', lambda context, key: resolved_value(f"min(@{key})"))
+            .variable('max(@', ')', lambda context, key: resolved_value(f"max(@{key})"))
+            .variable('sum(@', ')', lambda context, key: resolved_value(f"sum(@{key})"))
             .comment('[', ']', lambda text, value: NamedResolvedValue(value, text)))

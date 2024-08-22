@@ -1,9 +1,7 @@
 import {AlphaCharacters, DigitCharacters, WordCharacters} from "./CharClasses";
 
 export class ParseError extends Error {
-  constructor(message:string,
-              public readonly text: string,
-              public readonly index: number) {
+  constructor(message:string) {
     super(message);
   }
 }
@@ -43,7 +41,7 @@ export default class TokenTree {
         }
         i = match.endIndex - 1;
       } else {
-        throw new ParseError(TokenTree.generateParseErrorMessage(i, text, `did not expect character: '${text[i]}'`), text, i);
+        throw new ParseError(TokenTree.generateParseErrorMessage(i, text, `did not expect character: '${text[i]}'`));
       }
     }
     return tokens;
