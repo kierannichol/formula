@@ -34,5 +34,3 @@ def test_formula(test_case: FormulaTestCase) -> None:
             assert e.message == test_case.expected_error
         else:
             raise e
-
-

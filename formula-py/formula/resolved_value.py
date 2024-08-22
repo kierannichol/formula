@@ -3,12 +3,19 @@ from formula.resolve_error import ResolveError
 
 class ResolvedValue:
     def as_text(self) -> str: pass
+
     def as_number(self) -> int: pass
+
     def as_decimal(self) -> float: pass
+
     def as_boolean(self) -> bool: pass
+
     def has_value(self) -> bool: pass
+
     def __eq__(self, other_value): pass
+
     def __hash__(self): pass
+
     def __repr__(self): pass
 
 
@@ -245,4 +252,3 @@ def resolved_value(value: str | int | float | bool | None) -> ResolvedValue:
     if isinstance(value, float):
         return _DecimalResolvedValue(value)
     return _NONE
-

@@ -144,7 +144,7 @@ class ShuntingYard:
     @staticmethod
     def _checked_popped_param(func: any, index: int, stack: list):
         if len(stack) == 0:
-            raise ResolveError(f"Missing parameter #{index+1} for \"{func}\"")
+            raise ResolveError(f"Missing parameter #{index + 1} for \"{func}\"")
         return stack.pop(0)
 
     @staticmethod
@@ -186,7 +186,8 @@ class ShuntingYardParser:
                                                    2,
                                                    precedence,
                                                    associativity,
-                                                   lambda p: resolved_value(func(p[0].as_decimal(), p[1].as_decimal()))))
+                                                   lambda p: resolved_value(
+                                                       func(p[0].as_decimal(), p[1].as_decimal()))))
         return self
 
     def decimal_bi_operator(self,
@@ -252,7 +253,8 @@ class ShuntingYardParser:
     def decimal_function_2(self, name, func: Callable[[float, float], any]) -> Self:
         self._parser.add_branch(token_tree.term(name),
                                 lambda _: Function(name, 2,
-                                                   lambda x: resolved_value(func(x[0].as_decimal(), x[1].as_decimal()))))
+                                                   lambda x: resolved_value(
+                                                       func(x[0].as_decimal(), x[1].as_decimal()))))
         return self
 
     def function_3(self, name, func: Callable[[resolved_value, resolved_value, resolved_value], resolved_value]):
@@ -288,43 +290,44 @@ class ShuntingYardParser:
                 operator_stack.append(token)
                 continue
 
-            if isinstance(token, Function) or isinstance(token, VarargsFunction):
+            elif isinstance(token, Function) or isinstance(token, VarargsFunction):
                 operator_stack.append(token)
                 arity_stack.append(1)
                 continue
 
-            if isinstance(token, Variable) or isinstance(token, Term) or isinstance(token, Comment):
+            elif isinstance(token, Variable) or isinstance(token, Term) or isinstance(token, Comment):
                 output_buffer.append(token)
                 continue
 
-            match token:
-                case ' ' | '{' | '}':
-                    pass
-                case ',':
-                    arity_stack[-1] += 1
-                    while len(operator_stack) > 0:
-                        top = operator_stack.pop()
-                        if top == '(':
-                            operator_stack.append(top)
-                            break
-                        output_buffer.append(top)
-                case '(':
-                    operator_stack.append(token)
-                case ')':
-                    while len(operator_stack) > 0:
-                        top = operator_stack.pop()
-                        if top == '(':
-                            break
-                        output_buffer.append(top)
-                    if len(operator_stack) > 0:
-                        if isinstance(operator_stack[-1], Function):
-                            output_buffer.append(operator_stack.pop())
-                        elif isinstance(operator_stack[-1], VarargsFunction):
-                            arity = 0 if previous == '(' else arity_stack.pop()
-                            output_buffer.append(arity)
-                            output_buffer.append(operator_stack.pop())
-                case _:
-                    output_buffer.append(resolved_value(token))
+            else:
+                match token:
+                    case ' ' | '{' | '}':
+                        pass
+                    case ',':
+                        arity_stack[-1] += 1
+                        while len(operator_stack) > 0:
+                            top = operator_stack.pop()
+                            if top == '(':
+                                operator_stack.append(top)
+                                break
+                            output_buffer.append(top)
+                    case '(':
+                        operator_stack.append(token)
+                    case ')':
+                        while len(operator_stack) > 0:
+                            top = operator_stack.pop()
+                            if top == '(':
+                                break
+                            output_buffer.append(top)
+                        if len(operator_stack) > 0:
+                            if isinstance(operator_stack[-1], Function):
+                                output_buffer.append(operator_stack.pop())
+                            elif isinstance(operator_stack[-1], VarargsFunction):
+                                arity = 0 if previous == '(' else arity_stack.pop()
+                                output_buffer.append(arity)
+                                output_buffer.append(operator_stack.pop())
+                    case _:
+                        output_buffer.append(resolved_value(token))
 
         while len(operator_stack) > 0:
             output_buffer.append(operator_stack.pop())

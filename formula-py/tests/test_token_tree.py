@@ -63,7 +63,7 @@ def test_any_of_chain():
 def test_repeated():
     parser = (token_tree.create()
               .ignore_whitespace()
-              .add_branch([token_tree.any_of(DIGITS).repeats(1,2)],
+              .add_branch([token_tree.any_of(DIGITS).repeats(1, 2)],
                           lambda text: resolved_value(text)))
 
     assert parser.parse('5') == [resolved_value(5)]

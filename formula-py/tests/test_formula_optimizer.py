@@ -20,5 +20,3 @@ def get_test_cases() -> None:
 def test_formula(test_case: OptimizeTestCase) -> None:
     actual = formula.optimize(test_case.formula)
     assert actual == test_case.expected_formula
-
-

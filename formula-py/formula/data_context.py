@@ -4,7 +4,6 @@ from typing import TypeAlias
 from formula.resolvable import Resolvable
 from formula.resolved_value import resolved_value
 
-
 DataContextStateValue: TypeAlias = str | int | float | bool | Resolvable | None
 DataContextState: TypeAlias = dict[str, DataContextStateValue]
 

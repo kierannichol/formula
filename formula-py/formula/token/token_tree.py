@@ -22,9 +22,11 @@ class _Node:
     def __init__(self):
         self._nodes = []
 
-    def walk(self, text: str, start_index: int, current_index: int) -> list[_TokenMatch]: pass
+    def walk(self, text: str, start_index: int, current_index: int) -> list[_TokenMatch]:
+        pass
 
-    def is_same(self, other: type[Self]) -> bool: pass
+    def is_same(self, other: type[Self]) -> bool:
+        pass
 
     def add_branch(self, nodes: list[type[Self]]) -> None:
         if len(nodes) == 0:
@@ -332,10 +334,11 @@ class TokenTree:
             branch_nodes = to_stream(branch_nodes)
         branch_nodes_len = len(branch_nodes)
         for i in range(branch_nodes_len):
-            if isinstance(branch_nodes[i], str):
-                current_node = _CharacterNodeFactory(branch_nodes[i]).create()
-            else:
-                current_node = branch_nodes[i].create()
+            current_node = branch_nodes[i]
+            if isinstance(current_node, str):
+                current_node = _CharacterNodeFactory(current_node).create()
+            elif isinstance(current_node, _NodeFactory):
+                current_node = current_node.create()
             if i == branch_nodes_len - 1:
                 current_node = _MappedNode(current_node, map_fn)
             nodes.append(current_node)
