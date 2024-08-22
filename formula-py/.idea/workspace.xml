@@ -10,7 +10,6 @@
     <list default="true" id="882a28c6-6a77-4105-a1d9-af9c74633098" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/formula/token/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/formula/token/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/formula/token/token_tree.py" beforeDir="false" afterPath="$PROJECT_DIR$/formula/token/token_tree.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -279,7 +278,7 @@
     <SUITE FILE_PATH="coverage/formula_py$pytest_for_tests_test_resolved_value_test_boolean_as_text.coverage" NAME="pytest for tests.test_resolved_value.test_boolean_as_text Coverage Results" MODIFIED="1724361899078" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/formula_py$pytest_for_tests_test_formula_test_formula.coverage" NAME="pytest for tests.test_formula.test_formula Coverage Results" MODIFIED="1724260855968" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/formula_py$pytest_for_tests_test_token_tree_test_open_close_tag.coverage" NAME="pytest for tests.test_token_tree.test_open_close_tag Coverage Results" MODIFIED="1724264653159" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/formula_py$.coverage" NAME=" Coverage Results" MODIFIED="1724368228974" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/formula_py$.coverage" NAME=" Coverage Results" MODIFIED="1724368426501" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/formula_py$pytest_for_tests_test_formula_test_formula__1_.coverage" NAME="pytest for tests.test_formula.test_formula (1) Coverage Results" MODIFIED="1724261516083" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
   </component>
 </project>
