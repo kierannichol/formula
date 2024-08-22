@@ -5,22 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="882a28c6-6a77-4105-a1d9-af9c74633098" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/formula/resolvable.pyi" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/formula/resolve_error.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/formula/formula_optimizer.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/optimize_test_case.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/test_formula_optimizer.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/formula/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/formula/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/formula/data_context.py" beforeDir="false" afterPath="$PROJECT_DIR$/formula/data_context.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/formula/formula.py" beforeDir="false" afterPath="$PROJECT_DIR$/formula/formula.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/formula/resolvable.py" beforeDir="false" afterPath="$PROJECT_DIR$/formula/resolvable.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/formula/resolved_value.py" beforeDir="false" afterPath="$PROJECT_DIR$/formula/resolved_value.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/formula/shunting_yard.py" beforeDir="false" afterPath="$PROJECT_DIR$/formula/shunting_yard.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/formula/token/token_tree.py" beforeDir="false" afterPath="$PROJECT_DIR$/formula/token/token_tree.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/formula/token/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/formula/token/utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/formula_test_case.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/formula_test_case.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_formula.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_formula.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_resolved_value.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_resolved_value.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_token_tree.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_token_tree.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,12 +50,15 @@
     "Python tests.Python tests for test_token_tree.test_optional_leading_character.executor": "Run",
     "Python tests.Python tests for test_token_tree.test_parse_decimal.executor": "Run",
     "Python tests.Python tests for test_utils.test_to_stream.executor": "Run",
+    "Python tests.Python tests in test_formula_optimizer.py.executor": "Run",
     "Python tests.Python tests in test_token_tree.py.executor": "Run",
     "Python tests.Python tests in tests.executor": "Run",
     "Python tests.pytest for tests.test_formula.test_formula (1).executor": "Debug",
     "Python tests.pytest for tests.test_formula.test_formula (2).executor": "Debug",
     "Python tests.pytest for tests.test_formula.test_formula (3).executor": "Debug",
     "Python tests.pytest for tests.test_formula.test_formula.executor": "Debug",
+    "Python tests.pytest for tests.test_formula_optimizer.test_formula (1).executor": "Debug",
+    "Python tests.pytest for tests.test_formula_optimizer.test_formula.executor": "Debug",
     "Python tests.pytest for tests.test_token_tree.executor": "Debug",
     "Python tests.pytest for tests.test_token_tree.test_any_until.executor": "Debug",
     "Python tests.pytest for tests.test_token_tree.test_number_token.executor": "Debug",
@@ -88,6 +84,7 @@
       <recent name="$PROJECT_DIR$/formula/tree2" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/formula" />
       <recent name="$PROJECT_DIR$/formula/tree" />
     </key>
   </component>
@@ -131,6 +128,22 @@
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
+    <configuration name="Python tests in test_formula_optimizer.py" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="formula-py" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/tests/test_formula_optimizer.py&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
     <configuration name="Python tests in tests" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="formula-py" />
       <option name="ENV_FILES" value="" />
@@ -145,6 +158,42 @@
       <option name="_new_additionalArguments" value="&quot;&quot;" />
       <option name="_new_target" value="&quot;$PROJECT_DIR$/tests&quot;" />
       <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="pytest for tests.test_formula_optimizer.test_formula (1)" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
+      <module name="formula-py" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="$PROJECT_DIR$/.venv/bin/python3" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_keywords" value="&quot;&quot;" />
+      <option name="_new_parameters" value="&quot;comments&quot;" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;tests.test_formula_optimizer.test_formula&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="pytest for tests.test_formula_optimizer.test_formula" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
+      <module name="formula-py" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="$PROJECT_DIR$/.venv/bin/python3" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_keywords" value="&quot;&quot;" />
+      <option name="_new_parameters" value="&quot;keeps required brackets (logic)&quot;" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;tests.test_formula_optimizer.test_formula&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
     <configuration name="pytest for tests.test_formula.test_formula (2)" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
@@ -165,49 +214,13 @@
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
-    <configuration name="pytest for tests.test_formula.test_formula (3)" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
-      <module name="formula-py" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="$PROJECT_DIR$/.venv/bin/python3" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="_new_keywords" value="&quot;&quot;" />
-      <option name="_new_parameters" value="&quot;wildcard sum&quot;" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;tests.test_formula.test_formula&quot;" />
-      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
-      <method v="2" />
-    </configuration>
-    <configuration name="pytest for tests.test_token_tree.test_open_close_tag" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
-      <module name="formula-py" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="$PROJECT_DIR$/.venv/bin/python3" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="_new_keywords" value="&quot;&quot;" />
-      <option name="_new_parameters" value="&quot;&quot;" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;tests.test_token_tree.test_open_close_tag&quot;" />
-      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
-      <method v="2" />
-    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="Python tests.Python tests in tests" />
+        <item itemvalue="Python tests.pytest for tests.test_formula_optimizer.test_formula (1)" />
+        <item itemvalue="Python tests.pytest for tests.test_formula_optimizer.test_formula" />
+        <item itemvalue="Python tests.Python tests in test_formula_optimizer.py" />
         <item itemvalue="Python tests.Python tests for test_token_tree.test_optional_leading_character" />
-        <item itemvalue="Python tests.pytest for tests.test_formula.test_formula (3)" />
-        <item itemvalue="Python tests.pytest for tests.test_formula.test_formula (2)" />
-        <item itemvalue="Python tests.pytest for tests.test_token_tree.test_open_close_tag" />
       </list>
     </recent_temporary>
   </component>
@@ -244,10 +257,17 @@
           <line>167</line>
           <option name="timeStamp" value="22" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <condition expression="self.value is None" language="Python" />
+          <url>file://$PROJECT_DIR$/formula/resolved_value.py</url>
+          <line>78</line>
+          <option name="timeStamp" value="38" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/formula_py$pytest_for_tests_test_formula_optimizer_test_formula__1_.coverage" NAME="pytest for tests.test_formula_optimizer.test_formula (1) Coverage Results" MODIFIED="1724305803204" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/formula_py$pytest_for_tests_test_token_tree.coverage" NAME="pytest for tests.test_token_tree Coverage Results" MODIFIED="1723861757484" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/formula_py$pytest_for_tests_test_token_tree_test_number_token.coverage" NAME="pytest for tests.test_token_tree.test_number_token Coverage Results" MODIFIED="1724256571160" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/formula_py$pytest_for_tests_test_formula_test_formula__3_.coverage" NAME="pytest for tests.test_formula.test_formula (3) Coverage Results" MODIFIED="1724268809399" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
@@ -256,9 +276,10 @@
     <SUITE FILE_PATH="coverage/formula_py$test_resolved_value.coverage" NAME="test_resolved_value Coverage Results" MODIFIED="1723590960339" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/formula_py$pytest_for_tests_test_token_tree_test_parse_decimal.coverage" NAME="pytest for tests.test_token_tree.test_parse_decimal Coverage Results" MODIFIED="1724259142033" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/formula_py$pytest_for_tests_test_token_tree_test_optional_trailing_character.coverage" NAME="pytest for tests.test_token_tree.test_optional_trailing_character Coverage Results" MODIFIED="1723853933037" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/formula_py$pytest_for_tests_test_formula_optimizer_test_formula.coverage" NAME="pytest for tests.test_formula_optimizer.test_formula Coverage Results" MODIFIED="1724305677077" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/formula_py$pytest_for_tests_test_formula_test_formula.coverage" NAME="pytest for tests.test_formula.test_formula Coverage Results" MODIFIED="1724260855968" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/formula_py$pytest_for_tests_test_token_tree_test_open_close_tag.coverage" NAME="pytest for tests.test_token_tree.test_open_close_tag Coverage Results" MODIFIED="1724264653159" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/formula_py$.coverage" NAME=" Coverage Results" MODIFIED="1724281068474" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/formula_py$.coverage" NAME=" Coverage Results" MODIFIED="1724305744764" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/formula_py$pytest_for_tests_test_formula_test_formula__1_.coverage" NAME="pytest for tests.test_formula.test_formula (1) Coverage Results" MODIFIED="1724261516083" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
   </component>
 </project>

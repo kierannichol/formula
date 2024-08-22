@@ -112,7 +112,7 @@ class ShuntingYard:
         self._stack = stack
         self.original_formula = original_formula
 
-    def resolve(self, context: DataContext | None):
+    def resolve(self, context: DataContext | None = None):
         local_stack = list[any]()
         stack = list[any]()
         stack += self._stack
@@ -207,6 +207,12 @@ class ShuntingYardParser:
 
     def term(self, text: str, extractor: Callable[[], ResolvedValue]) -> Self:
         self._parser.add_branch(token_tree.term(text), lambda _: Term(extractor))
+        return self
+
+    def function(self, name: str,
+                 operands: int,
+                 fn: _TokenMapper) -> Self:
+        self._parser.add_branch(token_tree.term(name), lambda _: Function(name, operands, fn))
         return self
 
     def function_1(self, name, func: Callable[[ResolvedValue], ResolvedValue]) -> Self:

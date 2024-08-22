@@ -95,8 +95,35 @@ class QuotedTextResolvedValue(ResolvedValue):
 
 class NamedResolvedValue(ResolvedValue):
     def __init__(self, value: ResolvedValue, name: str):
-        super().__init__(value.value)
+        super().__init__(None)
         self._name = name
+        self._value = value
 
     def as_name(self) -> str:
         return self._name
+
+    def as_text(self) -> str:
+        return self._value.as_text()
+
+    def as_number(self) -> int:
+        return self._value.as_number()
+
+    def as_decimal(self) -> float:
+        return self._value.as_decimal()
+
+    def as_boolean(self) -> bool:
+        return self._value.as_boolean()
+
+    def has_value(self) -> bool:
+        return self._value.has_value()
+
+    def __eq__(self, other_value):
+        return self._value.__eq__(other_value)
+
+    def __hash__(self):
+        return self._value.__hash__()
+
+    def __repr__(self):
+        return f"{self._value.as_text()}[{self.as_name()}]"
+
+

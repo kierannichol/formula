@@ -127,27 +127,11 @@ class OptimizedMathFunction extends AbstractOptimizedFunction {
 
   private format(v: ResolvedValue): string {
     if (v instanceof OptimizedMathFunction) {
-      switch (this.operator) {
-        case "+":
-        case "-":
-          switch (v.operator) {
-            case "+":
-            case "-":
-              return v.asTextNoBrackets();
-            default:
-              return format(v);
-          }
-        case "*":
-        case "/":
-          switch (v.operator) {
-            case "*":
-            case "/":
-              return v.asTextNoBrackets();
-            default:
-              return format(v);
-          }
-        default:
-          return format(v);
+      if ((v.operator == "+" || v.operator == "-") && (this.operator == "+" || this.operator == "-")) {
+        return v.asTextNoBrackets();
+      }
+      if ((v.operator == "*" || v.operator == "/") && (this.operator == "*" || this.operator == "/")) {
+        return v.asTextNoBrackets();
       }
     }
     return format(v);

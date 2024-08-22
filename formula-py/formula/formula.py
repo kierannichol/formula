@@ -75,16 +75,22 @@ def ordinal(n: int) -> str:
 
 
 def min_fn(context: DataContext, key: str):
-    min_value = 0
+    min_value: float | None = None
     for value in context.search(key):
-        min_value = min(min_value, value.as_number())
+        if min_value is None:
+            min_value = value.as_decimal()
+        else:
+            min_value = min(min_value, value.as_number())
     return ResolvedValue(min_value)
 
 
 def max_fn(context: DataContext, key: str):
-    max_value = 0
+    max_value: float | None = None
     for value in context.search(key):
-        max_value = max(max_value, value.as_number())
+        if max_value is None:
+            max_value = value.as_decimal()
+        else:
+            max_value = max(max_value, value.as_number())
     return ResolvedValue(max_value)
 
 

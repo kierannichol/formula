@@ -75,8 +75,8 @@ class _MappedNode(_LeafNode):
         characters_matched = self._matches(text, start_index, current_index)
         if characters_matched is None:
             return []
-        matches = [_TokenMatch(text, start_index, current_index + characters_matched, self._map_fn)]
-        matches += self._walk_children(text, start_index, current_index)
+        matches = self._walk_children(text, start_index, current_index + characters_matched)
+        matches += [_TokenMatch(text, start_index, current_index + characters_matched, self._map_fn)]
         return matches
 
     def _matches(self, text: str, start_index: int, current_index: int) -> int:
@@ -315,7 +315,6 @@ class TokenTree:
         i = 0
         while i < len(text):
             matches = self._root.walk(text, i, i)
-            print(f"Matches: {matches}")
             if len(matches) > 0:
                 mapped_token = matches[0].map()
                 if mapped_token is not None:
