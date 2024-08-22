@@ -4,8 +4,7 @@ import pytest
 import yaml
 
 import formula
-from formula import DataContext
-from formula.shunting_yard import ResolveError
+from formula import DataContext, ResolveError
 from tests.formula_test_case import FormulaTestCase
 
 FORMULA_TEST_CASES_PATH = Path(__file__).parent.parent.parent / "formula-test" / "formula-test-cases.yml"

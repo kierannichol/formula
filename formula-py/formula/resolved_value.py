@@ -11,85 +11,6 @@ class ResolvedValue:
     def __hash__(self): pass
     def __repr__(self): pass
 
-# class ResolvedValue:
-#     def __init__(self, value: str | int | float | bool | None) -> None:
-#         self.value: str | int | float | bool | None = value
-#
-#     def as_text(self) -> str:
-#         if self.value is None:
-#             return ''
-#         if isinstance(self.value, bool):
-#             if self.value is True:
-#                 return 'true'
-#             else:
-#                 return 'false'
-#         if isinstance(self.value, float):
-#             if math.isnan(self.value):
-#                 return 'NaN'
-#             return f'{self.value:g}'
-#         if isinstance(self.value, int) and math.isnan(self.value):
-#             return 'NaN'
-#         return str(self.value)
-#
-#     def as_number(self) -> int:
-#         try:
-#             return int(self.value) if self.value is not None else 0
-#         except ValueError:
-#             raise ResolveError(f"Cannot convert '{self.value}' to a number")
-#
-#     def as_decimal(self) -> float:
-#         try:
-#             return float(self.value) if self.value is not None else 0.0
-#         except ValueError:
-#             raise ResolveError(f"Cannot convert '{self.value}' to a number")
-#
-#     def as_boolean(self) -> bool:
-#         if self.value is None:
-#             return False
-#         if isinstance(self.value, bool):
-#             return self.value
-#         if isinstance(self.value, str):
-#             lower_case = self.value.lower()
-#             if (lower_case == 'true'
-#                     or lower_case == 'yes'):
-#                 return True
-#             if (lower_case == 'false'
-#                     or lower_case == 'no'
-#                     or lower_case == '0'
-#                     or lower_case == ''):
-#                 return False
-#         if isinstance(self.value, int):
-#             return self.value != 0
-#         if isinstance(self.value, float):
-#             return self.value != 0.0
-#         return False
-#
-#     def has_value(self) -> bool:
-#         return self.value is not None
-#
-#     def __eq__(self, other_value):
-#         if not isinstance(other_value, ResolvedValue):
-#             return False
-#         if isinstance(self.value, str):
-#             return self.value == other_value.as_text()
-#         if isinstance(self.value, int):
-#             return self.value == other_value.as_number()
-#         if isinstance(self.value, float):
-#             return math.isclose(self.value, other_value.as_decimal())
-#         if isinstance(self.value, bool):
-#             return self.value == other_value.as_boolean()
-#         return self.value == other_value.value
-#
-#     def __hash__(self):
-#         return hash(self.value)
-#
-#     def __repr__(self):
-#         if self.value is None:
-#             return 'null'
-#         if isinstance(self.value, str):
-#             return f"'{self.value}'"
-#         return str(self.value)
-
 
 class _TextResolvedValue(ResolvedValue):
     def __init__(self, value: str):
@@ -309,13 +230,19 @@ class NamedResolvedValue(ResolvedValue):
         return f"{self._value.as_text()}[{self.as_name()}]"
 
 
+_TRUE = _BooleanResolvedValue(True)
+_FALSE = _BooleanResolvedValue(False)
+_NONE = _NullResolvedValue()
+
+
 def resolved_value(value: str | int | float | bool | None) -> ResolvedValue:
     if isinstance(value, str):
         return _TextResolvedValue(value)
     if isinstance(value, bool):
-        return _BooleanResolvedValue(value)
+        return _TRUE if value else _FALSE
     if isinstance(value, int):
         return _NumberResolvedValue(value)
     if isinstance(value, float):
         return _DecimalResolvedValue(value)
-    return _NullResolvedValue()
+    return _NONE
+
