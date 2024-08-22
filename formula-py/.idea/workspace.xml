@@ -5,15 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="882a28c6-6a77-4105-a1d9-af9c74633098" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/formula/formula_optimizer.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/optimize_test_case.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/test_formula_optimizer.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/formula/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/formula/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/formula/formula.py" beforeDir="false" afterPath="$PROJECT_DIR$/formula/formula.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/formula/resolved_value.py" beforeDir="false" afterPath="$PROJECT_DIR$/formula/resolved_value.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/formula/shunting_yard.py" beforeDir="false" afterPath="$PROJECT_DIR$/formula/shunting_yard.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/formula/token/token_tree.py" beforeDir="false" afterPath="$PROJECT_DIR$/formula/token/token_tree.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -267,7 +259,7 @@
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/formula_py$pytest_for_tests_test_formula_optimizer_test_formula__1_.coverage" NAME="pytest for tests.test_formula_optimizer.test_formula (1) Coverage Results" MODIFIED="1724305803204" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/formula_py$pytest_for_tests_test_formula_optimizer_test_formula__1_.coverage" NAME="pytest for tests.test_formula_optimizer.test_formula (1) Coverage Results" MODIFIED="1724305925845" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/formula_py$pytest_for_tests_test_token_tree.coverage" NAME="pytest for tests.test_token_tree Coverage Results" MODIFIED="1723861757484" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/formula_py$pytest_for_tests_test_token_tree_test_number_token.coverage" NAME="pytest for tests.test_token_tree.test_number_token Coverage Results" MODIFIED="1724256571160" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/formula_py$pytest_for_tests_test_formula_test_formula__3_.coverage" NAME="pytest for tests.test_formula.test_formula (3) Coverage Results" MODIFIED="1724268809399" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
@@ -279,7 +271,7 @@
     <SUITE FILE_PATH="coverage/formula_py$pytest_for_tests_test_formula_optimizer_test_formula.coverage" NAME="pytest for tests.test_formula_optimizer.test_formula Coverage Results" MODIFIED="1724305677077" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/formula_py$pytest_for_tests_test_formula_test_formula.coverage" NAME="pytest for tests.test_formula.test_formula Coverage Results" MODIFIED="1724260855968" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/formula_py$pytest_for_tests_test_token_tree_test_open_close_tag.coverage" NAME="pytest for tests.test_token_tree.test_open_close_tag Coverage Results" MODIFIED="1724264653159" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/formula_py$.coverage" NAME=" Coverage Results" MODIFIED="1724305744764" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/formula_py$.coverage" NAME=" Coverage Results" MODIFIED="1724305932134" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/formula_py$pytest_for_tests_test_formula_test_formula__1_.coverage" NAME="pytest for tests.test_formula.test_formula (1) Coverage Results" MODIFIED="1724261516083" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
   </component>
 </project>

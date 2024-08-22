@@ -13,6 +13,11 @@ public class FormulaTest
             var resolved = Formula.Parse(data.Formula);
             var value = resolved.Resolve(data.Data ?? DataContext.Empty);
 
+            if (data.ExpectedError != null)
+            {
+                throw new Exception("Expected error, but was none");
+            }
+
             if (data.ExpectedName != null)
             {
                 AssertResolvedValue(value).HasName(data.ExpectedName);

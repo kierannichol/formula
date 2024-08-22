@@ -1,4 +1,5 @@
 using System.Globalization;
+using Formula.ShuntingYard;
 
 namespace Formula;
 
@@ -8,7 +9,6 @@ public abstract class ResolvedValue
     public static ResolvedValue False { get; } = new BooleanResolvedValue(false);
     public static ResolvedValue None { get; } = new NoResolvedValue();
     public static ResolvedValue Zero { get; } = Of(0);
-    public static ResolvedValue NaN { get; } = new NanResolvedValue();
 
     public static ResolvedValue Of(string value)
     {
@@ -176,12 +176,26 @@ internal class TextResolvedValue : ResolvedValue
 
     public override int AsNumber()
     {
-        return int.Parse(_value);
+        try
+        {
+            return int.Parse(_value);
+        }
+        catch (Exception e)
+        {
+            throw new ResolveException($"Cannot convert '{AsText()}' to a number");
+        }
     }
 
     public override double AsDecimal()
     {
-        return double.Parse(_value);
+        try
+        {
+            return double.Parse(_value);
+        }
+        catch (Exception e)
+        {
+            throw new ResolveException($"Cannot convert '{AsText()}' to a number");
+        }
     }
 
     public override bool AsBoolean()
@@ -390,45 +404,5 @@ internal class NoResolvedValue : ResolvedValue
     public override string ToString()
     {
         return "null";
-    }
-}
-
-internal class NanResolvedValue : ResolvedValue
-{
-    public override bool HasValue => true;
-    
-    public override string AsText()
-    {
-        return "NaN";
-    }
-
-    public override int AsNumber()
-    {
-        throw new FormatException("NaN");
-    }
-
-    public override double AsDecimal()
-    {
-        return double.NaN;
-    }
-
-    public override bool AsBoolean()
-    {
-        return false;
-    }
-
-    public override bool Equals(object? obj)
-    {
-        return obj is NanResolvedValue;
-    }
-
-    public override int GetHashCode()
-    {
-        return double.NaN.GetHashCode();
-    }
-
-    public override string ToString()
-    {
-        return "NaN";
     }
 }
