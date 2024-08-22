@@ -63,7 +63,7 @@ class _LeafNode(_Node):
         return self._walk_children(text, start_index, current_index + characters_matched)
 
 
-class _NodeFactory:
+class NodeFactory:
     def create(self) -> _LeafNode: pass
 
 
@@ -135,8 +135,8 @@ class _RepeatingNode(_LeafNode):
         return f"{self._node}[{self._min_times},{self._max_times}]"
 
 
-class _RepeatingNodeFactory(_NodeFactory):
-    def __init__(self, node: _NodeFactory, min_times: int, max_times: int | None):
+class _RepeatingNodeFactory(NodeFactory):
+    def __init__(self, node: NodeFactory, min_times: int, max_times: int | None):
         self._node = node
         self._min_times = min_times
         self._max_times = max_times
@@ -173,8 +173,8 @@ class _OptionalNode(_LeafNode):
         return f"{self._nodes}?"
 
 
-class _OptionalNodeFactory(_NodeFactory):
-    def __init__(self, *nodes: _NodeFactory):
+class _OptionalNodeFactory(NodeFactory):
+    def __init__(self, *nodes: NodeFactory):
         super().__init__()
         self._nodes = nodes
 
@@ -183,6 +183,16 @@ class _OptionalNodeFactory(_NodeFactory):
 
     def __repr__(self):
         return f"{self._nodes}?"
+
+
+class CanBeRepeated:
+    def repeats(self, min_times: int, max_times: int | None = None) -> NodeFactory:
+        pass
+
+
+class CanBeOptional:
+    def optional(self) -> NodeFactory:
+        pass
 
 
 class _CharacterNode(_LeafNode):
@@ -205,13 +215,19 @@ class _CharacterNode(_LeafNode):
         return f"'{self._char}'"
 
 
-class _CharacterNodeFactory(_NodeFactory):
+class _CharacterNodeFactory(NodeFactory, CanBeOptional, CanBeRepeated):
     def __init__(self, char: str):
         super().__init__()
         self._char = char
 
     def create(self) -> _LeafNode:
         return _CharacterNode(self._char)
+
+    def repeats(self, min_times: int, max_times: int | None = None):
+        return _RepeatingNodeFactory(self, min_times, max_times)
+
+    def optional(self):
+        return _OptionalNodeFactory(self)
 
     def __repr__(self):
         return f"'{self._char}'"
@@ -237,7 +253,7 @@ class _AnyOfNode(_LeafNode):
         return f"*"
 
 
-class _AnyOfNodeFactory(_NodeFactory):
+class _AnyOfNodeFactory(NodeFactory, CanBeRepeated, CanBeOptional):
     def __init__(self, allowed: list[str]):
         super().__init__()
         self._allowed = allowed
@@ -291,7 +307,7 @@ class _AnyUntilNode(_LeafNode):
         return f"*{self._until}"
 
 
-class _AnyUntilNodeFactory(_NodeFactory):
+class _AnyUntilNodeFactory(NodeFactory, CanBeOptional):
     def __init__(self, until: str, escaped: str):
         super().__init__()
         self._until = until
@@ -299,6 +315,12 @@ class _AnyUntilNodeFactory(_NodeFactory):
 
     def create(self) -> _LeafNode:
         return _AnyUntilNode(self._until, self._escaped)
+
+    def repeats(self, min_times: int, max_times: int | None = None):
+        return _RepeatingNodeFactory(self, min_times, max_times)
+
+    def optional(self):
+        return _OptionalNodeFactory(self)
 
     def __repr__(self):
         return f"*{self._until}"
@@ -326,9 +348,9 @@ class TokenTree:
                 raise ValueError(self._generate_parse_error(i, text, f"did not expect character {text[i]} of '{text}'"))
         return tokens
 
-    def add_branch(self, branch_nodes: str | _NodeFactory | list[_NodeFactory], map_fn: Callable[[str], any]) -> Self:
+    def add_branch(self, branch_nodes: str | NodeFactory | list[NodeFactory], map_fn: Callable[[str], any]) -> Self:
         nodes = []
-        if isinstance(branch_nodes, _NodeFactory):
+        if isinstance(branch_nodes, NodeFactory):
             branch_nodes = [branch_nodes]
         if isinstance(branch_nodes, list):
             branch_nodes = to_stream(branch_nodes)
@@ -337,7 +359,7 @@ class TokenTree:
             current_node = branch_nodes[i]
             if isinstance(current_node, str):
                 current_node = _CharacterNodeFactory(current_node).create()
-            elif isinstance(current_node, _NodeFactory):
+            elif isinstance(current_node, NodeFactory):
                 current_node = current_node.create()
             if i == branch_nodes_len - 1:
                 current_node = _MappedNode(current_node, map_fn)
@@ -355,27 +377,27 @@ def create() -> TokenTree:
     return TokenTree()
 
 
-def just(char: str) -> _NodeFactory:
+def just(char: str) -> NodeFactory:
     return _CharacterNodeFactory(char)
 
 
-def any_of(characters: str) -> _AnyOfNodeFactory:
+def any_of(characters: str) -> NodeFactory | CanBeRepeated | CanBeOptional:
     return _AnyOfNodeFactory(list(characters))
 
 
-def any_until(characters: str, escaped: str | None = None):
+def any_until(characters: str, escaped: str | None = None) -> NodeFactory | CanBeRepeated | CanBeOptional:
     return _AnyUntilNodeFactory(characters, escaped)
 
 
-def term(text: str) -> list[_NodeFactory]:
+def term(text: str) -> list[NodeFactory]:
     return [just(x) for x in text]
 
 
-def literal(open_token: str, close_token: str, escaped_token: str | None = None) -> list[_NodeFactory]:
+def literal(open_token: str, close_token: str, escaped_token: str | None = None) -> list[NodeFactory]:
     return [*term(open_token), any_until(close_token, escaped_token), *term(close_token)]
 
 
-def optional(*nodes: _NodeFactory) -> _NodeFactory:
+def optional(*nodes: NodeFactory) -> NodeFactory:
     return _OptionalNodeFactory(*nodes)
 
 
