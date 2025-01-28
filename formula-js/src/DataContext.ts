@@ -12,7 +12,9 @@ export interface DataContext {
 }
 
 export interface ImmutableDataContext extends DataContext {
-  replace(key: string, value: string|number|boolean): ImmutableDataContext;
+  replace(key: string, value: string|number|boolean|Resolvable): ImmutableDataContext;
+  remove(key: string): ImmutableDataContext;
+  rename(key: string, to: string): ImmutableDataContext;
 }
 
 export class ImmutableDataContext {
@@ -153,11 +155,23 @@ export class StaticImmutableDataContext extends BaseDataContext implements Immut
     return ResolvedValue.of(result);
   }
 
-  replace(key: string, value: string|number): ImmutableDataContext {
+  replace(key: string, value: string|number|boolean|Resolvable): ImmutableDataContext {
     return new StaticImmutableDataContext({
       ...this.state,
       [key]: value
     });
+  }
+
+  remove(key: string): ImmutableDataContext {
+    const state = {...this.state};
+    delete state[key];
+    return new StaticImmutableDataContext(state);
+  }
+  rename(key: string, to: string): ImmutableDataContext {
+    const state = {...this.state};
+    state[to] = state[key];
+    delete state[key];
+    return new StaticImmutableDataContext(state);
   }
 
   keys(): string[] {
