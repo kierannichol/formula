@@ -77,15 +77,15 @@ public static class Formula
         return ResolvedValue.True;
     }
 
-    private static IResolvable FindVariable(IDataContext context, string key)
+    private static ResolvedValue FindVariable(IDataContext context, string key)
     {
-        return context.TryGet(key, out var found) ? found : Resolvable.Empty;
+        return context.Get(key);
     }
 
-    private static IResolvable SumFunction(IDataContext context, string key)
+    private static ResolvedValue SumFunction(IDataContext context, string key)
     {
         FindAndReduce(context, key, AddFunction, ResolvedValue.Zero, out var reduced);
-        return Resolvable.Just(reduced);
+        return reduced;
     }
 
     private static ResolvedValue AddFunction(ResolvedValue a, ResolvedValue b)
@@ -97,18 +97,18 @@ public static class Formula
         return ResolvedValue.Of(a.AsDecimal() + b.AsDecimal());
     }
     
-    private static IResolvable MaxFunction(IDataContext context, string key)
+    private static ResolvedValue MaxFunction(IDataContext context, string key)
     {
         FindAndReduce(context, key, Max, ResolvedValue.None, out var reduced);
-        return Resolvable.Just(reduced);
+        return reduced;
         ResolvedValue Max(ResolvedValue a, ResolvedValue b) => a.AsDecimal() > b.AsDecimal() ? a : b;
     }
     
-    private static IResolvable MinFunction(IDataContext context, string key)
+    private static ResolvedValue MinFunction(IDataContext context, string key)
     {
         var maxValue = ResolvedValue.Of(int.MaxValue);
         ResolvedValue Min(ResolvedValue a, ResolvedValue b) => a.AsDecimal() < b.AsDecimal() ? a : b;
-        return FindAndReduce(context, key, Min, maxValue, out var reduced) > 0 ? Resolvable.Just(reduced) : Resolvable.Empty;
+        return FindAndReduce(context, key, Min, maxValue, out var reduced) > 0 ? reduced : ResolvedValue.None;
     }
 
     private static int FindAndReduce<T>(IDataContext context, string pattern,
@@ -121,7 +121,7 @@ public static class Formula
         foreach (var key in context.Keys())
         {
             if (!Predicate(key)) continue;
-            reduced = reduceFunction(reduced, context.Resolve(key));
+            reduced = reduceFunction(reduced, context.Get(key));
             count++;
         }
 

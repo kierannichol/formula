@@ -34,11 +34,11 @@ public class FormulaOptimizer
             .Function("ordinal", OpFn1(a => $"ordinal({a})"))
             .Function("any", a => new AnyFunction(new List<ResolvedValue>(a)))
             .Function("all", a => new AllFunction(new List<ResolvedValue>(a)))
-            .Variable("@", (_, key) => Resolvable.Just(ResolvedValue.Of($"@{key}")))
-            .Variable("@{", "}", (_, key) => Resolvable.Just(ResolvedValue.Of($"@{{{key}}}")))
-            .Variable("min(@", ")", (_, key) => Resolvable.Just(ResolvedValue.Of($"min(@{key})")))
-            .Variable("max(@", ")", (_, key) => Resolvable.Just(ResolvedValue.Of($"max(@{key})")))
-            .Variable("sum(@", ")", (_, key) => Resolvable.Just(ResolvedValue.Of($"sum(@{key})")))
+            .Variable("@", (_, key) => ResolvedValue.Of($"@{key}"))
+            .Variable("@{", "}", (_, key) => ResolvedValue.Of($"@{{{key}}}"))
+            .Variable("min(@", ")", (_, key) => ResolvedValue.Of($"min(@{key})"))
+            .Variable("max(@", ")", (_, key) => ResolvedValue.Of($"max(@{key})"))
+            .Variable("sum(@", ")", (_, key) => ResolvedValue.Of($"sum(@{key})"))
             .Comment("[", "]", (value, comment) => NamedResolvedValue.Of(value, comment.Substring(1, comment.Length - 2)))
             ;
 

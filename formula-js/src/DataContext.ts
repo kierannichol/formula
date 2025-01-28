@@ -5,8 +5,7 @@ import {ResolvedValueWithId} from "./ResolvedValueWithId";
 export type DataContextState = { [key:string]:string|number|boolean|Resolvable; };
 
 export interface DataContext {
-  get(key: string): Resolvable|undefined;
-  resolve(key: string): ResolvedValue | undefined;
+  get(key: string): ResolvedValue|undefined;
   keys(): string[];
   search(pattern: string): ResolvedValueWithId[];
 }
@@ -31,11 +30,7 @@ export interface MutableDataContext extends DataContext {
 
 class EmptyDataContext implements DataContext {
 
-  get(key: string): Resolvable | undefined {
-    return undefined;
-  }
-
-  resolve(key: string): ResolvedValue | undefined {
+  get(key: string): ResolvedValue | undefined {
     return undefined;
   }
 
@@ -58,15 +53,11 @@ export class DataContext {
 
 export abstract class BaseDataContext implements DataContext {
 
-  public resolve(key: string): ResolvedValue|undefined {
-    return this.get(key)?.resolve(this);
-  }
-
   public search(pattern: string): ResolvedValueWithId[] {
     return DataContextUtils.find(this, pattern);
   }
 
-  abstract get(key: string): Resolvable | undefined;
+  abstract get(key: string): ResolvedValue | undefined;
 
   abstract keys(): string[];
 }
@@ -78,7 +69,7 @@ class DataContextUtils {
     return context.keys()
     .filter((key: string) => regex.test(key))
     .map(key => {
-      const value = context.resolve(key);
+      const value = context.get(key);
       if (value === undefined) {
         return undefined;
       }
@@ -98,15 +89,7 @@ class StaticDataContext extends BaseDataContext implements MutableDataContext {
     super();
   }
 
-  get(key: string): Resolvable | undefined {
-    const result: string|number|boolean|Resolvable|undefined = this.state[key];
-    if (result instanceof Resolvable) {
-      return result;
-    }
-    return Resolvable.just(result);
-  }
-
-  resolve(key: string): ResolvedValue|undefined {
+  get(key: string): ResolvedValue|undefined {
     const result: string|number|boolean|Resolvable|undefined = this.state[key];
     if (result instanceof Resolvable) {
       return result.resolve(this);
@@ -139,15 +122,7 @@ export class StaticImmutableDataContext extends BaseDataContext implements Immut
     super();
   }
 
-  get(key: string): Resolvable | undefined {
-    const result: string|number|boolean|Resolvable|undefined = this.state[key];
-    if (result instanceof Resolvable) {
-      return result;
-    }
-    return Resolvable.just(result);
-  }
-
-  resolve(key: string): ResolvedValue|undefined {
+  get(key: string): ResolvedValue|undefined {
     const result: string|number|boolean|Resolvable|undefined = this.state[key];
     if (result instanceof Resolvable) {
       return result.resolve(this);

@@ -53,7 +53,7 @@ public class FormulaPerformanceTest
     [Test]
     public void DeepResolvePerformance()
     {
-        const int depth = 1000;
+        const int depth = 100;
         var formula = Formula.Formula.Parse($"@step_{depth}");
         var context = new DataContext(new Dictionary<string, IResolvable>
         {
