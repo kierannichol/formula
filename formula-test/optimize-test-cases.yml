@@ -52,3 +52,6 @@
 - name: "comments"
   formula: "(@a+@b)[testing]"
   expected_formula: "(@a+@b)[testing]"
+- name: "dice roll"
+  formula: "2d8+6"
+  expected_formula: "2d8+6"

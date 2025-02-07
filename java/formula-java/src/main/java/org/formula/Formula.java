@@ -8,6 +8,7 @@ import org.formula.parse.shuntingyard.Operator1;
 import org.formula.parse.shuntingyard.Operator2;
 import org.formula.parse.shuntingyard.ShuntingYardParser;
 import org.formula.util.Ordinal;
+import org.formula.util.RollUtils;
 
 public class Formula {
 
@@ -28,6 +29,7 @@ public class Formula {
             .operator("!=", 3, Associativity.LEFT, (ResolvedValue a, ResolvedValue b) -> ResolvedValue.of(!a.equals(b)))
             .operator("AND", 1, Associativity.LEFT, (ResolvedValue a, ResolvedValue b) -> ResolvedValue.of(a.asBoolean() && b.asBoolean()))
             .operator("OR", 1, Associativity.LEFT, (ResolvedValue a, ResolvedValue b) -> ResolvedValue.of(a.asBoolean() || b.asBoolean()))
+            .operator("d", 4, Associativity.LEFT, (ResolvedValue a, ResolvedValue b) -> ResolvedRollValue.of(a.asNumber(), b.asNumber()))
             .term("true", () -> ResolvedValue.TRUE)
             .term("false", () -> ResolvedValue.FALSE)
             .term("null", ResolvedValue::none)

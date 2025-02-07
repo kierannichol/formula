@@ -4,6 +4,7 @@ import {Resolvable} from "./Resolvable";
 import {ResolvedValue} from "./ResolvedValue";
 import {Associativity, ShuntingYard} from "./ShuntingYard";
 import {NamedResolvedValue} from "./NamedResolvedValue";
+import {ResolvedRollValue} from "./ResolvedRollValue";
 
 export class Formula {
 
@@ -24,6 +25,7 @@ export class Formula {
     .operator('!=', 3, Associativity.Left, 2, (a:ResolvedValue, b:ResolvedValue) => ResolvedValue.of(!a.equals(b)))
     .operator('AND', 1, Associativity.Left, 2, (a:ResolvedValue, b:ResolvedValue) => ResolvedValue.of(a.asBoolean() && b.asBoolean()))
     .operator('OR', 1, Associativity.Left, 2, (a:ResolvedValue, b:ResolvedValue) => ResolvedValue.of(a.asBoolean() || b.asBoolean()))
+    .operator('d', 4, Associativity.Left, 2, (a:ResolvedValue, b:ResolvedValue) => new ResolvedRollValue(a.asNumber(), b.asNumber()))
     .term('true', () => ResolvedValue.of(true))
     .term('false', () => ResolvedValue.of(false))
     .term('null', () => ResolvedValue.None)

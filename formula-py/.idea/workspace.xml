@@ -8,8 +8,39 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="882a28c6-6a77-4105-a1d9-af9c74633098" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/../formula-cs/Formula/ResolvedRollValue.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../formula-js/src/ResolvedRollValue.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/formula/resolved_roll_value.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../java/formula-java/src/main/java/org/formula/ResolvedRollValue.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../java/formula-java/src/main/java/org/formula/util/RollUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../formula-cs/Formula/Formula.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../formula-cs/Formula/Formula.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../formula-cs/Formula/Optimize/FormulaOptimizer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../formula-cs/Formula/Optimize/FormulaOptimizer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../formula-cs/FormulaTest/FormulaTestCaseSource.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../formula-cs/FormulaTest/FormulaTestCaseSource.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../formula-js/src/Formula.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../formula-js/src/Formula.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../formula-js/src/FormulaOptimizer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../formula-js/src/FormulaOptimizer.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/formula/token/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/formula/token/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/formula/formula.py" beforeDir="false" afterPath="$PROJECT_DIR$/formula/formula.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/formula/formula_optimizer.py" beforeDir="false" afterPath="$PROJECT_DIR$/formula/formula_optimizer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_formula.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_formula.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../formula-test/formula-test-cases.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../formula-test/formula-test-cases.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../formula-test/optimize-test-cases.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../formula-test/optimize-test-cases.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../java/.gradle/8.8/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/../java/.gradle/8.8/executionHistory/executionHistory.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../java/.gradle/8.8/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/../java/.gradle/8.8/executionHistory/executionHistory.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../java/.gradle/8.8/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/../java/.gradle/8.8/fileHashes/fileHashes.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../java/.gradle/8.8/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/../java/.gradle/8.8/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../java/.gradle/8.8/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/../java/.gradle/8.8/fileHashes/resourceHashesCache.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../java/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/../java/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../java/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/../java/.gradle/file-system.probe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../java/buildSrc/.gradle/8.8/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/../java/buildSrc/.gradle/8.8/executionHistory/executionHistory.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../java/buildSrc/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/../java/buildSrc/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../java/buildSrc/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/../java/buildSrc/.gradle/file-system.probe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../java/formula-java/src/main/java/org/formula/Formula.java" beforeDir="false" afterPath="$PROJECT_DIR$/../java/formula-java/src/main/java/org/formula/Formula.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../java/formula-java/src/main/java/org/formula/ResolvedValue.java" beforeDir="false" afterPath="$PROJECT_DIR$/../java/formula-java/src/main/java/org/formula/ResolvedValue.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../java/formula-java/src/main/java/org/formula/optimize/FormulaOptimizer.java" beforeDir="false" afterPath="$PROJECT_DIR$/../java/formula-java/src/main/java/org/formula/optimize/FormulaOptimizer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../java/jackson-dataformat-formula/build/tmp/compileJava/compileTransaction/stash-dir/DataContextDeserializer.class.uniqueId0" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../java/jackson-dataformat-formula/build/tmp/compileJava/compileTransaction/stash-dir/FormulaModule.class.uniqueId2" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../java/jackson-dataformat-formula/build/tmp/compileJava/compileTransaction/stash-dir/ResolvableDeserializer.class.uniqueId1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../java/jackson-dataformat-formula/build/tmp/compileJava/previous-compilation-data.bin" beforeDir="false" afterPath="$PROJECT_DIR$/../java/jackson-dataformat-formula/build/tmp/compileJava/previous-compilation-data.bin" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -66,7 +97,7 @@
     "Python.test_resolved_value.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "python",
+    "git-widget-placeholder": "main",
     "last_opened_file_path": "/Users/knichol/dev/personal/formula/formula-py/formula/tree2",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -222,7 +253,6 @@
         <item itemvalue="Python tests.Python tests in tests" />
         <item itemvalue="Python tests.pytest for tests.test_resolved_value" />
         <item itemvalue="Python tests.pytest for tests.test_resolved_value.test_boolean_as_text" />
-        <item itemvalue="Python tests.pytest for tests.test_formula_optimizer.test_formula (1)" />
         <item itemvalue="Python tests.pytest for tests.test_formula_optimizer.test_formula" />
       </list>
     </recent_temporary>
@@ -246,6 +276,7 @@
       <workItem from="1723589289792" duration="54198000" />
       <workItem from="1724216777059" duration="2109000" />
       <workItem from="1724254186743" duration="19701000" />
+      <workItem from="1738954116593" duration="728000" />
     </task>
     <servers />
   </component>
@@ -265,8 +296,8 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/formula_py$pytest_for_tests_test_formula_optimizer_test_formula__1_.coverage" NAME="pytest for tests.test_formula_optimizer.test_formula (1) Coverage Results" MODIFIED="1724305925845" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/formula_py$pytest_for_tests_test_token_tree.coverage" NAME="pytest for tests.test_token_tree Coverage Results" MODIFIED="1723861757484" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/formula_py$pytest_for_tests_test_token_tree_test_number_token.coverage" NAME="pytest for tests.test_token_tree.test_number_token Coverage Results" MODIFIED="1724256571160" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/formula_py$pytest_for_tests_test_token_tree.coverage" NAME="pytest for tests.test_token_tree Coverage Results" MODIFIED="1723861757484" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/formula_py$pytest_for_tests_test_formula_test_formula__3_.coverage" NAME="pytest for tests.test_formula.test_formula (3) Coverage Results" MODIFIED="1724268809399" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/formula_py$pytest_for_tests_test_formula_test_formula__2_.coverage" NAME="pytest for tests.test_formula.test_formula (2) Coverage Results" MODIFIED="1724265079837" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/formula_py$pytest_for_tests_test_token_tree_test_any_until.coverage" NAME="pytest for tests.test_token_tree.test_any_until Coverage Results" MODIFIED="1723924312939" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
@@ -278,7 +309,7 @@
     <SUITE FILE_PATH="coverage/formula_py$pytest_for_tests_test_resolved_value_test_boolean_as_text.coverage" NAME="pytest for tests.test_resolved_value.test_boolean_as_text Coverage Results" MODIFIED="1724361899078" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/formula_py$pytest_for_tests_test_formula_test_formula.coverage" NAME="pytest for tests.test_formula.test_formula Coverage Results" MODIFIED="1724260855968" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/formula_py$pytest_for_tests_test_token_tree_test_open_close_tag.coverage" NAME="pytest for tests.test_token_tree.test_open_close_tag Coverage Results" MODIFIED="1724264653159" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/formula_py$.coverage" NAME=" Coverage Results" MODIFIED="1724368426501" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/formula_py$.coverage" NAME=" Coverage Results" MODIFIED="1738954767788" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/formula_py$pytest_for_tests_test_formula_test_formula__1_.coverage" NAME="pytest for tests.test_formula.test_formula (1) Coverage Results" MODIFIED="1724261516083" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
   </component>
 </project>

@@ -26,7 +26,7 @@ def test_formula(test_case: FormulaTestCase) -> None:
         if test_case.expected_text is not None:
             assert resolved.as_text() == test_case.expected_text
         if test_case.expected_number is not None:
-            assert resolved.as_number() == test_case.expected_number
+            assert resolved.as_decimal() == test_case.expected_number
         if test_case.expected_boolean is not None:
             assert resolved.as_boolean() == test_case.expected_boolean
     except ResolveError as e:

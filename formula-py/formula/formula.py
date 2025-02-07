@@ -4,6 +4,7 @@ from formula.data_context import DataContext
 from formula.resolvable import Resolvable
 from formula.resolved_value import resolved_value, NamedResolvedValue, ResolvedValue
 from formula.shunting_yard import ShuntingYard, ShuntingYardParser, Associativity
+from formula.resolved_roll_value import ResolvedRollValue
 
 
 class Formula(Resolvable):
@@ -44,6 +45,7 @@ _parser = (ShuntingYardParser()
            .decimal_operator_2('!=', 3, Associativity.LEFT, lambda x, y: x != y)
            .decimal_operator_2('AND', 1, Associativity.LEFT, lambda x, y: x and y)
            .decimal_operator_2('OR', 1, Associativity.LEFT, lambda x, y: x or y)
+           .operator('d', 4, Associativity.LEFT, 2, lambda p: ResolvedRollValue(p[0].as_number(), p[1].as_number()))
            .term('true', lambda: resolved_value(True))
            .term('false', lambda: resolved_value(False))
            .term('null', lambda: resolved_value(None))

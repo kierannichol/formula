@@ -32,6 +32,7 @@ public class FormulaOptimizer {
             .operator("!=", 3, Associativity.LEFT, opFn2((a, b) -> a + "!=" + b))
             .operator("AND", 1, Associativity.LEFT, (a, b) -> new AllFunction(List.of(b, a)))
             .operator("OR", 1, Associativity.LEFT, (a, b) -> new AnyFunction(List.of(b, a)))
+            .operator("d", 4, Associativity.LEFT, opFn2((a, b) -> a + "d" + b))
             .term("true", () -> ResolvedValue.of("true"))
             .term("false", () -> ResolvedValue.of("false"))
             .term("null", () -> ResolvedValue.of("null"))

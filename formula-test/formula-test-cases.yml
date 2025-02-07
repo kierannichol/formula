@@ -92,6 +92,14 @@
   formula: "signed(-3)"
   expected_number: -3
 
+# Decimals
+- name: add decimals
+  formula: "2.3 + 3.2"
+  expected_number: 5.5
+- name: multiply decimals
+  formula: "1.2 * 2"
+  expected_number: 2.4
+
 # Error Handling
 - name: string + number
   formula: "\"Text\" + 5"
@@ -239,3 +247,19 @@
 - name: "if: when false"
   formula: "if(-2 > 0, 'A', 'B')"
   expected_text: "B"
+
+# Dice Rolls
+- name: "roll 1d20"
+  formula: "1d20"
+  expected_number: 10.5
+  expected_text: "1d20"
+- name: "roll 2d6"
+  formula: "2d6"
+  expected_number: 7
+  expected_text: "2d6"
+- name: "roll 1d8+2"
+  formula: "1d8+2"
+  expected_number: 6.5
+- name: "roll 2+1d8"
+  formula: "2+1d8"
+  expected_number: 6.5

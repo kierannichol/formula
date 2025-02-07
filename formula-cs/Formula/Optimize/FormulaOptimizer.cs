@@ -20,6 +20,7 @@ public class FormulaOptimizer
             .Operator("!=", 3, Associativity.Left, OpFn2((a, b) => a + "!=" + b))
             .Operator("AND", 1, Associativity.Left, (a, b) => new AllFunction(new List<ResolvedValue>(new[] {b, a})))
             .Operator("OR", 1, Associativity.Left, (a, b) => new AnyFunction(new List<ResolvedValue>(new[] {b, a})))
+            .Operator("d", 4, Associativity.Left, OpFn2((a, b) => a + "d" + b))
             .Term("true", () => ResolvedValue.Of("true"))
             .Term("false", () => ResolvedValue.Of("false"))
             .Term("null", () => ResolvedValue.Of("null"))

@@ -22,6 +22,7 @@ public static class Formula
             .Operator("!=", 3, Associativity.Left, (a, b) => ResolvedValue.Of(!a.Equals(b)))
             .Operator("AND", 1, Associativity.Left, (a, b) => ResolvedValue.Of(a.AsBoolean() && b.AsBoolean()))
             .Operator("OR", 1, Associativity.Left, (a, b) => ResolvedValue.Of(a.AsBoolean() || b.AsBoolean()))
+            .Operator("d", 4, Associativity.Left, (a, b) => new ResolvedRollValue(a.AsNumber(), b.AsNumber()))
             .Term("true", () => ResolvedValue.Of(true))
             .Term("false", () => ResolvedValue.Of(false))
             .Term("null", () => ResolvedValue.None)

@@ -155,6 +155,7 @@ export class FormulaOptimizer {
   .operator('!=', 3, Associativity.Left, 2, opFn((a, b) => `${a}!=${b}`))
   .operator('AND', 1, Associativity.Left, 2, (a, b) => new OptimizedAllFunction([b, a]))
   .operator('OR', 1, Associativity.Left, 2, (a, b) => new OptimizedAnyFunction([b, a]))
+  .operator('d', 4, Associativity.Left, 2, opFn((a, b) => `${a}d${b}`))
   .term('true', () => ResolvedValue.of(true))
   .term('false', () => ResolvedValue.of(false))
   .term('null', () => ResolvedValue.of('null'))

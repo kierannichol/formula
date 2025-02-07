@@ -1,4 +1,3 @@
-using System.Data;
 using Formula;
 using FormulaTest.Yaml;
 using YamlDotNet.Serialization;
@@ -31,7 +30,7 @@ public class FormulaTestCaseSource
         public string Name;
         public string Formula;
         public string? ExpectedText;
-        public int? ExpectedNumber;
+        public double? ExpectedNumber;
         public bool? ExpectedBoolean;
         public string? ExpectedError;
         public string? ExpectedName;

@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-public abstract class ResolvedValue {
+public abstract class ResolvedValue implements Comparable<ResolvedValue> {
     public static final ResolvedValue TRUE = of(true);
     public static final ResolvedValue FALSE = of(false);
     public static final ResolvedValue ZERO = of(0);
@@ -43,6 +43,13 @@ public abstract class ResolvedValue {
     public boolean hasValue() {
         return true;
     }
+
+    @Override
+    public int compareTo(ResolvedValue o) {
+        return Double.compare(asDecimal(), o.asDecimal());
+    }
+
+    
 
     private static class TextResolvedValue extends ResolvedValue {
         private static final List<String> FALSE_STRING_VALUES = List.of("false", "no", "0", "");
