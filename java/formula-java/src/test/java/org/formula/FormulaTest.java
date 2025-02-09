@@ -36,7 +36,13 @@ class FormulaTest {
     private void validateTestCase(FormulaTestCase testCase) {
         try {
             var formula = parse(testCase.formula());
-            ResolvedValue resolved = formula.resolve(testCase.data());
+
+            var data = testCase.data();
+            if (data == null) {
+                data = DataContext.EMPTY;
+            }
+
+            ResolvedValue resolved = formula.resolve(data);
             testCase.assertResult(resolved);
 
             if (testCase.expectedName() != null) {

@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Globalization;
 using Formula.ShuntingYard;
 
@@ -30,12 +31,57 @@ public abstract class ResolvedValue
         return value ? True : False;
     }
 
+    public static ResolvedValue Of(IReadOnlyList<ResolvedValue> values)
+    {
+        return new ResolvedListValue(values);
+    }
+
     public abstract string AsText();
     public abstract int AsNumber();
     public abstract double AsDecimal();
     public abstract bool AsBoolean();
 
+    public virtual IReadOnlyList<ResolvedValue> AsList()
+    {
+        return new SingleElementList(this);
+    }
+
     public virtual bool HasValue => true;
+}
+
+internal readonly struct SingleElementList : IReadOnlyList<ResolvedValue>
+{
+    private readonly ResolvedValue _value;
+    
+    internal SingleElementList(ResolvedValue value)
+    {
+        _value = value;
+    }
+    
+    public IEnumerator<ResolvedValue> GetEnumerator()
+    {
+        yield return _value;
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
+
+    public int Count => 1;
+
+    public ResolvedValue this[int index]
+    {
+        get
+        {
+            if (index != 0)
+            {
+                throw new IndexOutOfRangeException("This list only has a single element");
+            }
+
+            return _value;
+        }
+    }
 }
 
 public class QuotedTextResolvedValue : ResolvedValue
@@ -182,7 +228,7 @@ internal class TextResolvedValue : ResolvedValue
         }
         catch (Exception e)
         {
-            throw new ResolveException($"Cannot convert '{AsText()}' to a number");
+            throw new ResolveException($"Cannot convert '{AsText()}' to a number", e);
         }
     }
 
@@ -194,7 +240,7 @@ internal class TextResolvedValue : ResolvedValue
         }
         catch (Exception e)
         {
-            throw new ResolveException($"Cannot convert '{AsText()}' to a number");
+            throw new ResolveException($"Cannot convert '{AsText()}' to a number", e);
         }
     }
 
@@ -364,6 +410,61 @@ internal class BooleanResolvedValue : ResolvedValue
     public override string ToString()
     {
         return _value.ToString();
+    }
+}
+
+internal class ResolvedListValue : ResolvedValue
+{
+    private readonly IReadOnlyList<ResolvedValue> _values;
+
+    public ResolvedListValue(IReadOnlyList<ResolvedValue> values)
+    {
+        _values = values;
+    }
+
+    public override string AsText()
+    {
+        return Latest().AsText();
+    }
+
+    public override int AsNumber()
+    {
+        return Latest().AsNumber();
+    }
+
+    public override double AsDecimal()
+    {
+        return Latest().AsDecimal();
+    }
+
+    public override bool AsBoolean()
+    {
+        return Latest().AsBoolean();
+    }
+
+    public override IReadOnlyList<ResolvedValue> AsList()
+    {
+        return _values;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is ResolvedListValue other && _values.Equals(other._values);
+    }
+
+    public override int GetHashCode()
+    {
+        return _values.GetHashCode();
+    }
+
+    public override string? ToString()
+    {
+        return _values.ToString();
+    }
+
+    private ResolvedValue Latest()
+    {
+        return _values.Count == 0 ? None : _values[^1];
     }
 }
 

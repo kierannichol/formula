@@ -30,8 +30,8 @@ public class FormulaOptimizer {
             .operator(">=", 3, Associativity.LEFT, opFn2((a, b) -> a + ">=" + b))
             .operator("==", 3, Associativity.LEFT, opFn2((a, b) -> a + "==" + b))
             .operator("!=", 3, Associativity.LEFT, opFn2((a, b) -> a + "!=" + b))
-            .operator("AND", 1, Associativity.LEFT, (a, b) -> new AllFunction(List.of(b, a)))
-            .operator("OR", 1, Associativity.LEFT, (a, b) -> new AnyFunction(List.of(b, a)))
+            .operator("AND", 1, Associativity.LEFT, (a, b) -> new AllFunction(List.of(a, b)))
+            .operator("OR", 1, Associativity.LEFT, (a, b) -> new AnyFunction(List.of(a, b)))
             .operator("d", 4, Associativity.LEFT, opFn2((a, b) -> a + "d" + b))
             .term("true", () -> ResolvedValue.of("true"))
             .term("false", () -> ResolvedValue.of("false"))
@@ -133,7 +133,7 @@ public class FormulaOptimizer {
             boolean hasFalse = false;
             for (ResolvedValue next : values) {
                 if (next instanceof AnyFunction anyFn) {
-                    this.values.addAll(0, anyFn.values);
+                    this.values.addAll(anyFn.values);
                     continue;
                 }
                 if (next.equals(ResolvedValue.FALSE)) {
@@ -145,7 +145,7 @@ public class FormulaOptimizer {
                     this.values.add(ResolvedValue.TRUE);
                     return;
                 }
-                this.values.add(0, next);
+                this.values.add(next);
             }
 
             if (this.values.isEmpty()) {
@@ -171,7 +171,7 @@ public class FormulaOptimizer {
             this.values = new ArrayList<>();
             for (ResolvedValue next : values) {
                 if (next instanceof AllFunction allFn) {
-                    this.values.addAll(0, allFn.values);
+                    this.values.addAll(allFn.values);
                     continue;
                 }
                 if (next.equals(ResolvedValue.TRUE)) {
@@ -182,7 +182,7 @@ public class FormulaOptimizer {
                     this.values.add(ResolvedValue.FALSE);
                     return;
                 }
-                this.values.add(0, next);
+                this.values.add(next);
             }
 
             if (this.values.isEmpty()) {

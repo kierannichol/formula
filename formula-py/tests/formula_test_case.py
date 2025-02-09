@@ -1,15 +1,18 @@
 import math
 
 import formula
+from formula import resolved_value, DataContext
 
 
 def _parse_data(data: dict):
     if data is None:
-        return None
+        return {}
     for key in data.keys():
         value = data.get(key)
         if isinstance(value, str) and value.startswith('{') and value.endswith('}'):
             data[key] = formula.parse(value[1:-1])
+        if isinstance(value, list):
+            data[key] = list(map(resolved_value, value))
     return data
 
 
@@ -24,6 +27,7 @@ class FormulaTestCase:
             self.expected_number = math.nan
         self.expected_boolean = yaml.get('expected_boolean')
         self.expected_error = yaml.get('expected_error')
+        self.expected_list = yaml.get('expected_list')
 
     def __repr__(self):
         return self.name

@@ -17,6 +17,10 @@ export class ResolvedRollValue implements ResolvedValue {
     return this.count > 0 && this.sides > 0;
   }
 
+  asList(): ResolvedValue[] {
+    return [this];
+  }
+
   equals(other: ResolvedValue): boolean {
     return other.hasValue() && this.asText() === other.asText();
   }

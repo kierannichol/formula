@@ -2,9 +2,9 @@ import re
 from typing import TypeAlias
 
 from formula.resolvable import Resolvable
-from formula.resolved_value import resolved_value
+from formula.resolved_value import resolved_value, ResolvedValue
 
-DataContextStateValue: TypeAlias = str | int | float | bool | Resolvable | None
+DataContextStateValue: TypeAlias = str | int | float | bool | ResolvedValue | Resolvable | list[str | int | float | bool | ResolvedValue | Resolvable] | None
 DataContextState: TypeAlias = dict[str, DataContextStateValue]
 
 
@@ -25,6 +25,9 @@ class DataContext:
 
     def set(self, key: str, value: DataContextStateValue):
         self._data[key] = value
+
+    def push(self, key: str, value: DataContextStateValue):
+        self._data[key] = self.get(key).as_list() + resolved_value(value).as_list()
 
     def search(self, pattern: str) -> list[resolved_value]:
         regex_pattern = pattern.replace('*', '.*?')

@@ -9,46 +9,46 @@ import {ResolvedRollValue} from "./ResolvedRollValue";
 export class Formula {
 
   private static Parser = ShuntingYard.parser()
-    .biOperator('-',
-      4, Associativity.Left,(a: ResolvedValue) => ResolvedValue.of(-a.asNumber()),
-      2, Associativity.Left,(a: ResolvedValue, b: ResolvedValue) => ResolvedValue.of(a.asNumber() - b.asNumber()))
-    .operator('^', 4, Associativity.Right, 2, (a: ResolvedValue, b: ResolvedValue) => ResolvedValue.of(Math.pow(a.asNumber(), b.asNumber())))
-    .operator('*', 3, Associativity.Left, 2, (a: ResolvedValue, b: ResolvedValue) => ResolvedValue.of(a.asNumber() * b.asNumber()))
-    .operator('/', 3, Associativity.Left, 2, (a: ResolvedValue, b: ResolvedValue) => ResolvedValue.of(a.asNumber() / b.asNumber()))
-    .operator('+', 2, Associativity.Left, 2, Formula.addFn)
-    .operator('!', 2, Associativity.Left, 1, (a:ResolvedValue) => ResolvedValue.of(!a.asBoolean()))
-    .operator('<', 3, Associativity.Left, 2, (a:ResolvedValue, b:ResolvedValue) => ResolvedValue.of(a.asNumber() < b.asNumber()))
-    .operator('<=', 3, Associativity.Left, 2, (a:ResolvedValue, b:ResolvedValue) => ResolvedValue.of(a.asNumber() <= b.asNumber()))
-    .operator('>', 3, Associativity.Left, 2, (a:ResolvedValue, b:ResolvedValue) => ResolvedValue.of(a.asNumber() > b.asNumber()))
-    .operator('>=', 3, Associativity.Left, 2, (a:ResolvedValue, b:ResolvedValue) => ResolvedValue.of(a.asNumber() >= b.asNumber()))
-    .operator('==', 3, Associativity.Left, 2, (a:ResolvedValue, b:ResolvedValue) => ResolvedValue.of(a.equals(b)))
-    .operator('!=', 3, Associativity.Left, 2, (a:ResolvedValue, b:ResolvedValue) => ResolvedValue.of(!a.equals(b)))
-    .operator('AND', 1, Associativity.Left, 2, (a:ResolvedValue, b:ResolvedValue) => ResolvedValue.of(a.asBoolean() && b.asBoolean()))
-    .operator('OR', 1, Associativity.Left, 2, (a:ResolvedValue, b:ResolvedValue) => ResolvedValue.of(a.asBoolean() || b.asBoolean()))
-    .operator('d', 4, Associativity.Left, 2, (a:ResolvedValue, b:ResolvedValue) => new ResolvedRollValue(a.asNumber(), b.asNumber()))
-    .term('true', () => ResolvedValue.of(true))
-    .term('false', () => ResolvedValue.of(false))
-    .term('null', () => ResolvedValue.None)
-    .function('abs', 1, (a: ResolvedValue) => ResolvedValue.of(Math.abs(a.asNumber())))
-    .function('min', 2, (a: ResolvedValue, b: ResolvedValue) => ResolvedValue.of(Math.min(a.asNumber(), b.asNumber())))
-    .function('max', 2, (a: ResolvedValue, b: ResolvedValue) => ResolvedValue.of(Math.max(a.asNumber(), b.asNumber())))
-    .function('floor', 1, (a: ResolvedValue) => ResolvedValue.of(Math.floor(a.asNumber())))
-    .function('ceil', 1, (a: ResolvedValue) => ResolvedValue.of(Math.ceil(a.asNumber())))
-    .function('signed', 1, (a: ResolvedValue) => ResolvedValue.of((a.asNumber() < 0 ? '' : '+') + a.asNumber()))
-    .function('if', 3, (a: ResolvedValue, b: ResolvedValue, c: ResolvedValue) => a.asBoolean() ? b : c)
-    .function('concat', 2, (a: ResolvedValue, b: ResolvedValue) => ResolvedValue.of(a.asText() + b.asText()))
-    .function('ordinal', 1, (a: ResolvedValue) => ResolvedValue.of(ordinal(a.asNumber())))
-    .varargsFunction('any', args => ResolvedValue.of(args.some(arg => arg.asBoolean())))
-    .varargsFunction('all', args => ResolvedValue.of(args.every(arg => arg.asBoolean())))
-    .variable('@', '', Formula.variableFn)
-    .variable('@{', '}', Formula.variableFn)
-    .variable('min(@', ')', Formula.minFn)
-    .variable('max(@', ')', Formula.maxFn)
-    .variable('sum(@', ')', Formula.sumFn)
-    .comment('[', ']', (text, value) => new NamedResolvedValue(value, text))
+  .biOperator('-',
+      4, Associativity.Left, (a: ResolvedValue) => ResolvedValue.of(-a.asNumber()),
+      2, Associativity.Left, (a: ResolvedValue, b: ResolvedValue) => ResolvedValue.of(a.asNumber() - b.asNumber()))
+  .operator('^', 4, Associativity.Right, 2, (a: ResolvedValue, b: ResolvedValue) => ResolvedValue.of(Math.pow(a.asNumber(), b.asNumber())))
+  .operator('*', 3, Associativity.Left, 2, (a: ResolvedValue, b: ResolvedValue) => ResolvedValue.of(a.asNumber() * b.asNumber()))
+  .operator('/', 3, Associativity.Left, 2, (a: ResolvedValue, b: ResolvedValue) => ResolvedValue.of(a.asNumber() / b.asNumber()))
+  .operator('+', 2, Associativity.Left, 2, Formula.addFn)
+  .operator('!', 2, Associativity.Left, 1, (a: ResolvedValue) => ResolvedValue.of(!a.asBoolean()))
+  .operator('<', 3, Associativity.Left, 2, (a: ResolvedValue, b: ResolvedValue) => ResolvedValue.of(a.asNumber() < b.asNumber()))
+  .operator('<=', 3, Associativity.Left, 2, (a: ResolvedValue, b: ResolvedValue) => ResolvedValue.of(a.asNumber() <= b.asNumber()))
+  .operator('>', 3, Associativity.Left, 2, (a: ResolvedValue, b: ResolvedValue) => ResolvedValue.of(a.asNumber() > b.asNumber()))
+  .operator('>=', 3, Associativity.Left, 2, (a: ResolvedValue, b: ResolvedValue) => ResolvedValue.of(a.asNumber() >= b.asNumber()))
+  .operator('==', 3, Associativity.Left, 2, (a: ResolvedValue, b: ResolvedValue) => ResolvedValue.of(a.equals(b)))
+  .operator('!=', 3, Associativity.Left, 2, (a: ResolvedValue, b: ResolvedValue) => ResolvedValue.of(!a.equals(b)))
+  .operator('AND', 1, Associativity.Left, 2, (a: ResolvedValue, b: ResolvedValue) => ResolvedValue.of(a.asBoolean() && b.asBoolean()))
+  .operator('OR', 1, Associativity.Left, 2, (a: ResolvedValue, b: ResolvedValue) => ResolvedValue.of(a.asBoolean() || b.asBoolean()))
+  .operator('d', 4, Associativity.Left, 2, (a: ResolvedValue, b: ResolvedValue) => new ResolvedRollValue(a.asNumber(), b.asNumber()))
+  .term('true', () => ResolvedValue.of(true))
+  .term('false', () => ResolvedValue.of(false))
+  .term('null', () => ResolvedValue.None)
+  .function('abs', 1, (a: ResolvedValue) => ResolvedValue.of(Math.abs(a.asNumber())))
+  .function('min', 2, (a: ResolvedValue, b: ResolvedValue) => ResolvedValue.of(Math.min(a.asNumber(), b.asNumber())))
+  .function('max', 2, (a: ResolvedValue, b: ResolvedValue) => ResolvedValue.of(Math.max(a.asNumber(), b.asNumber())))
+  .function('floor', 1, (a: ResolvedValue) => ResolvedValue.of(Math.floor(a.asNumber())))
+  .function('ceil', 1, (a: ResolvedValue) => ResolvedValue.of(Math.ceil(a.asNumber())))
+  .function('signed', 1, (a: ResolvedValue) => ResolvedValue.of((a.asNumber() < 0 ? '' : '+') + a.asNumber()))
+  .function('if', 3, (a: ResolvedValue, b: ResolvedValue, c: ResolvedValue) => a.asBoolean() ? b : c)
+  .varargsFunction('concat', Formula.concatFn)
+  .function('ordinal', 1, (a: ResolvedValue) => ResolvedValue.of(ordinal(a.asNumber())))
+  .varargsFunction('any', args => ResolvedValue.of(args.some(arg => arg.asBoolean())))
+  .varargsFunction('all', args => ResolvedValue.of(args.every(arg => arg.asBoolean())))
+  .variable('@', '', Formula.variableFn)
+  .variable('@{', '}', Formula.variableFn)
+  .variable('min(@', ')', Formula.minFn)
+  .variable('max(@', ')', Formula.maxFn)
+  .variable('sum(@', ')', Formula.sumFn)
+  .comment('[', ']', (text, value) => new NamedResolvedValue(value, text))
   ;
 
-  static parse(formula: string|Resolvable): Resolvable {
+  static parse(formula: string | Resolvable): Resolvable {
     if (formula instanceof Resolvable) {
       return formula;
     }
@@ -68,20 +68,31 @@ export class Formula {
   }
 
   private static minFn(state: DataContext, key: string) {
-    return Formula.noneIfEmpty(state.search(key)).reduce((a, b) => a.asNumber() < b.asNumber() ? a : b);
+    return Formula.noneIfEmpty(state.search(key))
+    .flatMap(a => a.asList())
+    .reduce((a, b) => a.asNumber() < b.asNumber() ? a : b);
   }
 
   private static maxFn(state: DataContext, key: string) {
-    return Formula.noneIfEmpty(state.search(key)).reduce((a, b) => a.asNumber() > b.asNumber() ? a : b, ResolvedValue.None);
+    return Formula.noneIfEmpty(state.search(key))
+    .flatMap(a => a.asList())
+    .reduce((a, b) => a.asNumber() > b.asNumber() ? a : b, ResolvedValue.None);
   }
 
   private static sumFn(state: DataContext, key: string) {
-    return state.search(key).reduce((a, b) => Formula.addFn(a, b), ResolvedValue.None);
+    return state.search(key)
+    .flatMap(a => a.asList())
+    .reduce((a, b) => Formula.addFn(a, b), ResolvedValue.None);
   }
 
   private static addFn(a: ResolvedValue, b: ResolvedValue): ResolvedValue {
     if ((a ?? ResolvedValue.None).equals(ResolvedValue.None) && (b ?? ResolvedValue.None).equals(ResolvedValue.None)) return ResolvedValue.None;
     return ResolvedValue.of(a.asNumber() + b.asNumber());
+  }
+
+  private static concatFn(args: ResolvedValue[]) {
+    return ResolvedValue.of(
+        args.flatMap(a => a.asList()));
   }
 }
 

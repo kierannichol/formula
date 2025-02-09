@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
 import org.formula.ResolvedValue;
 import org.formula.context.DataContext;
 
@@ -14,7 +15,8 @@ public record FormulaTestCase(String name,
                               @JsonProperty("expected_number") Number expectedNumber,
                               @JsonProperty("expected_boolean") Boolean expectedBoolean,
                               @JsonProperty("expected_error") String expectedError,
-                              @JsonProperty("expected_name") String expectedName) {
+                              @JsonProperty("expected_name") String expectedName,
+                              @JsonProperty("expected_list") List<ResolvedValue> expectedList) {
 
     public void assertResult(ResolvedValue result) {
         if (expectedError != null) {
@@ -37,6 +39,9 @@ public record FormulaTestCase(String name,
         }
         if (expectedBoolean != null) {
             assertThat(result.asBoolean()).isEqualTo(expectedBoolean);
+        }
+        if (expectedList != null) {
+            assertThat(result.asList()).isEqualTo(expectedList);
         }
     }
 }

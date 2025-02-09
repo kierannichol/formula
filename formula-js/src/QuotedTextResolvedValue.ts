@@ -19,6 +19,10 @@ export class QuotedTextResolvedValue implements ResolvedValue {
     return this.value.asText();
   }
 
+  asList(): ResolvedValue[] {
+    return this.value.asList();
+  }
+
   asQuotedText(): string {
     return this.prefix + this.asText() + this.suffix;
   }

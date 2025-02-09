@@ -56,7 +56,7 @@ _parser = (ShuntingYardParser()
            .decimal_function_1('ceil', lambda x: math.ceil(x))
            .decimal_function_1('signed', lambda x: ('+' if x > 0 else '') + f'{x:g}')
            .function_3('if', lambda x, y, z: y if x.as_boolean() else z)
-           .function_2('concat', lambda x, y: resolved_value(f'{x.as_text()}{y.as_text()}'))
+           .function_n('concat', lambda args: _concat_fn(args))
            .function_1('ordinal', lambda x: resolved_value(_ordinal(x.as_number())))
            .function_n('all', lambda args: resolved_value(all(x.as_boolean() for x in args)))
            .function_n('any', lambda args: resolved_value(any(x.as_boolean() for x in args)))
@@ -78,26 +78,37 @@ def _ordinal(n: int) -> str:
 
 def _min_fn(context: DataContext, key: str):
     min_value: float | None = None
-    for value in context.search(key):
-        if min_value is None:
-            min_value = value.as_decimal()
-        else:
-            min_value = min(min_value, value.as_number())
+    for found in context.search(key):
+        for value in found.as_list():
+            if min_value is None:
+                min_value = value.as_decimal()
+            else:
+                min_value = min(min_value, value.as_number())
     return resolved_value(min_value)
 
 
 def _max_fn(context: DataContext, key: str):
     max_value: float | None = None
-    for value in context.search(key):
-        if max_value is None:
-            max_value = value.as_decimal()
-        else:
-            max_value = max(max_value, value.as_number())
+    for found in context.search(key):
+        for value in found.as_list():
+            if max_value is None:
+                max_value = value.as_decimal()
+            else:
+                max_value = max(max_value, value.as_number())
     return resolved_value(max_value)
 
 
 def _sum_fn(context: DataContext, key: str):
     sum_value = 0
-    for value in context.search(key):
-        sum_value += value.as_number()
+    for found in context.search(key):
+        for value in found.as_list():
+            sum_value += value.as_number()
     return resolved_value(sum_value)
+
+
+def _concat_fn(args):
+    merged = []
+    for arg in args:
+        for value in arg.as_list():
+            merged.append(value)
+    return resolved_value(merged)

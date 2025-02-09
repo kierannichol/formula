@@ -3,6 +3,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import {DataContext} from "./DataContext";
 import {Resolvable} from "./Resolvable";
+import {ResolvedValue} from "./ResolvedValue";
 
 const YAML = require("yaml");
 
@@ -33,6 +34,9 @@ formulaTestCases.forEach(testCase => {
         expect(resolved?.asText()).toBe(testCase.expected_text);
       if (testCase.expected_boolean)
         expect(resolved?.asBoolean()).toBe(testCase.expected_boolean);
+      if (testCase.expected_list)
+        expect(resolved?.asList()).toEqual(
+            testCase.expected_list.map(ResolvedValue.of))
     } catch (e) {
       if (testCase.expected_error) {
         expect(e.message).toBe(testCase.expected_error);
@@ -52,11 +56,14 @@ function toDataContext(data: any): DataContext {
   return DataContext.of(parsed);
 }
 
-function parseDataValue(value: any): string|number|boolean|Resolvable {
+function parseDataValue(value: any): string|number|boolean|ResolvedValue[]|Resolvable {
   if (typeof value === "string"
       && value.startsWith("{")
       && value.endsWith("}")) {
     return Formula.parse(value.slice(1, -1));
+  }
+  if (Array.isArray(value)) {
+    return value.map(ResolvedValue.of);
   }
   return value;
 }

@@ -1,6 +1,7 @@
 package org.formula;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -31,14 +32,40 @@ public abstract class ResolvedValue implements Comparable<ResolvedValue> {
                 : BooleanFalseResolvedValue.INSTANCE;
     }
 
+    public static ResolvedValue of(ResolvedValue... values) {
+        return of(List.of(values));
+    }
+
+    public static ResolvedValue of(List<ResolvedValue> values) {
+        return new ResolvedListValue(values);
+    }
+
     public static ResolvedValue none() {
         return NullResolvedValue.INSTANCE;
+    }
+
+    public static ResolvedValue concat(ResolvedValue... values) {
+        return concat(List.of(values));
+    }
+
+    public static ResolvedValue concat(List<ResolvedValue> values) {
+        List<ResolvedValue> combined = new ArrayList<>();
+        for (ResolvedValue value : values) {
+            if (value.hasValue()) {
+                combined.addAll(value.asList());
+            }
+        }
+        return new ResolvedListValue(combined);
     }
 
     public abstract String asText();
     public abstract int asNumber();
     public abstract double asDecimal();
     public abstract boolean asBoolean();
+
+    public List<ResolvedValue> asList() {
+        return List.of(this);
+    }
 
     public boolean hasValue() {
         return true;
@@ -48,8 +75,6 @@ public abstract class ResolvedValue implements Comparable<ResolvedValue> {
     public int compareTo(ResolvedValue o) {
         return Double.compare(asDecimal(), o.asDecimal());
     }
-
-    
 
     private static class TextResolvedValue extends ResolvedValue {
         private static final List<String> FALSE_STRING_VALUES = List.of("false", "no", "0", "");
@@ -335,6 +360,11 @@ public abstract class ResolvedValue implements Comparable<ResolvedValue> {
         @Override
         public boolean hasValue() {
             return false;
+        }
+
+        @Override
+        public List<ResolvedValue> asList() {
+            return List.of();
         }
 
         @Override

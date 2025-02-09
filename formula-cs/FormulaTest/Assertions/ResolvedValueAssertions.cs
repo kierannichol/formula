@@ -55,4 +55,9 @@ public class ResolvedValueAssertions
         }
         Assert.That(named.AsName(), Is.EqualTo(expectedName));
     }
+
+    public void HasValue(List<ResolvedValue> expectedList)
+    {
+        
+    }
 }

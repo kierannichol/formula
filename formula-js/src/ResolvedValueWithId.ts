@@ -1,9 +1,8 @@
-import { ResolvedValue } from "./ResolvedValue";
+import {ResolvedValue} from "./ResolvedValue";
 
-export class ResolvedValueWithId extends ResolvedValue {
+export class ResolvedValueWithId implements ResolvedValue {
 
   constructor(public readonly id: string, private readonly value: ResolvedValue) {
-    super();
   }
 
   asBoolean(): boolean {
@@ -16,6 +15,14 @@ export class ResolvedValueWithId extends ResolvedValue {
 
   asText(): string {
     return this.value.asText();
+  }
+
+  asList(): ResolvedValue[] {
+    return this.value.asList();
+  }
+
+  map(fn: (value: ResolvedValue) => ResolvedValue): ResolvedValue {
+    return fn(this);
   }
 
   hasValue(): boolean {

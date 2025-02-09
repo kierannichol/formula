@@ -15,6 +15,18 @@ public class ResolvedValueDeserializer : INodeDeserializer
             value = null;
             return false;
         }
+
+        if (reader.TryConsume(out SequenceStart? _))
+        {
+            var values = new List<ResolvedValue>();
+            while (!reader.TryConsume(out SequenceEnd? _))
+            {
+                values.Add(ResolvedValue.Of(reader.Consume<Scalar>().Value));
+            }
+
+            value = ResolvedValue.Of(values);
+            return true;
+        }
         
         var scalar = reader.Consume<Scalar>();
         value = ResolvedValue.Of(scalar.Value);

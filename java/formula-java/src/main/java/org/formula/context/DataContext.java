@@ -18,6 +18,10 @@ public interface DataContext {
     Stream<String> keys();
 
     default Stream<ResolvedValue> search(String pattern) {
+        if (!pattern.contains("*")) {
+            return Stream.of(get(pattern));
+        }
+
         Predicate<String> patternFilter = Pattern.compile("^%s$".formatted(pattern
                         .replaceAll("\\*", ".*")))
                 .asMatchPredicate();

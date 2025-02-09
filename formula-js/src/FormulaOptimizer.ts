@@ -27,6 +27,10 @@ abstract class AbstractOptimizedFunction extends ResolvedValue {
   asBoolean(): boolean {
     throw AbstractOptimizedFunction.UnsupportedException;
   }
+
+  asList(): ResolvedValue[] {
+    throw AbstractOptimizedFunction.UnsupportedException;
+  }
 }
 
 class OptimizedAnyFunction extends AbstractOptimizedFunction {
@@ -39,7 +43,7 @@ class OptimizedAnyFunction extends AbstractOptimizedFunction {
     let hasFalse = false;
     values.forEach(next => {
       if (next instanceof OptimizedAnyFunction) {
-        this.values.unshift(...next.values);
+        this.values.push(...next.values);
         return;
       }
       if (next === ResolvedValue.False) {
@@ -50,7 +54,7 @@ class OptimizedAnyFunction extends AbstractOptimizedFunction {
         hasTrue = true;
         return;
       }
-      this.values.unshift(next);
+      this.values.push(next);
     });
 
     if (hasTrue) {
@@ -78,7 +82,7 @@ class OptimizedAllFunction extends AbstractOptimizedFunction {
     let hasFalse = false;
     values.forEach(next => {
       if (next instanceof OptimizedAllFunction) {
-        this.values.unshift(...next.values);
+        this.values.push(...next.values);
         return;
       }
       if (next === ResolvedValue.True) {
@@ -88,7 +92,7 @@ class OptimizedAllFunction extends AbstractOptimizedFunction {
         hasFalse = true;
         return;
       }
-      this.values.unshift(next);
+      this.values.push(next);
     });
 
     if (hasFalse) {
@@ -153,8 +157,8 @@ export class FormulaOptimizer {
   .operator('>=', 3, Associativity.Left, 2, opFn((a, b) => `${a}>=${b}`))
   .operator('==', 3, Associativity.Left, 2, opFn((a, b) => `${a}==${b}`))
   .operator('!=', 3, Associativity.Left, 2, opFn((a, b) => `${a}!=${b}`))
-  .operator('AND', 1, Associativity.Left, 2, (a, b) => new OptimizedAllFunction([b, a]))
-  .operator('OR', 1, Associativity.Left, 2, (a, b) => new OptimizedAnyFunction([b, a]))
+  .operator('AND', 1, Associativity.Left, 2, (a, b) => new OptimizedAllFunction([a, b]))
+  .operator('OR', 1, Associativity.Left, 2, (a, b) => new OptimizedAnyFunction([a, b]))
   .operator('d', 4, Associativity.Left, 2, opFn((a, b) => `${a}d${b}`))
   .term('true', () => ResolvedValue.of(true))
   .term('false', () => ResolvedValue.of(false))

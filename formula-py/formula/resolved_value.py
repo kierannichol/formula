@@ -1,4 +1,5 @@
 from formula.resolve_error import ResolveError
+from typing import Self
 
 
 class ResolvedValue:
@@ -9,6 +10,9 @@ class ResolvedValue:
     def as_decimal(self) -> float: pass
 
     def as_boolean(self) -> bool: pass
+
+    def as_list(self) -> list[Self]:
+        return [self]
 
     def has_value(self) -> bool: pass
 
@@ -157,6 +161,9 @@ class _NullResolvedValue(ResolvedValue):
     def as_boolean(self) -> bool:
         return False
 
+    def as_list(self) -> list[ResolvedValue]:
+        return []
+
     def has_value(self) -> bool:
         return False
 
@@ -168,6 +175,11 @@ class _NullResolvedValue(ResolvedValue):
 
     def __repr__(self):
         return 'null'
+
+
+_TRUE = _BooleanResolvedValue(True)
+_FALSE = _BooleanResolvedValue(False)
+_NONE = _NullResolvedValue()
 
 
 class QuotedTextResolvedValue(ResolvedValue):
@@ -204,6 +216,43 @@ class QuotedTextResolvedValue(ResolvedValue):
         return self._value.__repr__()
 
 
+class _ResolvedListValue(ResolvedValue):
+    def __init__(self, values: list[ResolvedValue]):
+        self._values = values
+
+    def as_text(self) -> str:
+        return self._latest().as_text()
+
+    def as_number(self) -> int:
+        return self._latest().as_number()
+
+    def as_decimal(self) -> float:
+        return self._latest().as_decimal()
+
+    def as_boolean(self) -> bool:
+        return self._latest().as_boolean()
+
+    def as_list(self) -> list[ResolvedValue]:
+        return self._values
+
+    def has_value(self) -> bool:
+        return True
+
+    def __eq__(self, other_value):
+        return isinstance(other_value, ResolvedValue) and self.as_decimal() == other_value.as_decimal()
+
+    def __hash__(self):
+        return hash(self._values)
+
+    def __repr__(self):
+        return repr(self._values)
+
+    def _latest(self) -> ResolvedValue:
+        if len(self._values) == 0:
+            return _NONE
+        return self._values[-1]
+
+
 class NamedResolvedValue(ResolvedValue):
     def __init__(self, value: ResolvedValue, name: str):
         self._name = name
@@ -237,12 +286,7 @@ class NamedResolvedValue(ResolvedValue):
         return f"{self._value.as_text()}[{self.as_name()}]"
 
 
-_TRUE = _BooleanResolvedValue(True)
-_FALSE = _BooleanResolvedValue(False)
-_NONE = _NullResolvedValue()
-
-
-def resolved_value(value: str | int | float | bool | None) -> ResolvedValue:
+def resolved_value(value: str | int | float | bool | list[ResolvedValue] | None) -> ResolvedValue:
     if isinstance(value, str):
         return _TextResolvedValue(value)
     if isinstance(value, bool):
@@ -251,4 +295,6 @@ def resolved_value(value: str | int | float | bool | None) -> ResolvedValue:
         return _NumberResolvedValue(value)
     if isinstance(value, float):
         return _DecimalResolvedValue(value)
+    if isinstance(value, list):
+        return _ResolvedListValue(value)
     return _NONE

@@ -37,6 +37,11 @@ public class FormulaTest
             {
                 AssertResolvedValue(value).HasValue(data.ExpectedBoolean.Value);
             }
+
+            if (data.ExpectedList != null)
+            {
+                AssertResolvedValue(value).HasValue(data.ExpectedList);
+            }
         }
         catch (Exception e)
         {

@@ -17,12 +17,18 @@ public class ResolvedValueDeserializer extends StdDeserializer<ResolvedValue> {
     @Override
     public ResolvedValue deserialize(JsonParser jsonParser, DeserializationContext deserializationContext)
             throws IOException {
+
         return switch (jsonParser.currentToken()) {
             case VALUE_NUMBER_INT -> ResolvedValue.of(jsonParser.getValueAsInt());
             case VALUE_NUMBER_FLOAT -> ResolvedValue.of(jsonParser.getValueAsDouble());
             case VALUE_STRING -> ResolvedValue.of(jsonParser.getValueAsString());
             case VALUE_TRUE -> ResolvedValue.of(Boolean.TRUE);
             case VALUE_FALSE -> ResolvedValue.of(Boolean.FALSE);
+            case VALUE_NULL -> ResolvedValue.none();
+            case START_ARRAY -> {
+                var values = deserializationContext.readValue(jsonParser, ResolvedValue[].class);
+                yield ResolvedValue.of(values);
+            }
             default -> throw new JsonParseException(jsonParser,
                     "ResolvedValue must be a string, integer, or boolean; was " + jsonParser.currentToken(),
                     jsonParser.currentLocation());

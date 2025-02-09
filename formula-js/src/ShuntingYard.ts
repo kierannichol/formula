@@ -377,7 +377,7 @@ export class ShuntingYard extends Resolvable {
         let params: ResolvedValue[] = [];
         let paramCount = localStack.pop() as number;
         while (paramCount-- > 0) {
-          params.push(localStack.pop() as ResolvedValue);
+          params.unshift(localStack.pop() as ResolvedValue);
         }
         localStack.push(func.execute(params));
         continue;

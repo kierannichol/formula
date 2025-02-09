@@ -18,6 +18,10 @@ export class NamedResolvedValue implements ResolvedValue {
     return this.value.asText();
   }
 
+  asList(): ResolvedValue[] {
+    return this.value.asList();
+  }
+
   asName(): string {
     return this.name;
   }

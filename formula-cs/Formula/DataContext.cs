@@ -77,6 +77,35 @@ public class DataContext : IDataContext
     {
         return Set(key, ResolvedValue.Of(value));
     }
+
+    public DataContext Push(string key, ResolvedValue value)
+    {
+        var existing = Get(key).AsList();
+        var merged = new List<ResolvedValue>();
+        merged.AddRange(existing);
+        merged.AddRange(value.AsList());
+        return Set(key, ResolvedValue.Of(merged));
+    }
+
+    public DataContext Push(string key, string value)
+    {
+        return Push(key, ResolvedValue.Of(value));
+    }
+    
+    public DataContext Push(string key, int value)
+    {
+        return Push(key, ResolvedValue.Of(value));
+    }
+    
+    public DataContext Push(string key, double value)
+    {
+        return Push(key, ResolvedValue.Of(value));
+    }
+    
+    public DataContext Push(string key, bool value)
+    {
+        return Push(key, ResolvedValue.Of(value));
+    }
 }
 
 internal class EmptyDataContext : IDataContext

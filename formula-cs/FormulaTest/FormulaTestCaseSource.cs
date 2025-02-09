@@ -17,6 +17,7 @@ public class FormulaTestCaseSource
             .WithNamingConvention(UnderscoredNamingConvention.Instance)
             .WithNodeDeserializer(new FloatNodeDeserializer())
             .WithNodeDeserializer(new ResolvableDeserializer())
+            .WithNodeDeserializer(new ResolvedValueDeserializer())
             .WithNodeDeserializer(new DataContextDeserializer())
             .Build();
 
@@ -34,6 +35,7 @@ public class FormulaTestCaseSource
         public bool? ExpectedBoolean;
         public string? ExpectedError;
         public string? ExpectedName;
+        public List<ResolvedValue>? ExpectedList;
         public DataContext? Data;
     }
 }

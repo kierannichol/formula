@@ -1,19 +1,27 @@
 import {Resolvable} from "./Resolvable";
 import {ResolvedValue} from "./ResolvedValue";
 import {ResolvedValueWithId} from "./ResolvedValueWithId";
+import {ResolvedListValue} from "./ResolvedListValue";
 
-export type DataContextState = { [key:string]:string|number|boolean|Resolvable; };
+type DataContextValue = string | number | boolean | Resolvable | (string | number | boolean | Resolvable)[];
+export type DataContextState = { [key: string]: DataContextValue; };
 
 export interface DataContext {
-  get(key: string): ResolvedValue|undefined;
+  get(key: string): ResolvedValue | undefined;
+
   keys(): string[];
+
   search(pattern: string): ResolvedValueWithId[];
 }
 
 export interface ImmutableDataContext extends DataContext {
-  replace(key: string, value: string|number|boolean|Resolvable): ImmutableDataContext;
+  replace(key: string, value: string | number | boolean | Resolvable): ImmutableDataContext;
+
   remove(key: string): ImmutableDataContext;
+
   rename(key: string, to: string): ImmutableDataContext;
+
+  push(key: string, value: string | number | boolean | Resolvable): ImmutableDataContext;
 }
 
 export class ImmutableDataContext {
@@ -23,9 +31,13 @@ export class ImmutableDataContext {
 }
 
 export interface MutableDataContext extends DataContext {
-  set(key: string, value: string|number|boolean|Resolvable): void;
+  set(key: string, value: string | number | boolean | Resolvable): void;
+
   remove(key: string): void;
+
   rename(key: string, to: string): void;
+
+  push(key: string, value: string | number | boolean | Resolvable): void;
 }
 
 class EmptyDataContext implements DataContext {
@@ -65,6 +77,10 @@ export abstract class BaseDataContext implements DataContext {
 class DataContextUtils {
 
   static find(context: DataContext, pattern: string): ResolvedValueWithId[] {
+    if (!pattern.includes("*")) {
+      return [new ResolvedValueWithId(pattern, context.get(pattern))];
+    }
+
     const regex = new RegExp(this.escapeRegExp(pattern).replace(/\\\*/g, ".*?"));
     return context.keys()
     .filter((key: string) => regex.test(key))
@@ -89,16 +105,34 @@ class StaticDataContext extends BaseDataContext implements MutableDataContext {
     super();
   }
 
-  get(key: string): ResolvedValue|undefined {
-    const result: string|number|boolean|Resolvable|undefined = this.state[key];
+  get(key: string): ResolvedValue | undefined {
+    const result: DataContextValue = this.state[key];
     if (result instanceof Resolvable) {
       return result.resolve(this);
+    } else if (Array.isArray(result)) {
+      return new ResolvedListValue(result.map(value => {
+        if (value instanceof Resolvable) {
+          return value.resolve(this);
+        }
+        return ResolvedValue.of(value)
+      }));
     }
     return ResolvedValue.of(result);
   }
 
-  set(key: string, value: string|number|boolean|Resolvable): void {
+  set(key: string, value: string | number | boolean | Resolvable): void {
     this.state[key] = value;
+  }
+
+  push(key: string, value: string | number | boolean | Resolvable): void {
+    const existing = this.state[key];
+    if (existing === undefined) {
+      this.state[key] = [value];
+    } else if (!Array.isArray(existing)) {
+      this.state[key] = [existing, value];
+    } else {
+      this.state[key] = [...existing, value];
+    }
   }
 
   remove(key: string): void {
@@ -115,6 +149,7 @@ class StaticDataContext extends BaseDataContext implements MutableDataContext {
       delete this.state[key];
     }
   }
+
 }
 
 export class StaticImmutableDataContext extends BaseDataContext implements ImmutableDataContext {
@@ -122,15 +157,22 @@ export class StaticImmutableDataContext extends BaseDataContext implements Immut
     super();
   }
 
-  get(key: string): ResolvedValue|undefined {
-    const result: string|number|boolean|Resolvable|undefined = this.state[key];
+  get(key: string): ResolvedValue | undefined {
+    const result: DataContextValue = this.state[key];
     if (result instanceof Resolvable) {
       return result.resolve(this);
+    } else if (Array.isArray(result)) {
+      return new ResolvedListValue(result.map(value => {
+        if (value instanceof Resolvable) {
+          return value.resolve(this);
+        }
+        return ResolvedValue.of(value)
+      }));
     }
     return ResolvedValue.of(result);
   }
 
-  replace(key: string, value: string|number|boolean|Resolvable): ImmutableDataContext {
+  replace(key: string, value: string | number | boolean | Resolvable): ImmutableDataContext {
     return new StaticImmutableDataContext({
       ...this.state,
       [key]: value
@@ -142,10 +184,24 @@ export class StaticImmutableDataContext extends BaseDataContext implements Immut
     delete state[key];
     return new StaticImmutableDataContext(state);
   }
+
   rename(key: string, to: string): ImmutableDataContext {
     const state = {...this.state};
     state[to] = state[key];
     delete state[key];
+    return new StaticImmutableDataContext(state);
+  }
+
+  push(key: string, value: string | number | boolean | Resolvable): ImmutableDataContext {
+    const state = {...this.state};
+    const existing = state[key];
+    if (existing === undefined) {
+      state[key] = [value];
+    } else if (!Array.isArray(existing)) {
+      state[key] = [existing, value];
+    } else {
+      state[key] = [...existing, value];
+    }
     return new StaticImmutableDataContext(state);
   }
 

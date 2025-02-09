@@ -1,5 +1,7 @@
 package org.formula;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import org.formula.context.DataContext;
 import org.formula.optimize.FormulaOptimizer;
@@ -40,7 +42,7 @@ public class Formula {
             .function("ceil", (ResolvedValue a) -> ResolvedValue.of(Math.ceil(a.asDecimal())))
             .function("signed", (ResolvedValue a) -> ResolvedValue.of((a.asNumber() < 0 ? "" : "+") + a.asNumber()))
             .function("if", (ResolvedValue a, ResolvedValue b, ResolvedValue c) -> a.asBoolean() ? b : c)
-            .function("concat", (ResolvedValue a, ResolvedValue b) -> ResolvedValue.of(a.asText() + b.asText()))
+            .function("concat", Formula::concatFn)
             .function("ordinal", (ResolvedValue a) -> ResolvedValue.of(Ordinal.toString(a.asNumber())))
             .function("any", (List<ResolvedValue> values) -> ResolvedValue.of(values.stream().anyMatch(ResolvedValue::asBoolean)))
             .function("all", (List<ResolvedValue> values) -> ResolvedValue.of(values.stream().allMatch(ResolvedValue::asBoolean)))
@@ -57,18 +59,28 @@ public class Formula {
     }
 
     private static ResolvedValue minFn(DataContext context, String key) {
-        return context.search(key).reduce((a, b) -> a.asDecimal() < b.asDecimal() ? a : b)
+        return context.search(key)
+                .flatMap(a -> a.asList().stream())
+                .reduce((a, b) -> a.asDecimal() < b.asDecimal() ? a : b)
                 .orElse(ResolvedValue.none());
     }
 
     private static ResolvedValue sumFn(DataContext context, String key) {
-        return context.search(key).reduce(Formula::addFn)
+        return context.search(key)
+                .flatMap(a -> a.asList().stream())
+                .reduce(Formula::addFn)
                 .orElse(ResolvedValue.of(0));
     }
 
     private static ResolvedValue maxFn(DataContext context, String key) {
-        return context.search(key).reduce((a, b) -> a.asDecimal() > b.asDecimal() ? a : b)
+        return context.search(key)
+                .flatMap(a -> a.asList().stream())
+                .reduce((a, b) -> a.asDecimal() > b.asDecimal() ? a : b)
                 .orElse(ResolvedValue.none());
+    }
+
+    private static ResolvedValue concatFn(List<ResolvedValue> values) {
+        return ResolvedValue.concat(values);
     }
 
     private static ResolvedValue addFn(ResolvedValue a, ResolvedValue b) {

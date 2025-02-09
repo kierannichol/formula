@@ -41,7 +41,7 @@ public class ShuntingYard implements Resolvable {
                 int arity = ((Arity) localStack.removeFirst()).arity();
                 List<ResolvedValue> params = new ArrayList<>();
                 while (arity-- > 0) {
-                    params.add((ResolvedValue) checkedPopParameter(next, arity, localStack));
+                    params.add(0, (ResolvedValue) checkedPopParameter(next, arity, localStack));
                 }
                 localStack.addFirst(func.execute(params));
             } else if (next instanceof Variable variable) {

@@ -1,4 +1,5 @@
 import {ResolveError} from "./ResolveError";
+import {ResolvedListValue} from "./ResolvedListValue";
 
 export interface ResolvedValue {
   asText(): string;
@@ -6,6 +7,8 @@ export interface ResolvedValue {
   asNumber(): number;
 
   asBoolean(): boolean;
+
+  asList(): ResolvedValue[];
 
   hasValue(): boolean;
 
@@ -32,6 +35,10 @@ class TextValue implements ResolvedValue {
 
   asBoolean(): boolean {
     return !['false', 'no', '0', ''].includes(this.value.toLowerCase());
+  }
+
+  asList(): ResolvedValue[] {
+    return [this];
   }
 
   equals(other: ResolvedValue): boolean {
@@ -65,6 +72,10 @@ class NumberValue implements ResolvedValue {
 
   asBoolean(): boolean {
     return this.value > 0;
+  }
+
+  asList(): ResolvedValue[] {
+    return [this];
   }
 
   equals(other: ResolvedValue): boolean {
@@ -101,6 +112,10 @@ class BooleanValue implements ResolvedValue {
     return this.value ? "true" : "false";
   }
 
+  asList(): ResolvedValue[] {
+    return [this];
+  }
+
   map(fn: (value: ResolvedValue) => ResolvedValue): ResolvedValue {
     return fn(this);
   }
@@ -133,6 +148,10 @@ class NullValue implements ResolvedValue {
     return '';
   }
 
+  asList(): ResolvedValue[] {
+    return [];
+  }
+
   map(_: (value: ResolvedValue) => ResolvedValue): ResolvedValue {
     return this;
   }
@@ -155,7 +174,7 @@ export abstract class ResolvedValue {
   static readonly False: ResolvedValue = new BooleanValue(false);
   static readonly None: ResolvedValue = NullValue.Instance;
 
-  static of(value: string | number | boolean): ResolvedValue {
+  static of(value: string | number | boolean | ResolvedValue | (string | number | boolean | ResolvedValue)[]): ResolvedValue {
     if (value === undefined) {
       return NullValue.Instance;
     }
@@ -169,5 +188,9 @@ export abstract class ResolvedValue {
     if (typeof value === 'boolean') {
       return value ? ResolvedValue.True : ResolvedValue.False;
     }
+    if (Array.isArray(value)) {
+      return new ResolvedListValue(value.map(ResolvedValue.of));
+    }
+    return value;
   }
 }

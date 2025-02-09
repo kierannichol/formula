@@ -255,4 +255,9 @@ internal class ResolveException : Exception
     {
         
     }
+    
+    public ResolveException(string message, Exception? innerException) : base(message, innerException)
+    {
+        
+    }
 }

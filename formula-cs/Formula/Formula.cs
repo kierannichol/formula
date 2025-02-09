@@ -108,22 +108,38 @@ public static class Formula
     private static ResolvedValue MinFunction(IDataContext context, string key)
     {
         var maxValue = ResolvedValue.Of(int.MaxValue);
-        ResolvedValue Min(ResolvedValue a, ResolvedValue b) => a.AsDecimal() < b.AsDecimal() ? a : b;
         return FindAndReduce(context, key, Min, maxValue, out var reduced) > 0 ? reduced : ResolvedValue.None;
+        ResolvedValue Min(ResolvedValue a, ResolvedValue b) => a.AsDecimal() < b.AsDecimal() ? a : b;
     }
 
     private static int FindAndReduce<T>(IDataContext context, string pattern,
         Func<T, ResolvedValue, T> reduceFunction, T initialValue, out T reduced)
     {
-        var formatted = pattern.Replace("*", ".*");
-        var regex = new Regex($"^{formatted}$");
         reduced = initialValue;
         var count = 0;
+        if (!pattern.Contains('*'))
+        {
+            var found = context.Get(pattern);
+            foreach (var value in found.AsList())
+            {
+                reduced = reduceFunction(reduced, value);
+                count++;
+            }
+
+            return count;
+        }
+        
+        var formatted = pattern.Replace("*", ".*");
+        var regex = new Regex($"^{formatted}$");
         foreach (var key in context.Keys())
         {
             if (!Predicate(key)) continue;
-            reduced = reduceFunction(reduced, context.Get(key));
-            count++;
+            var found = context.Get(key);
+            foreach (var value in found.AsList())
+            {
+                reduced = reduceFunction(reduced, context.Get(key));
+                count++;
+            }
         }
 
         return count;

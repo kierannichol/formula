@@ -153,11 +153,11 @@
   formula: "all(false, false)"
   expected_boolean: false
 - name: "all(with nested 'any')"
-  formula: "all(any(@b, @c), @a, 1)"
+  formula: "all(any(@bool_b, @bool_c), @bool_a, 1)"
   data:
-    a: true
-    b: false
-    c: true
+    bool_a: true
+    bool_b: false
+    bool_c: true
   expected_boolean: true
 
 - name: "any(empty)"
@@ -263,3 +263,56 @@
 - name: "roll 2+1d8"
   formula: "2+1d8"
   expected_number: 6.5
+
+# Lists
+- name: "empty list"
+  formula: "@list"
+  expected_list: []
+- name: "list with one element"
+  formula: "@list"
+  data:
+    list: [5]
+  expected_number: 5
+  expected_text: "5"
+  expected_boolean: true
+  expected_list: [5]
+- name: "list with multiple elements"
+  formula: "@list"
+  data:
+      list: [5, 2, 3]
+  expected_number: 3
+  expected_text: "3"
+  expected_list: [5, 2, 3]
+- name: "max(list)"
+  formula: "max(@list)"
+  data:
+    list: [1, 5, 3]
+  expected_number: 5
+- name: "min(list)"
+  formula: "min(@list)"
+  data:
+    list: [1, 5, 3]
+  expected_number: 1
+- name: "sum(list)"
+  formula: "sum(@list)"
+  data:
+      list: [1, 5, 3]
+  expected_number: 9
+- name: "concat(num, num)"
+  formula: "concat(@num_a, @num_b)"
+  data:
+    num_a: 1
+    num_b: 2
+  expected_list: [1, 2]
+- name: "concat(list, list)"
+  formula: "concat(@list_a, @list_b)"
+  data:
+    list_a: [1, 2]
+    list_b: [3, 4]
+  expected_list: [1, 2, 3, 4]
+- name: "concat(list, num)"
+  formula: "concat(@list_a, @num_b)"
+  data:
+    list_a: [1, 2]
+    num_b: 3
+  expected_list: [1, 2, 3]
