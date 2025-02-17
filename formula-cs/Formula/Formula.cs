@@ -33,7 +33,7 @@ public static class Formula
             .Function("ceil", a => ResolvedValue.Of(Math.Ceiling(a.AsDecimal())))
             .Function("signed", a => ResolvedValue.Of((a.AsNumber() < 0 ? "" : "+") + a.AsNumber()))
             .Function("if", (a, b, c) => a.AsBoolean() ? b : c)
-            .Function("concat", (a, b) => ResolvedValue.Of(a.AsText() + b.AsText()))
+            .Function("concat", ConcatFunction)
             .Function("ordinal", a => ResolvedValue.Of(Ordinal.ToString(a.AsNumber())))
             .Function("any", AnyFunction)
             .Function("all", AllFunction)
@@ -45,7 +45,17 @@ public static class Formula
             .Comment("[", "]", (value, comment) => NamedResolvedValue.Of(value, comment.Substring(1, comment.Length - 2)))
             ;
 
-    public static IResolvable Parse(string formulaText)
+    private static ResolvedValue ConcatFunction(IEnumerable<ResolvedValue> arg)
+    {
+        var collected = new List<ResolvedValue>();
+        foreach (var resolvedValue in arg)
+        {
+            collected.AddRange(resolvedValue.AsList());
+        }
+        return new ResolvedListValue(collected);
+    }
+
+    public static IResolvable? Parse(string formulaText)
     {
         return formulaText.Length == 0 
             ? Resolvable.Empty 

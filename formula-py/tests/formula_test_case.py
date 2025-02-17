@@ -1,7 +1,17 @@
 import math
 
 import formula
-from formula import resolved_value, DataContext
+from formula import resolved_value
+from formula.resolvable import ResolvableList
+from formula.static_resolvable import StaticResolvable
+
+
+def _parse_value(value: str):
+    if isinstance(value, str) and value.startswith('{') and value.endswith('}'):
+        return formula.parse(value[1:-1])
+    if isinstance(value, list):
+        return list(map(resolved_value, value))
+    return StaticResolvable(value)
 
 
 def _parse_data(data: dict):
@@ -11,8 +21,10 @@ def _parse_data(data: dict):
         value = data.get(key)
         if isinstance(value, str) and value.startswith('{') and value.endswith('}'):
             data[key] = formula.parse(value[1:-1])
-        if isinstance(value, list):
-            data[key] = list(map(resolved_value, value))
+        elif isinstance(value, list):
+            data[key] = ResolvableList(map(_parse_value, value))
+        elif value is not None:
+            data[key] = StaticResolvable(value)
     return data
 
 

@@ -1,6 +1,6 @@
 using Formula;
 
-namespace FormulaTest;
+namespace FormulaTest.Assertions;
 
 public class ResolvedValueAssertions
 {
@@ -35,6 +35,42 @@ public class ResolvedValueAssertions
         Assert.That(_value.AsBoolean(), Is.EqualTo(expected));
         return this;
     }
+    
+    public ResolvedValueAssertions HasValue(List<ResolvedValue> expected)
+    {
+        Assert.That(_value.AsList(), Is.EqualTo(expected));
+        return this;
+    }
+    
+    public ResolvedValueAssertions HasValues(ExpectedValues expected) {
+        if (expected.ExpectedText != null)
+        {
+            HasValue(expected.ExpectedText);
+        }
+
+        if (expected.ExpectedNumber.HasValue)
+        {
+            HasValue(expected.ExpectedNumber.Value);
+        }
+        
+        if (expected.ExpectedBoolean.HasValue)
+        {
+            HasValue(expected.ExpectedBoolean.Value);
+        }
+
+        if (expected.ExpectedList != null)
+        {
+            var list = _value.AsList();
+            Assert.That(list.Count, Is.EqualTo(expected.ExpectedList.Count));
+
+            for (var i = 0; i < list.Count; i++)
+            {
+                AssertResolvedValue(list[i]).HasValues(expected.ExpectedList[i]);
+            }
+        }
+
+        return this;
+    }
 
     public ResolvedValueAssertions HasNoValue() {
         Assert.That(_value, Is.EqualTo(ResolvedValue.None));
@@ -54,10 +90,5 @@ public class ResolvedValueAssertions
             return;
         }
         Assert.That(named.AsName(), Is.EqualTo(expectedName));
-    }
-
-    public void HasValue(List<ResolvedValue> expectedList)
-    {
-        
     }
 }

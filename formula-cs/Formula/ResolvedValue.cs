@@ -470,6 +470,9 @@ internal class ResolvedListValue : ResolvedValue
 
 internal class NoResolvedValue : ResolvedValue
 {
+    // ReSharper disable once CollectionNeverUpdated.Local
+    private static readonly List<ResolvedValue> EmptyList = new();
+    
     public override bool HasValue => false;
     
     public override string AsText()
@@ -490,6 +493,11 @@ internal class NoResolvedValue : ResolvedValue
     public override bool AsBoolean()
     {
         return false;
+    }
+
+    public override IReadOnlyList<ResolvedValue> AsList()
+    {
+        return EmptyList;
     }
 
     public override bool Equals(object? obj)

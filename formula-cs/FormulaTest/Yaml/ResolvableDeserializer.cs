@@ -18,13 +18,16 @@ public class ResolvableDeserializer : INodeDeserializer
         
         if (reader.TryConsume(out SequenceStart? _))
         {
-            var values = new List<ResolvedValue>();
+            var list = new ResolvableList();
             while (!reader.TryConsume(out SequenceEnd? _))
             {
-                values.Add(ResolvedValue.Of(reader.Consume<Scalar>().Value));
+                var elementNode = nestedObjectDeserializer.Invoke(reader, typeof(IResolvable));
+                if (elementNode != null)
+                {
+                    list.Push((IResolvable?) elementNode);
+                }
             }
-
-            value = Resolvable.Just(ResolvedValue.Of(values));
+            value = list;
             return true;
         }
         

@@ -18,8 +18,8 @@ public class FormulaOptimizer
             .Operator(">=", 3, Associativity.Left, OpFn2((a, b) => a + ">=" + b))
             .Operator("==", 3, Associativity.Left, OpFn2((a, b) => a + "==" + b))
             .Operator("!=", 3, Associativity.Left, OpFn2((a, b) => a + "!=" + b))
-            .Operator("AND", 1, Associativity.Left, (a, b) => new AllFunction(new List<ResolvedValue>(new[] {b, a})))
-            .Operator("OR", 1, Associativity.Left, (a, b) => new AnyFunction(new List<ResolvedValue>(new[] {b, a})))
+            .Operator("AND", 1, Associativity.Left, (a, b) => new AllFunction(new List<ResolvedValue>(new[] {a, b})))
+            .Operator("OR", 1, Associativity.Left, (a, b) => new AnyFunction(new List<ResolvedValue>(new[] {a, b})))
             .Operator("d", 4, Associativity.Left, OpFn2((a, b) => a + "d" + b))
             .Term("true", () => ResolvedValue.Of("true"))
             .Term("false", () => ResolvedValue.Of("false"))
@@ -127,7 +127,7 @@ public class FormulaOptimizer
             foreach (var next in values) 
             {
                 if (next is AnyFunction anyFn) {
-                    _values.InsertRange(0, anyFn._values);
+                    _values.AddRange(anyFn._values);
                     continue;
                 }
 
@@ -143,7 +143,7 @@ public class FormulaOptimizer
                     _values.Add(True);
                     return;
                 }
-                _values.Insert(0, next);
+                _values.Add(next);
             }
 
             if (_values.Count == 0)
@@ -184,7 +184,7 @@ public class FormulaOptimizer
             foreach (var next in values) 
             {
                 if (next is AllFunction allFn) {
-                    _values.InsertRange(0, allFn._values);
+                    _values.AddRange(allFn._values);
                     continue;
                 }
 
@@ -199,7 +199,7 @@ public class FormulaOptimizer
                     _values.Add(False);
                     return;
                 }
-                _values.Insert(0, next);
+                _values.Add(next);
             }
 
             if (_values.Count == 0)

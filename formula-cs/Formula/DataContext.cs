@@ -11,16 +11,16 @@ public class DataContext : IDataContext
 {
     public static readonly IDataContext Empty = new EmptyDataContext();
 
-    private readonly Dictionary<string, IResolvable> _data;
+    private readonly Dictionary<string, IResolvable?> _data;
     
     public DataContext()
     {
-        _data = new Dictionary<string, IResolvable>();
+        _data = new Dictionary<string, IResolvable?>();
     }
     
-    public DataContext(IDictionary<string, IResolvable> values)
+    public DataContext(IDictionary<string, IResolvable?> values)
     {
-        _data = new Dictionary<string, IResolvable>(values);
+        _data = new Dictionary<string, IResolvable?>(values);
     }
 
     public bool TryGet(string key, out ResolvedValue resolvable)
@@ -46,7 +46,7 @@ public class DataContext : IDataContext
         return _data.Keys;
     }
 
-    public DataContext Set(string key, IResolvable value)
+    public DataContext Set(string key, IResolvable? value)
     {
         _data[key] = value;
         return this;
@@ -78,13 +78,28 @@ public class DataContext : IDataContext
         return Set(key, ResolvedValue.Of(value));
     }
 
+    public DataContext Push(string key, IResolvable value)
+    {
+        if (!_data.TryGetValue(key, out var existing))
+        {
+            existing = new ResolvableList();
+        }
+
+        if (existing is ResolvableList list)
+        {
+            list.Push(value);
+            return this;
+        }
+
+        var newList = new ResolvableList();
+        newList.Push(existing);
+        newList.Push(value);
+        return this;
+    }
+
     public DataContext Push(string key, ResolvedValue value)
     {
-        var existing = Get(key).AsList();
-        var merged = new List<ResolvedValue>();
-        merged.AddRange(existing);
-        merged.AddRange(value.AsList());
-        return Set(key, ResolvedValue.Of(merged));
+        return Push(key, Resolvable.Just(value));
     }
 
     public DataContext Push(string key, string value)

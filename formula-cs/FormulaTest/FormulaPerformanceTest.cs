@@ -26,7 +26,7 @@ public class FormulaPerformanceTest
     public void ResolvePerformance()
     {
         var formula = Formula.Formula.Parse(FormulaText);
-        var context = new DataContext(new Dictionary<string, IResolvable>
+        var context = new DataContext(new Dictionary<string, IResolvable?>
         {
             ["alpha"] = Resolvable.Just("true"),
             ["beta"] = Formula.Formula.Parse("!@delta"),
@@ -55,7 +55,7 @@ public class FormulaPerformanceTest
     {
         const int depth = 100;
         var formula = Formula.Formula.Parse($"@step_{depth}");
-        var context = new DataContext(new Dictionary<string, IResolvable>
+        var context = new DataContext(new Dictionary<string, IResolvable?>
         {
             ["step_1"] = Resolvable.Just(1)
         });

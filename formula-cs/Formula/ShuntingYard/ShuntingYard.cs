@@ -42,7 +42,7 @@ public class ShuntingYard : IResolvable
                     var arity = ((Arity) localStack.Pop()).Value;
                     var parameters = new List<ResolvedValue>();
                     while (arity-- > 0) {
-                        parameters.Add((ResolvedValue) CheckedPopParameter(next, arity, localStack));
+                        parameters.Insert(0, (ResolvedValue) CheckedPopParameter(next, arity, localStack));
                     }
                     localStack.Push(func.Execute(parameters));
                     break;

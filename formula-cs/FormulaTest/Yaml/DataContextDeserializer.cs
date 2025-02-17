@@ -21,7 +21,7 @@ public class DataContextDeserializer : INodeDeserializer
             value = null;
             return true;
         }
-        value = new DataContext((Dictionary<string, IResolvable>) result);
+        value = new DataContext((Dictionary<string, IResolvable?>) result);
         return true;
     }
 }
