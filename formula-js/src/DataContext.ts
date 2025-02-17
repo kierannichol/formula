@@ -31,7 +31,7 @@ export class ImmutableDataContext {
 }
 
 export interface MutableDataContext extends DataContext {
-  set(key: string, value: string | number | boolean | Resolvable): void;
+  set(key: string, value: string | number | boolean | ResolvedValue[] | Resolvable): void;
 
   remove(key: string): void;
 
@@ -131,7 +131,7 @@ class StaticDataContext extends BaseDataContext implements MutableDataContext {
     } else if (!Array.isArray(existing)) {
       this.state[key] = [existing, value];
     } else {
-      this.state[key] = [...existing, value];
+      existing.push(value);
     }
   }
 

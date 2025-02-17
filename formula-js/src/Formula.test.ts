@@ -56,14 +56,20 @@ function toDataContext(data: any): DataContext {
   return DataContext.of(parsed);
 }
 
-function parseDataValue(value: any): string|number|boolean|ResolvedValue[]|Resolvable {
+function parseDataValue(value: any): string | number | boolean | Resolvable[] | Resolvable {
   if (typeof value === "string"
       && value.startsWith("{")
       && value.endsWith("}")) {
     return Formula.parse(value.slice(1, -1));
   }
   if (Array.isArray(value)) {
-    return value.map(ResolvedValue.of);
+    return value
+    .map(value => parseDataValue(value))
+    .map(value => {
+      if (value instanceof Resolvable) return value;
+      if (Array.isArray(value)) throw Error("Nested arrays not supported");
+      return Resolvable.just(value);
+    });
   }
   return value;
 }

@@ -316,3 +316,18 @@
     list_a: [1, 2]
     num_b: 3
   expected_list: [1, 2, 3]
+- name: "max(list with formulas)"
+  formula: "max(@list)"
+  data:
+      list: ["{1+1}", "{2+2}", "{3+3}"]
+  expected_number: 6
+- name: "min(list with formulas)"
+  formula: "min(@list)"
+  data:
+    list: ["{1+1}", "{2+2}", "{3+3}"]
+  expected_number: 2
+- name: "sum(list with formulas)"
+  formula: "sum(@list)"
+  data:
+    list: ["{1+1}", "{2+2}", "{3+3}"]
+  expected_number: 12

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 public abstract class ResolvedValue implements Comparable<ResolvedValue> {
     public static final ResolvedValue TRUE = of(true);
@@ -48,7 +49,7 @@ public abstract class ResolvedValue implements Comparable<ResolvedValue> {
         return concat(List.of(values));
     }
 
-    public static ResolvedValue concat(List<ResolvedValue> values) {
+    public static ResolvedValue concat(Iterable<ResolvedValue> values) {
         List<ResolvedValue> combined = new ArrayList<>();
         for (ResolvedValue value : values) {
             if (value.hasValue()) {
@@ -56,6 +57,20 @@ public abstract class ResolvedValue implements Comparable<ResolvedValue> {
             }
         }
         return new ResolvedListValue(combined);
+    }
+
+    public static ResolvedValue concat(Stream<ResolvedValue> values) {
+        return ResolvedValue.of(values
+                .filter(ResolvedValue::hasValue)
+                .reduce(new ArrayList<>(),
+                        (list, value) -> {
+                            list.addAll(value.asList());
+                            return list;
+                        },
+                        (list1, list2) -> {
+                            list1.addAll(list2);
+                            return list1;
+                        }));
     }
 
     public abstract String asText();
@@ -101,7 +116,7 @@ public abstract class ResolvedValue implements Comparable<ResolvedValue> {
 
         @Override
         public boolean asBoolean() {
-            return FALSE_STRING_VALUES.contains(value.toLowerCase(Locale.ROOT));
+            return !FALSE_STRING_VALUES.contains(value.toLowerCase(Locale.ROOT));
         }
 
         @Override

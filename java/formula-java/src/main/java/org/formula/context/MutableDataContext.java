@@ -31,6 +31,8 @@ public interface MutableDataContext extends DataContext {
         return set(key, ResolvedValue.of(value));
     }
 
+    MutableDataContext push(String key, Resolvable value);
+
     default MutableDataContext push(String key, ResolvedValue value) {
         return set(key, ResolvedValue.concat(get(key), value));
     }

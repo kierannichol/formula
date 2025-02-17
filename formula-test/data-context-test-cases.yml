@@ -1,0 +1,52 @@
+- name: "set number"
+  actions:
+    - "SET key_num 5"
+  expected:
+    key_num:
+      expected_number: 5
+- name: "set text"
+  actions:
+    - "SET key_text Foo"
+  expected:
+    key_text:
+      expected_text: "Foo"
+- name: "set boolean"
+  actions:
+    - "SET key_bool true"
+  expected:
+    key_bool:
+      expected_boolean: true
+- name: "set formula"
+  actions:
+      - "SET foo 10"
+      - "SET key_formula {@foo}"
+  expected:
+      key_formula:
+        expected_number: 10
+- name: "push to new key"
+  actions:
+      - "PUSH key_list 1"
+  expected:
+      key_list:
+        expected_list:
+          - expected_number: 1
+- name: "push to key with scalar value"
+  actions:
+    - "PUSH key_list 1"
+    - "PUSH key_list 2"
+  expected:
+    key_list:
+      expected_list:
+        - expected_number: 1
+        - expected_number: 2
+- name: "push to key with list value"
+  actions:
+    - "PUSH key_list 1"
+    - "PUSH key_list 2"
+    - "PUSH key_list 3"
+  expected:
+    key_list:
+      expected_list:
+        - expected_number: 1
+        - expected_number: 2
+        - expected_number: 3

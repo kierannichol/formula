@@ -1,5 +1,6 @@
 package org.formula;
 
+import java.util.List;
 import org.formula.context.DataContext;
 
 public interface Resolvable {
@@ -25,7 +26,7 @@ public interface Resolvable {
     }
 
     static Resolvable empty() {
-        return StaticResolvable.of(null);
+        return EmptyResolvable.INSTANCE;
     }
 
     default ResolvedValue resolve() {
@@ -35,4 +36,12 @@ public interface Resolvable {
     ResolvedValue resolve(DataContext context);
 
     String asFormula();
+
+    static Resolvable concat(Resolvable... values) {
+        return concat(List.of(values));
+    }
+
+    static Resolvable concat(Iterable<Resolvable> values) {
+        return new ResolvableList(values);
+    }
 }

@@ -8,12 +8,15 @@ public class StaticResolvable implements Resolvable {
     private final ResolvedValue resolved;
 
     public static Resolvable of(ResolvedValue value) {
+        if (value == null) {
+            return Resolvable.empty();
+        }
         return new StaticResolvable(value);
     }
 
     @Override
     public ResolvedValue resolve() {
-        return Optional.ofNullable(resolved).orElse(ResolvedValue.none());
+        return resolved;
     }
 
     @Override

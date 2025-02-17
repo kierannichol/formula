@@ -26,6 +26,10 @@ public class ResolvableDeserializer extends StdDeserializer<Resolvable> {
                 return Formula.parse(formula);
             }
         }
+        if (currentToken == JsonToken.START_ARRAY) {
+            var values = deserializationContext.readValue(jp, Resolvable[].class);
+            return Resolvable.concat(values);
+        }
         return Resolvable.just(deserializationContext.readValue(jp, ResolvedValue.class));
     }
 

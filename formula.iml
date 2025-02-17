@@ -7,6 +7,8 @@
       <excludeFolder url="file://$MODULE_DIR$/formula-cs/Formula/obj" />
       <excludeFolder url="file://$MODULE_DIR$/formula-cs/FormulaTest/bin" />
       <excludeFolder url="file://$MODULE_DIR$/formula-cs/FormulaTest/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/formula-py/.venv/bin" />
+      <excludeFolder url="file://$MODULE_DIR$/formula-py/.venv/lib" />
     </content>
     <orderEntry type="jdk" jdkName="17" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />

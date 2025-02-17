@@ -15,8 +15,8 @@ public class TestCaseLoader {
     }
 
     public static <T> List<T> load(Class<? extends T> testCaseType, String resourceName) {
-        try (var resouceStream = ClassLoader.getSystemResourceAsStream(resourceName)) {
-            return mapper.readValue(resouceStream, mapper.getTypeFactory().constructCollectionLikeType(List.class, testCaseType));
+        try (var resourceStream = ClassLoader.getSystemResourceAsStream(resourceName)) {
+            return mapper.readValue(resourceStream, mapper.getTypeFactory().constructCollectionLikeType(List.class, testCaseType));
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

@@ -63,4 +63,13 @@ class ResolvableDeserializerTest {
 
         assertThat(actual).isEqualTo(expected);
     }
+
+    @Test
+    void listOfNumbers() throws JsonProcessingException {
+        String json = "[1, 2, 3]";
+        Resolvable expected = Resolvable.concat(Resolvable.just(1), Resolvable.just(2), Resolvable.just(3));
+        Resolvable actual = mapper.readValue(json, Resolvable.class);
+
+        assertThat(actual).isEqualTo(expected);
+    }
 }
