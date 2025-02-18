@@ -1,6 +1,7 @@
 package org.formula;
 
 import java.util.List;
+import java.util.Optional;
 import org.formula.context.DataContext;
 import org.formula.optimize.FormulaOptimizer;
 import org.formula.parse.shuntingyard.Associativity;
@@ -61,21 +62,21 @@ public class Formula {
         return context.search(key)
                 .flatMap(a -> a.asList().stream())
                 .reduce(Formula::addReduceFn)
-                .orElse(ResolvedValue.of(0));
+                .orElse(ResolvedValue.ZERO);
     }
 
     private static ResolvedValue sumMaxFn(DataContext context, String key) {
         return context.search(key)
                 .map(a -> a.asList().stream().reduce(Formula::maxReduceFn).orElse(ResolvedValue.none()))
                 .reduce(Formula::addReduceFn)
-                .orElse(ResolvedValue.of(0));
+                .orElse(ResolvedValue.ZERO);
     }
 
     private static ResolvedValue sumMinFn(DataContext context, String key) {
         return context.search(key)
                 .map(a -> a.asList().stream().reduce(Formula::minReduceFn).orElse(ResolvedValue.none()))
                 .reduce(Formula::addReduceFn)
-                .orElse(ResolvedValue.of(0));
+                .orElse(ResolvedValue.ZERO);
     }
 
     private static ResolvedValue maxFn(DataContext context, String key) {
@@ -97,18 +98,18 @@ public class Formula {
     }
 
     private static ResolvedValue addReduceFn(ResolvedValue a, ResolvedValue b) {
-        if (a.equals(ResolvedValue.none()) && b.equals(ResolvedValue.none())) {
-            return ResolvedValue.none();
+        if (!a.hasValue() && !b.hasValue()) {
+            return ResolvedValue.ZERO;
         }
         return ResolvedValue.of(a.asDecimal() + b.asDecimal());
     }
 
     private static ResolvedValue maxReduceFn(ResolvedValue a, ResolvedValue b) {
-        return a.asDecimal() > b.asDecimal() ? a : b;
+        return checkForNone(a,b).orElseGet(() -> a.asDecimal() > b.asDecimal() ? a : b);
     }
 
     private static ResolvedValue minReduceFn(ResolvedValue a, ResolvedValue b) {
-        return a.asDecimal() < b.asDecimal() ? a : b;
+        return checkForNone(a,b).orElseGet(() -> a.asDecimal() < b.asDecimal() ? a : b);
     }
 
     public static Resolvable parse(String formulaText) {
@@ -120,6 +121,12 @@ public class Formula {
 
     public static String optimize(String formulaText) {
         return FormulaOptimizer.optimize(formulaText);
+    }
+
+    private static Optional<ResolvedValue> checkForNone(ResolvedValue a, ResolvedValue b) {
+        if (!a.hasValue()) return Optional.of(b);
+        if (!b.hasValue()) return Optional.of(a);
+        return Optional.empty();
     }
 
     private Formula() {}

@@ -97,41 +97,46 @@ public static class Formula
 
     private static ResolvedValue SumFunction(IDataContext context, string key)
     {
-        FindAndReduce(context, key, AddReduceFunction, ResolvedValue.Zero, out var reduced);
-        return reduced;
+        return FindAndReduce(context, key, AddReduceFunction, ResolvedValue.Zero, out var reduced) > 0
+            ? reduced
+            : ResolvedValue.Zero;
     }
 
     private static ResolvedValue SumMaxFunction(IDataContext context, string key)
     {
-        FindAndReduce2(context, key, MaxReduceFunction, AddReduceFunction, ResolvedValue.Zero, out var reduced);
-        return reduced;
+        return FindAndReduce2(context, key, MaxReduceFunction, AddReduceFunction, ResolvedValue.Zero, out var reduced) >
+               0
+            ? reduced
+            : ResolvedValue.Zero;
     }
 
     private static ResolvedValue SumMinFunction(IDataContext context, string key)
     {
-        FindAndReduce2(context, key, MinReduceFunction, AddReduceFunction, ResolvedValue.Zero, out var reduced);
-        return reduced;
+        return FindAndReduce2(context, key, MinReduceFunction, AddReduceFunction, ResolvedValue.Zero, out var reduced) >
+               0
+            ? reduced
+            : ResolvedValue.Zero;
     }
 
     private static ResolvedValue MaxFunction(IDataContext context, string key)
     {
-        FindAndReduce(context, key, MaxReduceFunction, ResolvedValue.None, out var reduced);
-        return reduced;
+        return FindAndReduce(context, key, MaxReduceFunction, ResolvedValue.None, out var reduced) > 0
+            ? reduced
+            : ResolvedValue.None;
     }
 
     private static ResolvedValue MinFunction(IDataContext context, string key)
     {
-        var maxValue = ResolvedValue.Of(int.MaxValue);
-        return FindAndReduce(context, key, MinReduceFunction, maxValue, out var reduced) > 0
+        return FindAndReduce(context, key, MinReduceFunction, ResolvedValue.None, out var reduced) > 0
             ? reduced
             : ResolvedValue.None;
     }
 
     private static ResolvedValue AddReduceFunction(ResolvedValue a, ResolvedValue b)
     {
-        if (a.Equals(ResolvedValue.None) && b.Equals(ResolvedValue.None))
+        if (!a.HasValue && !b.HasValue)
         {
-            return ResolvedValue.None;
+            return ResolvedValue.Zero;
         }
 
         return ResolvedValue.Of(a.AsDecimal() + b.AsDecimal());
@@ -139,40 +144,18 @@ public static class Formula
 
     private static ResolvedValue MaxReduceFunction(ResolvedValue a, ResolvedValue b)
     {
-        if (a == ResolvedValue.None && b == ResolvedValue.None)
-        {
-            return ResolvedValue.None;
-        }
-
-        if (a == ResolvedValue.None)
-        {
-            return b;
-        }
-
-        if (b == ResolvedValue.None)
-        {
-            return a;
-        }
-        return a.AsDecimal() > b.AsDecimal() ? a : b;
+        return CheckForNone(a,b) ?? (a.AsDecimal() > b.AsDecimal() ? a : b);
     }
 
     private static ResolvedValue MinReduceFunction(ResolvedValue a, ResolvedValue b)
     {
-        if (a == ResolvedValue.None && b == ResolvedValue.None)
-        {
-            return ResolvedValue.None;
-        }
+        return CheckForNone(a,b) ?? (a.AsDecimal() < b.AsDecimal() ? a : b);
+    }
 
-        if (a == ResolvedValue.None)
-        {
-            return b;
-        }
-
-        if (b == ResolvedValue.None)
-        {
-            return a;
-        }
-        return a.AsDecimal() < b.AsDecimal() ? a : b;
+    private static ResolvedValue? CheckForNone(ResolvedValue a, ResolvedValue b)
+    {
+        if (a is { HasValue: false }) return b;
+        return b is { HasValue: false } ? a : null;
     }
 
     private static int FindAndReduce<T>(IDataContext context, string pattern,

@@ -72,31 +72,31 @@ export class Formula {
   private static minFn(state: DataContext, key: string) {
     return Formula.noneIfEmpty(state.search(key))
     .flatMap(a => a.asList())
-    .reduce(Formula.minReduceFn);
+    .reduce(Formula.minReduceFn, ResolvedValue.None);
   }
 
   private static maxFn(state: DataContext, key: string) {
     return Formula.noneIfEmpty(state.search(key))
     .flatMap(a => a.asList())
-    .reduce(Formula.maxReduceFn);
+    .reduce(Formula.maxReduceFn, ResolvedValue.None);
   }
 
   private static sumFn(state: DataContext, key: string) {
     return state.search(key)
     .flatMap(a => a.asList())
-    .reduce(Formula.addReduceFn, ResolvedValue.None);
+    .reduce(Formula.addReduceFn, ResolvedValue.of(0));
   }
 
   private static sumMaxFn(state: DataContext, key: string) {
     return state.search(key)
     .flatMap(a => a.asList().reduce(Formula.maxReduceFn))
-    .reduce(Formula.addReduceFn, ResolvedValue.None);
+    .reduce(Formula.addReduceFn, ResolvedValue.of(0));
   }
 
   private static sumMinFn(state: DataContext, key: string) {
     return state.search(key)
     .flatMap(a => a.asList().reduce(Formula.minReduceFn))
-    .reduce(Formula.addReduceFn, ResolvedValue.None);
+    .reduce(Formula.addReduceFn, ResolvedValue.of(0));
   }
 
   private static concatFn(args: ResolvedValue[]) {
@@ -110,11 +110,18 @@ export class Formula {
   }
 
   private static maxReduceFn(a: ResolvedValue, b: ResolvedValue): ResolvedValue {
-    return a.asNumber() > b.asNumber() ? a : b;
+    return Formula.notNone(a,b) ?? (a.asNumber() > b.asNumber() ? a : b);
   }
 
   private static minReduceFn(a: ResolvedValue, b: ResolvedValue): ResolvedValue {
-    return a.asNumber() < b.asNumber() ? a : b;
+    return Formula.notNone(a,b) ?? (a.asNumber() < b.asNumber() ? a : b);
+  }
+
+  private static notNone(a: ResolvedValue, b: ResolvedValue): ResolvedValue | null {
+    if (!a.hasValue() && !b.hasValue()) return ResolvedValue.None;
+    if (!a.hasValue()) return b;
+    if (!b.hasValue()) return a;
+    return null;
   }
 }
 

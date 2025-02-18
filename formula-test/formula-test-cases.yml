@@ -298,6 +298,28 @@
   data:
       list: [1, 5, 3]
   expected_number: 9
+- name: "sum(nothing)"
+  formula: "sum(@nothing)"
+  expected_number: 0
+  expected_text: "0"
+- name: "max(nothing)"
+  formula: "max(@nothing)"
+  expected_number: 0
+  expected_text: ""
+- name: "min(nothing)"
+  formula: "min(@nothing)"
+  expected_number: 0
+  expected_text: ""
+- name: "max(negatives)"
+  formula: "max(@negatives)"
+  data:
+    negatives: [-1, -5, -3]
+  expected_number: -1
+- name: "min(negatives)"
+  formula: "min(@negatives)"
+  data:
+    negatives: [ 1, -5, -3 ]
+  expected_number: -5
 - name: "concat(num, num)"
   formula: "concat(@num_a, @num_b)"
   data:
@@ -349,3 +371,9 @@
     list#1: [1, 5, 3]
     list#2: [2, 4, 6]
   expected_number: 3
+- name: "sum(max(nothing))"
+  formula: "sum(max(@nothing#*))"
+  expected_number: 0
+- name: "sum(min(nothing))"
+  formula: "sum(min(@nothing#*))"
+  expected_number: 0
