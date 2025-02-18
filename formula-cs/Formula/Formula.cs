@@ -6,44 +6,45 @@ namespace Formula;
 public static class Formula
 {
     private static readonly ShuntingYardParser Parser = ShuntingYardParser.Create()
-            .Operator("^", 4, Associativity.Right, (a, b) => ResolvedValue.Of(Math.Pow(a.AsDecimal(), b.AsDecimal())))
-            .Operator("*", 3, Associativity.Left, (a, b) => ResolvedValue.Of(a.AsDecimal() * b.AsDecimal()))
-            .Operator("/", 3, Associativity.Left, (a, b) => ResolvedValue.Of(a.AsDecimal() / b.AsDecimal()))
-            .Operator("+", 2, Associativity.Left, (a, b) => ResolvedValue.Of(a.AsDecimal() + b.AsDecimal()))
-            .BiOperator("-", 
-                new Operator1("-", 4, Associativity.Left, a => ResolvedValue.Of(-a.AsDecimal())),
-                new Operator2("-", 2, Associativity.Left, (a, b) => ResolvedValue.Of(a.AsDecimal() - b.AsDecimal())))
-            .Operator("!", 2, Associativity.Left, a => ResolvedValue.Of(!a.AsBoolean()))
-            .Operator("<", 3, Associativity.Left, (a, b) => ResolvedValue.Of(a.AsDecimal() < b.AsDecimal()))
-            .Operator("<=", 3, Associativity.Left, (a, b) => ResolvedValue.Of(a.AsDecimal() <= b.AsDecimal()))
-            .Operator(">", 3, Associativity.Left, (a, b) => ResolvedValue.Of(a.AsDecimal() > b.AsDecimal()))
-            .Operator(">=", 3, Associativity.Left, (a, b) => ResolvedValue.Of(a.AsDecimal() >= b.AsDecimal()))
-            .Operator("==", 3, Associativity.Left, (a, b) => ResolvedValue.Of(a.Equals(b)))
-            .Operator("!=", 3, Associativity.Left, (a, b) => ResolvedValue.Of(!a.Equals(b)))
-            .Operator("AND", 1, Associativity.Left, (a, b) => ResolvedValue.Of(a.AsBoolean() && b.AsBoolean()))
-            .Operator("OR", 1, Associativity.Left, (a, b) => ResolvedValue.Of(a.AsBoolean() || b.AsBoolean()))
-            .Operator("d", 4, Associativity.Left, (a, b) => new ResolvedRollValue(a.AsNumber(), b.AsNumber()))
-            .Term("true", () => ResolvedValue.Of(true))
-            .Term("false", () => ResolvedValue.Of(false))
-            .Term("null", () => ResolvedValue.None)
-            .Function("abs", a => ResolvedValue.Of(Math.Abs(a.AsDecimal())))
-            .Function("min", (a, b) => ResolvedValue.Of(Math.Min(a.AsDecimal(), b.AsDecimal())))
-            .Function("max", (a, b) => ResolvedValue.Of(Math.Max(a.AsDecimal(), b.AsDecimal())))
-            .Function("floor", a => ResolvedValue.Of(Math.Floor(a.AsDecimal())))
-            .Function("ceil", a => ResolvedValue.Of(Math.Ceiling(a.AsDecimal())))
-            .Function("signed", a => ResolvedValue.Of((a.AsNumber() < 0 ? "" : "+") + a.AsNumber()))
-            .Function("if", (a, b, c) => a.AsBoolean() ? b : c)
-            .Function("concat", ConcatFunction)
-            .Function("ordinal", a => ResolvedValue.Of(Ordinal.ToString(a.AsNumber())))
-            .Function("any", AnyFunction)
-            .Function("all", AllFunction)
-            .Variable("@", FindVariable)
-            .Variable("@{", "}", FindVariable)
-            .Variable("min(@", ")", MinFunction)
-            .Variable("max(@", ")", MaxFunction)
-            .Variable("sum(@", ")", SumFunction)
-            .Comment("[", "]", (value, comment) => NamedResolvedValue.Of(value, comment.Substring(1, comment.Length - 2)))
-            ;
+        .Operator("^", 4, Associativity.Right, (a, b) => ResolvedValue.Of(Math.Pow(a.AsDecimal(), b.AsDecimal())))
+        .Operator("*", 3, Associativity.Left, (a, b) => ResolvedValue.Of(a.AsDecimal() * b.AsDecimal()))
+        .Operator("/", 3, Associativity.Left, (a, b) => ResolvedValue.Of(a.AsDecimal() / b.AsDecimal()))
+        .Operator("+", 2, Associativity.Left, (a, b) => ResolvedValue.Of(a.AsDecimal() + b.AsDecimal()))
+        .BiOperator("-",
+            new Operator1("-", 4, Associativity.Left, a => ResolvedValue.Of(-a.AsDecimal())),
+            new Operator2("-", 2, Associativity.Left, (a, b) => ResolvedValue.Of(a.AsDecimal() - b.AsDecimal())))
+        .Operator("!", 2, Associativity.Left, a => ResolvedValue.Of(!a.AsBoolean()))
+        .Operator("<", 3, Associativity.Left, (a, b) => ResolvedValue.Of(a.AsDecimal() < b.AsDecimal()))
+        .Operator("<=", 3, Associativity.Left, (a, b) => ResolvedValue.Of(a.AsDecimal() <= b.AsDecimal()))
+        .Operator(">", 3, Associativity.Left, (a, b) => ResolvedValue.Of(a.AsDecimal() > b.AsDecimal()))
+        .Operator(">=", 3, Associativity.Left, (a, b) => ResolvedValue.Of(a.AsDecimal() >= b.AsDecimal()))
+        .Operator("==", 3, Associativity.Left, (a, b) => ResolvedValue.Of(a.Equals(b)))
+        .Operator("!=", 3, Associativity.Left, (a, b) => ResolvedValue.Of(!a.Equals(b)))
+        .Operator("AND", 1, Associativity.Left, (a, b) => ResolvedValue.Of(a.AsBoolean() && b.AsBoolean()))
+        .Operator("OR", 1, Associativity.Left, (a, b) => ResolvedValue.Of(a.AsBoolean() || b.AsBoolean()))
+        .Operator("d", 4, Associativity.Left, (a, b) => new ResolvedRollValue(a.AsNumber(), b.AsNumber()))
+        .Term("true", () => ResolvedValue.Of(true))
+        .Term("false", () => ResolvedValue.Of(false))
+        .Term("null", () => ResolvedValue.None)
+        .Function("abs", a => ResolvedValue.Of(Math.Abs(a.AsDecimal())))
+        .Function("min", (a, b) => ResolvedValue.Of(Math.Min(a.AsDecimal(), b.AsDecimal())))
+        .Function("max", (a, b) => ResolvedValue.Of(Math.Max(a.AsDecimal(), b.AsDecimal())))
+        .Function("floor", a => ResolvedValue.Of(Math.Floor(a.AsDecimal())))
+        .Function("ceil", a => ResolvedValue.Of(Math.Ceiling(a.AsDecimal())))
+        .Function("signed", a => ResolvedValue.Of((a.AsNumber() < 0 ? "" : "+") + a.AsNumber()))
+        .Function("if", (a, b, c) => a.AsBoolean() ? b : c)
+        .Function("concat", ConcatFunction)
+        .Function("ordinal", a => ResolvedValue.Of(Ordinal.ToString(a.AsNumber())))
+        .Function("any", AnyFunction)
+        .Function("all", AllFunction)
+        .Variable("@", FindVariable)
+        .Variable("@{", "}", FindVariable)
+        .Variable("min(@", ")", MinFunction)
+        .Variable("max(@", ")", MaxFunction)
+        .Variable("sum(@", ")", SumFunction)
+        .Variable("sum(max(@", "))", SumMaxFunction)
+        .Variable("sum(min(@", "))", SumMinFunction)
+        .Comment("[", "]", (value, comment) => NamedResolvedValue.Of(value, comment.Substring(1, comment.Length - 2)));
 
     private static ResolvedValue ConcatFunction(IEnumerable<ResolvedValue> arg)
     {
@@ -52,13 +53,14 @@ public static class Formula
         {
             collected.AddRange(resolvedValue.AsList());
         }
+
         return new ResolvedListValue(collected);
     }
 
-    public static IResolvable? Parse(string formulaText)
+    public static IResolvable Parse(string formulaText)
     {
-        return formulaText.Length == 0 
-            ? Resolvable.Empty 
+        return formulaText.Length == 0
+            ? Resolvable.Empty
             : Parser.Parse(formulaText);
     }
 
@@ -74,7 +76,7 @@ public static class Formula
 
         return ResolvedValue.False;
     }
-    
+
     private static ResolvedValue AllFunction(IEnumerable<ResolvedValue> values)
     {
         foreach (var value in values)
@@ -95,31 +97,82 @@ public static class Formula
 
     private static ResolvedValue SumFunction(IDataContext context, string key)
     {
-        FindAndReduce(context, key, AddFunction, ResolvedValue.Zero, out var reduced);
+        FindAndReduce(context, key, AddReduceFunction, ResolvedValue.Zero, out var reduced);
         return reduced;
     }
 
-    private static ResolvedValue AddFunction(ResolvedValue a, ResolvedValue b)
+    private static ResolvedValue SumMaxFunction(IDataContext context, string key)
+    {
+        FindAndReduce2(context, key, MaxReduceFunction, AddReduceFunction, ResolvedValue.Zero, out var reduced);
+        return reduced;
+    }
+
+    private static ResolvedValue SumMinFunction(IDataContext context, string key)
+    {
+        FindAndReduce2(context, key, MinReduceFunction, AddReduceFunction, ResolvedValue.Zero, out var reduced);
+        return reduced;
+    }
+
+    private static ResolvedValue MaxFunction(IDataContext context, string key)
+    {
+        FindAndReduce(context, key, MaxReduceFunction, ResolvedValue.None, out var reduced);
+        return reduced;
+    }
+
+    private static ResolvedValue MinFunction(IDataContext context, string key)
+    {
+        var maxValue = ResolvedValue.Of(int.MaxValue);
+        return FindAndReduce(context, key, MinReduceFunction, maxValue, out var reduced) > 0
+            ? reduced
+            : ResolvedValue.None;
+    }
+
+    private static ResolvedValue AddReduceFunction(ResolvedValue a, ResolvedValue b)
     {
         if (a.Equals(ResolvedValue.None) && b.Equals(ResolvedValue.None))
         {
             return ResolvedValue.None;
         }
+
         return ResolvedValue.Of(a.AsDecimal() + b.AsDecimal());
     }
-    
-    private static ResolvedValue MaxFunction(IDataContext context, string key)
+
+    private static ResolvedValue MaxReduceFunction(ResolvedValue a, ResolvedValue b)
     {
-        FindAndReduce(context, key, Max, ResolvedValue.None, out var reduced);
-        return reduced;
-        ResolvedValue Max(ResolvedValue a, ResolvedValue b) => a.AsDecimal() > b.AsDecimal() ? a : b;
+        if (a == ResolvedValue.None && b == ResolvedValue.None)
+        {
+            return ResolvedValue.None;
+        }
+
+        if (a == ResolvedValue.None)
+        {
+            return b;
+        }
+
+        if (b == ResolvedValue.None)
+        {
+            return a;
+        }
+        return a.AsDecimal() > b.AsDecimal() ? a : b;
     }
-    
-    private static ResolvedValue MinFunction(IDataContext context, string key)
+
+    private static ResolvedValue MinReduceFunction(ResolvedValue a, ResolvedValue b)
     {
-        var maxValue = ResolvedValue.Of(int.MaxValue);
-        return FindAndReduce(context, key, Min, maxValue, out var reduced) > 0 ? reduced : ResolvedValue.None;
-        ResolvedValue Min(ResolvedValue a, ResolvedValue b) => a.AsDecimal() < b.AsDecimal() ? a : b;
+        if (a == ResolvedValue.None && b == ResolvedValue.None)
+        {
+            return ResolvedValue.None;
+        }
+
+        if (a == ResolvedValue.None)
+        {
+            return b;
+        }
+
+        if (b == ResolvedValue.None)
+        {
+            return a;
+        }
+        return a.AsDecimal() < b.AsDecimal() ? a : b;
     }
 
     private static int FindAndReduce<T>(IDataContext context, string pattern,
@@ -138,7 +191,7 @@ public static class Formula
 
             return count;
         }
-        
+
         var formatted = pattern.Replace("*", ".*");
         var regex = new Regex($"^{formatted}$");
         foreach (var key in context.Keys())
@@ -147,9 +200,37 @@ public static class Formula
             var found = context.Get(key);
             foreach (var value in found.AsList())
             {
-                reduced = reduceFunction(reduced, context.Get(key));
+                reduced = reduceFunction(reduced, value);
                 count++;
             }
+        }
+
+        return count;
+        bool Predicate(string key) => regex.IsMatch(key);
+    }
+
+    private static int FindAndReduce2<T>(IDataContext context, string pattern,
+        Func<ResolvedValue, ResolvedValue, ResolvedValue> reduceFunctionA,
+        Func<T, ResolvedValue, T> reduceFunctionB,
+        T initialValue, out T reduced)
+    {
+        reduced = initialValue;
+        var count = 0;
+
+        var formatted = pattern.Replace("*", ".*");
+        var regex = new Regex($"^{formatted}$");
+        foreach (var key in context.Keys())
+        {
+            if (!Predicate(key)) continue;
+            var found = context.Get(key);
+            var reducedA = ResolvedValue.None;
+            foreach (var value in found.AsList())
+            {
+                reducedA = reduceFunctionA(reducedA, value);
+            }
+
+            reduced = reduceFunctionB(reduced, reducedA);
+            count++;
         }
 
         return count;

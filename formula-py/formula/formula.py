@@ -65,6 +65,8 @@ _parser = (ShuntingYardParser()
            .variable('min(@', ')', lambda context, key: _min_fn(context, key))
            .variable('max(@', ')', lambda context, key: _max_fn(context, key))
            .variable('sum(@', ')', lambda context, key: _sum_fn(context, key))
+           .variable('sum(max(@', '))', lambda context, key: _sum_max_fn(context, key))
+           .variable('sum(min(@', '))', lambda context, key: _sum_min_fn(context, key))
            .comment('[', ']', lambda text, value: NamedResolvedValue(value, text)))
 
 
@@ -103,6 +105,30 @@ def _sum_fn(context: DataContext, key: str):
     for found in context.search(key):
         for value in found.as_list():
             sum_value += value.as_number()
+    return resolved_value(sum_value)
+
+
+def _sum_max_fn(context: DataContext, key: str):
+    sum_value = 0
+    for found in context.search(key):
+        max_value = None
+        for value in found.as_list():
+            if max_value is None or value.as_decimal() > max_value:
+                max_value = value.as_decimal()
+        if max_value is not None:
+            sum_value += max_value
+    return resolved_value(sum_value)
+
+
+def _sum_min_fn(context: DataContext, key: str):
+    sum_value = 0
+    for found in context.search(key):
+        max_value = None
+        for value in found.as_list():
+            if max_value is None or value.as_decimal() < max_value:
+                max_value = value.as_decimal()
+        if max_value is not None:
+            sum_value += max_value
     return resolved_value(sum_value)
 
 

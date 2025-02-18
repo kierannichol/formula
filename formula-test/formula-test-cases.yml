@@ -331,3 +331,21 @@
   data:
     list: ["{1+1}", "{2+2}", "{3+3}"]
   expected_number: 12
+- name: "sum(keys + list)"
+  formula: "sum(@to_add#*)"
+  data:
+    to_add#value: 4
+    to_add#list: ["{1+1}", "{2+2}", "{3+3}"]
+  expected_number: 16
+- name: "sum(max(lists))"
+  formula: "sum(max(@list#*))"
+  data:
+    list#1: [1, 5, 3]
+    list#2: [2, 4, 6]
+  expected_number: 11
+- name: "sum(min(lists))"
+  formula: "sum(min(@list#*))"
+  data:
+    list#1: [1, 5, 3]
+    list#2: [2, 4, 6]
+  expected_number: 3

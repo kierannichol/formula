@@ -15,7 +15,7 @@ export class Formula {
   .operator('^', 4, Associativity.Right, 2, (a: ResolvedValue, b: ResolvedValue) => ResolvedValue.of(Math.pow(a.asNumber(), b.asNumber())))
   .operator('*', 3, Associativity.Left, 2, (a: ResolvedValue, b: ResolvedValue) => ResolvedValue.of(a.asNumber() * b.asNumber()))
   .operator('/', 3, Associativity.Left, 2, (a: ResolvedValue, b: ResolvedValue) => ResolvedValue.of(a.asNumber() / b.asNumber()))
-  .operator('+', 2, Associativity.Left, 2, Formula.addFn)
+  .operator('+', 2, Associativity.Left, 2, Formula.addReduceFn)
   .operator('!', 2, Associativity.Left, 1, (a: ResolvedValue) => ResolvedValue.of(!a.asBoolean()))
   .operator('<', 3, Associativity.Left, 2, (a: ResolvedValue, b: ResolvedValue) => ResolvedValue.of(a.asNumber() < b.asNumber()))
   .operator('<=', 3, Associativity.Left, 2, (a: ResolvedValue, b: ResolvedValue) => ResolvedValue.of(a.asNumber() <= b.asNumber()))
@@ -45,6 +45,8 @@ export class Formula {
   .variable('min(@', ')', Formula.minFn)
   .variable('max(@', ')', Formula.maxFn)
   .variable('sum(@', ')', Formula.sumFn)
+  .variable('sum(max(@', '))', Formula.sumMaxFn)
+  .variable('sum(min(@', '))', Formula.sumMinFn)
   .comment('[', ']', (text, value) => new NamedResolvedValue(value, text))
   ;
 
@@ -70,29 +72,49 @@ export class Formula {
   private static minFn(state: DataContext, key: string) {
     return Formula.noneIfEmpty(state.search(key))
     .flatMap(a => a.asList())
-    .reduce((a, b) => a.asNumber() < b.asNumber() ? a : b);
+    .reduce(Formula.minReduceFn);
   }
 
   private static maxFn(state: DataContext, key: string) {
     return Formula.noneIfEmpty(state.search(key))
     .flatMap(a => a.asList())
-    .reduce((a, b) => a.asNumber() > b.asNumber() ? a : b, ResolvedValue.None);
+    .reduce(Formula.maxReduceFn);
   }
 
   private static sumFn(state: DataContext, key: string) {
     return state.search(key)
     .flatMap(a => a.asList())
-    .reduce((a, b) => Formula.addFn(a, b), ResolvedValue.None);
+    .reduce(Formula.addReduceFn, ResolvedValue.None);
   }
 
-  private static addFn(a: ResolvedValue, b: ResolvedValue): ResolvedValue {
-    if ((a ?? ResolvedValue.None).equals(ResolvedValue.None) && (b ?? ResolvedValue.None).equals(ResolvedValue.None)) return ResolvedValue.None;
-    return ResolvedValue.of(a.asNumber() + b.asNumber());
+  private static sumMaxFn(state: DataContext, key: string) {
+    return state.search(key)
+    .flatMap(a => a.asList().reduce(Formula.maxReduceFn))
+    .reduce(Formula.addReduceFn, ResolvedValue.None);
+  }
+
+  private static sumMinFn(state: DataContext, key: string) {
+    return state.search(key)
+    .flatMap(a => a.asList().reduce(Formula.minReduceFn))
+    .reduce(Formula.addReduceFn, ResolvedValue.None);
   }
 
   private static concatFn(args: ResolvedValue[]) {
     return ResolvedValue.of(
         args.flatMap(a => a.asList()));
+  }
+
+  private static addReduceFn(a: ResolvedValue, b: ResolvedValue): ResolvedValue {
+    if ((a ?? ResolvedValue.None).equals(ResolvedValue.None) && (b ?? ResolvedValue.None).equals(ResolvedValue.None)) return ResolvedValue.None;
+    return ResolvedValue.of(a.asNumber() + b.asNumber());
+  }
+
+  private static maxReduceFn(a: ResolvedValue, b: ResolvedValue): ResolvedValue {
+    return a.asNumber() > b.asNumber() ? a : b;
+  }
+
+  private static minReduceFn(a: ResolvedValue, b: ResolvedValue): ResolvedValue {
+    return a.asNumber() < b.asNumber() ? a : b;
   }
 }
 
