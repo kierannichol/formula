@@ -81,7 +81,7 @@ class DataContextUtils {
       return [new ResolvedValueWithId(pattern, context.get(pattern))];
     }
 
-    const regex = new RegExp(this.escapeRegExp(pattern).replace(/\\\*/g, ".*?"));
+    const regex = new RegExp('^' + this.escapeRegExp(pattern).replace(/\\\*/g, ".*?") + '$');
     return context.keys()
     .filter((key: string) => regex.test(key))
     .map(key => {

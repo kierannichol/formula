@@ -377,3 +377,10 @@
 - name: "sum(min(nothing))"
   formula: "sum(min(@nothing#*))"
   expected_number: 0
+- name: "search wildcards work"
+  formula: "sum(@key:*)"
+  data:
+    'key:1': 1
+    'key:2': 1
+    'not:key:3': 1
+  expected_number: 2
