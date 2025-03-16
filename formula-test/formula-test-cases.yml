@@ -204,7 +204,6 @@
     key_2: 3
     key_3: 5
   expected_number: 12
-
 - name: wildcard max
   formula: "max(@{key_*})"
   data:
@@ -213,7 +212,6 @@
     key_2: 3
     key_3: 5
   expected_number: 5
-
 - name: wildcard min
   formula: "min(@{key_*})"
   data:
