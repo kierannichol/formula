@@ -1,5 +1,7 @@
 package org.formula;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import org.formula.context.DataContext;
@@ -29,68 +31,102 @@ public class Formula {
             .operator("!=", 3, Associativity.LEFT, (ResolvedValue a, ResolvedValue b) -> ResolvedValue.of(!a.equals(b)))
             .operator("AND", 1, Associativity.LEFT, (ResolvedValue a, ResolvedValue b) -> ResolvedValue.of(a.asBoolean() && b.asBoolean()))
             .operator("OR", 1, Associativity.LEFT, (ResolvedValue a, ResolvedValue b) -> ResolvedValue.of(a.asBoolean() || b.asBoolean()))
-            .operator("d", 4, Associativity.LEFT, (ResolvedValue a, ResolvedValue b) -> ResolvedRollValue.of(a.asNumber(), b.asNumber()))
+            .operator(",", 1, Associativity.LEFT, Formula::mergeLists)
             .term("true", () -> ResolvedValue.TRUE)
             .term("false", () -> ResolvedValue.FALSE)
             .term("null", ResolvedValue::none)
             .function("abs", (ResolvedValue a) -> ResolvedValue.of(Math.abs(a.asDecimal())))
-            .function("min", (ResolvedValue a, ResolvedValue b) -> ResolvedValue.of(Math.min(a.asDecimal(), b.asDecimal())))
-            .function("max", (ResolvedValue a, ResolvedValue b) -> ResolvedValue.of(Math.max(a.asDecimal(), b.asDecimal())))
+            .function("min", Formula::minFn)
+            .function("max", Formula::maxFn)
+            .function("maxeach", Formula::maxEachFn)
+            .function("mineach", Formula::minEachFn)
+            .function("clamp", Formula::clampFn)
             .function("floor", (ResolvedValue a) -> ResolvedValue.of(Math.floor(a.asDecimal())))
             .function("ceil", (ResolvedValue a) -> ResolvedValue.of(Math.ceil(a.asDecimal())))
+            .function("sum", Formula::sumFn)
             .function("signed", (ResolvedValue a) -> ResolvedValue.of((a.asNumber() < 0 ? "" : "+") + a.asNumber()))
             .function("if", (ResolvedValue a, ResolvedValue b, ResolvedValue c) -> a.asBoolean() ? b : c)
             .function("concat", Formula::concatFn)
             .function("ordinal", (ResolvedValue a) -> ResolvedValue.of(Ordinal.toString(a.asNumber())))
-            .function("any", (List<ResolvedValue> values) -> ResolvedValue.of(values.stream().anyMatch(ResolvedValue::asBoolean)))
-            .function("all", (List<ResolvedValue> values) -> ResolvedValue.of(values.stream().allMatch(ResolvedValue::asBoolean)))
+            .function("any", Formula::anyFn)
+            .function("all", Formula::allFn)
             .variable("@", Formula::variableFn)
             .variable("@{", "}", Formula::variableFn)
-            .variable("min(@", ")", Formula::minFn)
-            .variable("max(@", ")", Formula::maxFn)
-            .variable("sum(@", ")", Formula::sumFn)
-            .variable("sum(max(@", "))", Formula::sumMaxFn)
-            .variable("sum(min(@", "))", Formula::sumMinFn)
             .comment("[", "]", (value, comment) -> NamedResolvedValue.of(value, comment.substring(1, comment.length() - 1), "[", "]"))
             ;
 
+    private static ResolvedValue allFn(List<ResolvedValue> values) {
+        return ResolvedValue.of(values.stream()
+                .flatMap(value -> value.asList().stream())
+                .allMatch(ResolvedValue::asBoolean));
+    }
+
+    private static ResolvedValue anyFn(List<ResolvedValue> values) {
+        return ResolvedValue.of(values.stream()
+                .flatMap(value -> value.asList().stream())
+                .anyMatch(ResolvedValue::asBoolean));
+    }
+
+    private static ResolvedValue sumFn(ResolvedValue a) {
+        var list = a.asList();
+        if (list.isEmpty()) {
+            return ResolvedValue.ZERO;
+        }
+        if (list.size() < 2) {
+            return a;
+        }
+        return ResolvedValue.of(a.asList()
+                .stream()
+                .mapToDouble(value -> sumFn(value).asDecimal())
+                .sum());
+    }
+
+    private static ResolvedValue maxEachFn(ResolvedValue a) {
+        List<ResolvedValue> values = new ArrayList<>();
+        a.asList().forEach(value -> values.add(maxFn(value)));
+        return ResolvedValue.of(values);
+    }
+
+    private static ResolvedValue minEachFn(ResolvedValue a) {
+        return ResolvedValue.of(a.asList().stream()
+                .map(Formula::minFn)
+                .toList());
+    }
+
+    private static ResolvedValue clampFn(ResolvedValue a, ResolvedValue min, ResolvedValue max) {
+        if (a.asDecimal() < min.asDecimal()) {
+            return min;
+        }
+        if (a.asDecimal() > max.asDecimal()) {
+            return max;
+        }
+        return a;
+    }
+
+    private static ResolvedValue maxFn(ResolvedValue a) {
+        return a.asList().stream()
+                .max(Comparator.comparing(ResolvedValue::asDecimal))
+                .orElse(ResolvedValue.none());
+    }
+
+    private static ResolvedValue minFn(ResolvedValue a) {
+        return a.asList().stream()
+                .min(Comparator.comparing(ResolvedValue::asDecimal))
+                .orElse(ResolvedValue.none());
+    }
+
+    private static ResolvedValue mergeLists(ResolvedValue a, ResolvedValue b) {
+        List<ResolvedValue> merged = new ArrayList<>();
+        merged.addAll(a.asList());
+        merged.addAll(b.asList());
+        return ResolvedValue.of(merged);
+    }
+
     private static ResolvedValue variableFn(DataContext context, String key) {
+        if (key.contains("*")) {
+            return ResolvedValue.of(context.search(key).toList());
+        }
         return context.get(key);
-    }
-
-    private static ResolvedValue sumFn(DataContext context, String key) {
-        return context.search(key)
-                .flatMap(a -> a.asList().stream())
-                .reduce(Formula::addReduceFn)
-                .orElse(ResolvedValue.ZERO);
-    }
-
-    private static ResolvedValue sumMaxFn(DataContext context, String key) {
-        return context.search(key)
-                .map(a -> a.asList().stream().reduce(Formula::maxReduceFn).orElse(ResolvedValue.none()))
-                .reduce(Formula::addReduceFn)
-                .orElse(ResolvedValue.ZERO);
-    }
-
-    private static ResolvedValue sumMinFn(DataContext context, String key) {
-        return context.search(key)
-                .map(a -> a.asList().stream().reduce(Formula::minReduceFn).orElse(ResolvedValue.none()))
-                .reduce(Formula::addReduceFn)
-                .orElse(ResolvedValue.ZERO);
-    }
-
-    private static ResolvedValue maxFn(DataContext context, String key) {
-        return context.search(key)
-                .flatMap(a -> a.asList().stream())
-                .reduce(Formula::maxReduceFn)
-                .orElse(ResolvedValue.none());
-    }
-
-    private static ResolvedValue minFn(DataContext context, String key) {
-        return context.search(key)
-                .flatMap(a -> a.asList().stream())
-                .reduce(Formula::minReduceFn)
-                .orElse(ResolvedValue.none());
     }
 
     private static ResolvedValue concatFn(List<ResolvedValue> values) {

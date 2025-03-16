@@ -4,6 +4,13 @@ namespace Formula.ShuntingYard;
 
 public class ShuntingYardParser
 {
+    private const string ParametersStartSymbol = "(";
+    private const string ParametersEndSymbol = ")";
+    private const string ParametersSeparatorSymbol = ";";
+    private static readonly Literal ParametersStartToken = new Literal(ParametersStartSymbol);
+    private static readonly Literal ParametersEndToken = new Literal(ParametersEndSymbol);
+    private static readonly Literal ParametersSeparatorToken = new Literal(ParametersSeparatorSymbol);
+    
     private readonly TokenTree<INode> _tokenTree;
 
     public static ShuntingYardParser Create()
@@ -17,9 +24,9 @@ public class ShuntingYardParser
             .IgnoreWhitespaces()
             .Add(NodeExpression.Integer, token => new Term(ResolvedValue.Of(int.Parse(token))))
             .Add(NodeExpression.Decimal, token => new Term(ResolvedValue.Of(double.Parse(token))))
-            .Add("(", token => new Literal(token))
-            .Add(")", token => new Literal(token))
-            .Add(",", token => new Literal(token))
+            .Add(ParametersStartSymbol, _ => ParametersStartToken)
+            .Add(ParametersEndSymbol, _ => ParametersEndToken)
+            .Add(ParametersSeparatorSymbol, _ => ParametersSeparatorToken)
             .Add(NodeExpression.Literal("\"", "\"", "\\\""),
                 quote => new Term(ResolvedValue.Of(quote.Substring(1, quote.Length - 2)), "\"", "\""))
             .Add(NodeExpression.Literal("'", "'", "\\'"),
@@ -123,9 +130,6 @@ public class ShuntingYardParser
         return this;
     }
 
-    private static readonly Literal OpenBracket = new Literal("(");
-    private static readonly Literal Comma = new Literal(",");
-
     public IResolvable Parse(string text)
     {
         var operatorStack = new Stack<INode>();
@@ -142,7 +146,7 @@ public class ShuntingYardParser
             if (token is BiOperator biOp)
             {
                 token = biOp.BinaryOperator;
-                if (previous is null or IOperator || previous.Equals(OpenBracket) || previous.Equals(Comma))
+                if (previous is null or IOperator || previous.Equals(ParametersStartToken) || previous.Equals(ParametersSeparatorToken))
                 {
                     token = biOp.UnaryOperator;
                 }
@@ -203,12 +207,12 @@ public class ShuntingYardParser
                     case "}":
                         // ignore
                         break;
-                    case ",":
+                    case ParametersSeparatorSymbol:
                         arityStack.Push(arityStack.Pop() + 1);
                         while (operatorStack.Count > 0)
                         {
                             var next = operatorStack.Pop();
-                            if (next.Equals(new Literal("(")))
+                            if (next.Equals(ParametersStartToken))
                             {
                                 operatorStack.Push(next);
                                 break;
@@ -218,14 +222,14 @@ public class ShuntingYardParser
                         }
 
                         break;
-                    case "(":
+                    case ParametersStartSymbol:
                         operatorStack.Push(token);
                         break;
-                    case ")":
+                    case ParametersEndSymbol:
                         while (operatorStack.Count > 0)
                         {
                             var next = operatorStack.Pop();
-                            if (next.Equals(new Literal("(")))
+                            if (next.Equals(ParametersStartToken))
                             {
                                 break;
                             }
@@ -238,7 +242,7 @@ public class ShuntingYardParser
                             if (operatorStack.Peek() is FunctionN)
                             {
                                 var arity = arityStack.Pop();
-                                arity = previous != null && previous.Equals(new Literal("(")) ? 0 : arity;
+                                arity = previous != null && previous.Equals(ParametersStartToken) ? 0 : arity;
                                 outputBuffer.Push(new Arity(arity));
                             }
 

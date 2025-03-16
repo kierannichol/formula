@@ -5,10 +5,10 @@ from formula.resolved_value import resolved_value, ResolvedValue
 
 
 class DataContext:
-    def __init__(self, data: dict[str, Resolvable]):
+    def __init__(self, data: dict[str, str|int|float|bool|Resolvable|list[Resolvable]]):
         self._data = data
 
-    def get(self, key: str) -> resolved_value:
+    def get(self, key: str) -> ResolvedValue:
         if key not in self._data:
             return resolved_value(None)
         value = self._data[key]
@@ -33,19 +33,15 @@ class DataContext:
             existing = self._data[key]
             self._data[key] = [existing, value]
 
-    def search(self, pattern: str) -> list[resolved_value]:
-        regex_pattern = pattern.replace('*', '.*?')
+    def search(self, pattern: str) -> list[ResolvedValue]:
+        regex_pattern = re.escape(pattern).replace('\\*', '.*?')
         regex = re.compile(f"^{regex_pattern}$")
+        found = []
         for key in self._data:
             match = regex.search(key)
             if match is not None:
-                value = self._data[key]
-                if isinstance(value, Resolvable):
-                    yield value.resolve(self)
-                elif isinstance(value, list):
-                    yield self._resolve_list(value)
-                else:
-                    yield resolved_value(value)
+                found.append(self.get(key))
+        return found
 
     def _resolve_list(self, values) -> ResolvedValue:
         resolved = []

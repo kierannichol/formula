@@ -13,12 +13,6 @@ public class FormulaTest
         try
         {
             var resolved = Formula.Parse(data.Formula);
-            if (resolved == null)
-            {
-                Assert.Fail("Resolved value was null");
-                return;
-            }
-            
             var value = resolved.Resolve(data.Data ?? DataContext.Empty);
 
             if (data.ExpectedError != null)

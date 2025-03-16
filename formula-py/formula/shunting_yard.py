@@ -162,7 +162,7 @@ class ShuntingYardParser:
                         .add_branch(token_tree.INTEGER, lambda x: int(x))
                         .add_branch('(', lambda x: x)
                         .add_branch(')', lambda x: x)
-                        .add_branch(',', lambda x: x)
+                        .add_branch(';', lambda x: x)
                         .add_branch(token_tree.literal('"', '"', '\\"'),
                                     lambda quote: Term(lambda: resolved_value(quote[1:-1]), '"', '"'))
                         .add_branch(token_tree.literal('\'', '\'', '\\\''),
@@ -276,7 +276,7 @@ class ShuntingYardParser:
             if isinstance(token, BiOperator):
                 operator = token
                 token = operator.binary
-                if previous is None or isinstance(previous, Operator) or previous == '(' or previous == ',':
+                if previous is None or isinstance(previous, Operator) or previous == '(' or previous == ';':
                     token = operator.unary
 
             if isinstance(token, Operator):
@@ -303,7 +303,7 @@ class ShuntingYardParser:
                 match token:
                     case ' ' | '{' | '}':
                         pass
-                    case ',':
+                    case ';':
                         arity_stack[-1] += 1
                         while len(operator_stack) > 0:
                             top = operator_stack.pop()

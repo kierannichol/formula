@@ -29,7 +29,7 @@ abstract class AbstractOptimizedFunction extends ResolvedValue {
   }
 
   asList(): ResolvedValue[] {
-    throw AbstractOptimizedFunction.UnsupportedException;
+    return [this];
   }
 }
 
@@ -41,7 +41,7 @@ class OptimizedAnyFunction extends AbstractOptimizedFunction {
     this.values = [];
     let hasTrue = false;
     let hasFalse = false;
-    values.forEach(next => {
+    values.flatMap(x => x.asList()).forEach(next => {
       if (next instanceof OptimizedAnyFunction) {
         this.values.push(...next.values);
         return;
@@ -80,7 +80,7 @@ class OptimizedAllFunction extends AbstractOptimizedFunction {
     super();
     this.values = [];
     let hasFalse = false;
-    values.forEach(next => {
+    values.flatMap(x => x.asList()).forEach(next => {
       if (next instanceof OptimizedAllFunction) {
         this.values.push(...next.values);
         return;
@@ -142,6 +142,27 @@ class OptimizedMathFunction extends AbstractOptimizedFunction {
   }
 }
 
+export class OptimizedListFunction extends AbstractOptimizedFunction {
+  private readonly values: ResolvedValue[];
+
+  constructor(values: ResolvedValue[]) {
+    super();
+    this.values = values.flatMap(x => x.asList());
+  }
+
+  asText(): string {
+    return `(${this.asTextNoBrackets()})`;
+  }
+
+  asTextNoBrackets(): string {
+    return this.values.map(x => x.asText()).join(',');
+  }
+
+  asList(): ResolvedValue[] {
+    return this.values;
+  }
+}
+
 export class FormulaOptimizer {
 
   private static Parser = ShuntingYard.parser()
@@ -159,7 +180,7 @@ export class FormulaOptimizer {
   .operator('!=', 3, Associativity.Left, 2, opFn((a, b) => `${a}!=${b}`))
   .operator('AND', 1, Associativity.Left, 2, (a, b) => new OptimizedAllFunction([a, b]))
   .operator('OR', 1, Associativity.Left, 2, (a, b) => new OptimizedAnyFunction([a, b]))
-  .operator('d', 4, Associativity.Left, 2, opFn((a, b) => `${a}d${b}`))
+  .operator(',', 1, Associativity.Left, 2, (a, b) => new OptimizedListFunction([a, b]))
   .term('true', () => ResolvedValue.of(true))
   .term('false', () => ResolvedValue.of(false))
   .term('null', () => ResolvedValue.of('null'))
@@ -174,11 +195,8 @@ export class FormulaOptimizer {
   .function('ordinal', 1, passthroughFn('ordinal'))
   .varargsFunction('any', (args) => new OptimizedAnyFunction(args))
   .varargsFunction('all', (args) => new OptimizedAllFunction(args))
-  .variable('@', '', (state, key) => ResolvedValue.of(`@${key}`))
-  .variable('@{', '}', (state, key) => ResolvedValue.of(`@{${key}}`))
-  .variable('min(@', ')', (state, key) => ResolvedValue.of(`min(@${key})`))
-  .variable('max(@', ')', (state, key) => ResolvedValue.of(`max(@${key})`))
-  .variable('sum(@', ')', (state, key) => ResolvedValue.of(`sum(@${key})`))
+  .variable('@', '', (_, key) => ResolvedValue.of(`@${key}`))
+  .variable('@{', '}', (_, key) => ResolvedValue.of(`@{${key}}`))
   .comment('[', ']', (comment, subject) => new QuotedTextResolvedValue(subject, "", `[${comment}]`))
 
   static optimize(formula: string): string {

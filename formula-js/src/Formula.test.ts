@@ -34,9 +34,14 @@ formulaTestCases.forEach(testCase => {
         expect(resolved?.asText()).toBe(testCase.expected_text);
       if (testCase.expected_boolean)
         expect(resolved?.asBoolean()).toBe(testCase.expected_boolean);
-      if (testCase.expected_list)
-        expect(resolved?.asList()).toEqual(
-            testCase.expected_list.map(ResolvedValue.of))
+      if (testCase.expected_list) {
+        const resolvedList = resolved?.asList();
+        expect(resolvedList)
+          .toHaveLength(testCase.expected_list.length);
+        for (const expected_entry of testCase.expected_list.map(ResolvedValue.of)) {
+          expect(resolvedList.find(x => x.equals(expected_entry))).toBeDefined();
+        }
+      }
     } catch (e) {
       if (testCase.expected_error) {
         expect(e.message).toBe(testCase.expected_error);

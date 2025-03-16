@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Self
 
 from formula import resolved_value
 from formula.resolved_value import NamedResolvedValue, QuotedTextResolvedValue, ResolvedValue
@@ -60,18 +60,19 @@ class _AnyFunction(ResolvedValue):
     def __init__(self, values: list[resolved_value]):
         self._values = []
         has_false = False
-        for value in values:
-            if isinstance(value, _AnyFunction):
-                self._values += value._values
-                continue
-            if value == resolved_value(False):
-                has_false = True
-                continue
-            if value == resolved_value(True):
-                self._values.clear()
+        for arg in values:
+            for value in arg.as_list():
+                if isinstance(value, _AnyFunction):
+                    self._values += value._values
+                    continue
+                if value == resolved_value(False):
+                    has_false = True
+                    continue
+                if value == resolved_value(True):
+                    self._values.clear()
+                    self._values.append(value)
+                    return
                 self._values.append(value)
-                return
-            self._values.append(value)
         if len(self._values) == 0:
             self._values.append(resolved_value(not has_false))
 
@@ -87,17 +88,18 @@ class _AnyFunction(ResolvedValue):
 class _AllFunction(ResolvedValue):
     def __init__(self, values: list[resolved_value]):
         self._values = []
-        for value in values:
-            if isinstance(value, _AllFunction):
-                self._values += value._values
-                continue
-            if value == resolved_value(True):
-                continue
-            if value == resolved_value(False):
-                self._values.clear()
+        for arg in values:
+            for value in arg.as_list():
+                if isinstance(value, _AllFunction):
+                    self._values += value._values
+                    continue
+                if value == resolved_value(True):
+                    continue
+                if value == resolved_value(False):
+                    self._values.clear()
+                    self._values.append(value)
+                    return
                 self._values.append(value)
-                return
-            self._values.append(value)
         if len(self._values) == 0:
             self._values.append(resolved_value(True))
 
@@ -108,6 +110,19 @@ class _AllFunction(ResolvedValue):
 
     def __repr__(self):
         return self.as_text()
+
+
+class _ListFunction(ResolvedValue):
+    def __init__(self, a: ResolvedValue, b: ResolvedValue):
+        self._values = a.as_list() + b.as_list()
+
+    def as_text(self) -> str:
+        if len(self._values) == 1:
+            return _format(self._values[0])
+        return ','.join([_format(x) for x in self._values])
+
+    def as_list(self) -> list[ResolvedValue]:
+        return self._values
 
 
 __parser = (ShuntingYardParser()
@@ -125,7 +140,7 @@ __parser = (ShuntingYardParser()
             .operator('!=', 3, Associativity.LEFT, 2, _op_fn2(lambda a, b: f"{a}!={b}"))
             .operator('AND', 1, Associativity.LEFT, 2, lambda p: _AllFunction(p))
             .operator('OR', 1, Associativity.LEFT, 2, lambda p: _AnyFunction(p))
-            .operator('d', 4, Associativity.LEFT, 2, _op_fn2(lambda a, b: f"{a}d{b}"))
+            .operator(',', 1, Associativity.LEFT, 2, lambda p: _ListFunction(p[0],p[1]))
             .term('true', lambda: resolved_value(True))
             .term('false', lambda: resolved_value(False))
             .term('null', lambda: resolved_value(None))

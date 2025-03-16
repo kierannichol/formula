@@ -91,6 +91,22 @@
 - name: signed(-3) as integer
   formula: "signed(-3)"
   expected_number: -3
+- name: clamp(3; 1; 5)
+  formula: "clamp(3; 1; 5)"
+  expected_number: 3
+- name: clamp(10; 1; 5)
+  formula: "clamp(10; 1; 5)"
+  expected_number: 5
+- name: clamp(-8; 1; 5)
+  formula: "clamp(-8; 1; 5)"
+  expected_number: 1
+- name: clamp(@value; @min; @max)
+  data:
+    value: 10
+    min: 1
+    max: 7
+  formula: "clamp(@value; @min; @max)"
+  expected_number: 7
 
 # Decimals
 - name: add decimals
@@ -137,7 +153,7 @@
     b: "2"
   expected_number: 2
 
-- name: "all()"
+- name: "all(empty)"
   formula: "all()"
   expected_boolean: true
 - name: "all(true)"
@@ -190,7 +206,7 @@
   expected_number: 12
 
 - name: wildcard max
-  formula: "max(@key_*)"
+  formula: "max(@{key_*})"
   data:
     other: 2
     key_1: 4
@@ -199,7 +215,7 @@
   expected_number: 5
 
 - name: wildcard min
-  formula: "min(@key_*)"
+  formula: "min(@{key_*})"
   data:
     other: 2
     key_1: 4
@@ -242,27 +258,11 @@
   expected_text: "10th"
 
 - name: "if: when true"
-  formula: "if(-2 < 0, 'A', 'B')"
+  formula: "if(-2 < 0; 'A'; 'B')"
   expected_text: "A"
 - name: "if: when false"
-  formula: "if(-2 > 0, 'A', 'B')"
+  formula: "if(-2 > 0; 'A'; 'B')"
   expected_text: "B"
-
-# Dice Rolls
-- name: "roll 1d20"
-  formula: "1d20"
-  expected_number: 10.5
-  expected_text: "1d20"
-- name: "roll 2d6"
-  formula: "2d6"
-  expected_number: 7
-  expected_text: "2d6"
-- name: "roll 1d8+2"
-  formula: "1d8+2"
-  expected_number: 6.5
-- name: "roll 2+1d8"
-  formula: "2+1d8"
-  expected_number: 6.5
 
 # Lists
 - name: "empty list"
@@ -354,33 +354,33 @@
     list: ["{1+1}", "{2+2}", "{3+3}"]
   expected_number: 12
 - name: "sum(keys + list)"
-  formula: "sum(@to_add#*)"
+  formula: "sum(@{to_add#*})"
   data:
     to_add#value: 4
     to_add#list: ["{1+1}", "{2+2}", "{3+3}"]
   expected_number: 16
-- name: "sum(max(lists))"
-  formula: "sum(max(@list#*))"
+- name: "sum(maxeach(lists))"
+  formula: "sum(maxeach(@list#*))"
   data:
     list#1: [1, 5, 3]
     list#2: [2, 4, 6]
   expected_number: 11
-- name: "sum(min(lists))"
-  formula: "sum(min(@list#*))"
+- name: "sum(mineach(lists))"
+  formula: "sum(mineach(@list#*))"
   data:
     list#1: [1, 5, 3]
     list#2: [2, 4, 6]
   expected_number: 3
-- name: "sum(max(nothing))"
-  formula: "sum(max(@nothing#*))"
+- name: "sum(maxeach(nothing))"
+  formula: "sum(maxeach(@nothing#*))"
   expected_number: 0
-- name: "sum(min(nothing))"
-  formula: "sum(min(@nothing#*))"
+- name: "sum(mineach(nothing))"
+  formula: "sum(mineach(@nothing#*))"
   expected_number: 0
 - name: "search wildcards work"
-  formula: "sum(@key:*)"
+  formula: "@key:*"
   data:
     'key:1': 1
     'key:2': 1
-    'not:key:3': 1
-  expected_number: 2
+    'not:key:3': 99
+  expected_list: [1, 1]

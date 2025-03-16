@@ -13,8 +13,12 @@ import org.formula.parse.tree.TokenTree;
 import org.formula.util.Lambda2;
 
 public class ShuntingYardParser implements Parser {
-    private static final Literal OPEN_BRACKET = Literal.of("(");
-    private static final Literal COMMA = Literal.of(",");
+    private static final String PARAMETERS_START_SYMBOL = "(";
+    private static final String PARAMETERS_END_SYMBOL = ")";
+    private static final String PARAMETERS_SEPARATOR_SYMBOL = ";";
+    private static final Literal PARAMETERS_START_TOKEN = Literal.of(PARAMETERS_START_SYMBOL);
+    private static final Literal PARAMETERS_END_TOKEN = Literal.of(PARAMETERS_END_SYMBOL);
+    private static final Literal PARAMETERS_SEPARATOR_TOKEN = Literal.of(PARAMETERS_SEPARATOR_SYMBOL);
 
     private final TokenTree<Node> tokenTree;
 
@@ -27,9 +31,9 @@ public class ShuntingYardParser implements Parser {
                 .ignoreWhitespaces()
                 .add(NodeExpression.INTEGER, token -> Term.of(Integer.parseInt(token)))
                 .add(NodeExpression.DECIMAL, token -> Term.of(Double.parseDouble(token)))
-                .add("(", Literal::of)
-                .add(")", Literal::of)
-                .add(",", Literal::of)
+                .add(PARAMETERS_START_SYMBOL, ignored -> PARAMETERS_START_TOKEN)
+                .add(PARAMETERS_END_SYMBOL, ignored -> PARAMETERS_END_TOKEN)
+                .add(PARAMETERS_SEPARATOR_SYMBOL, ignored -> PARAMETERS_SEPARATOR_TOKEN)
                 .add(NodeExpression.literal("\"", "\"", "\\\""),
                         quote -> Term.of(quote.substring(1, quote.length() - 1), "\"", "\""))
                 .add(NodeExpression.literal("'", "'", "\\'"),
@@ -129,8 +133,8 @@ public class ShuntingYardParser implements Parser {
             if (token instanceof BiOperatorFunction func) {
                 token = func.binaryOperator();
                 if (previous == null || previous instanceof Operator
-                        || Objects.equals(previous, OPEN_BRACKET)
-                        || Objects.equals(previous, COMMA)) {
+                        || Objects.equals(previous, PARAMETERS_START_TOKEN)
+                        || Objects.equals(previous, PARAMETERS_SEPARATOR_TOKEN)) {
                     token = func.unaryOperator();
                 }
             }
@@ -180,24 +184,24 @@ public class ShuntingYardParser implements Parser {
                     case "}":
                         // ignore
                         break;
-                    case ",":
+                    case PARAMETERS_SEPARATOR_SYMBOL:
                         arityStack.push(arityStack.pop() + 1);
                         while (!operatorStack.isEmpty()) {
                             Node next = operatorStack.pop();
-                            if (next.equals(Literal.of("("))) {
+                            if (next.equals(PARAMETERS_START_TOKEN)) {
                                 operatorStack.push(next);
                                 break;
                             }
                             outputBuffer.push(next);
                         }
                         break;
-                    case "(":
+                    case PARAMETERS_START_SYMBOL:
                         operatorStack.push(token);
                         break;
-                    case ")":
+                    case PARAMETERS_END_SYMBOL:
                         while (!operatorStack.isEmpty()) {
                             var next = operatorStack.pop();
-                            if (next.equals(Literal.of("("))) {
+                            if (next.equals(PARAMETERS_START_TOKEN)) {
                                 break;
                             }
                             outputBuffer.push(next);
@@ -206,7 +210,7 @@ public class ShuntingYardParser implements Parser {
                         if (!operatorStack.isEmpty() && operatorStack.peek() instanceof Function) {
                             if (operatorStack.peek() instanceof FunctionN) {
                                 int arity = arityStack.pop();
-                                arity = previous.equals(Literal.of("(")) ? 0 : arity;
+                                arity = previous.equals(PARAMETERS_START_TOKEN) ? 0 : arity;
                                 outputBuffer.push(new Arity(arity));
                             }
                             outputBuffer.push(operatorStack.pop());

@@ -179,7 +179,7 @@ class BasicNodeExpression implements NodeExpression {
     if (isRoot) {
       let matcherNode = node as MatcherNode;
       if (matcherNode.mapper !== undefined) {
-        throw new Error("Conflicting tokens");
+        throw new Error("Conflicting tokens: " + matcherNode);
       }
       matcherNode.mapper = mapper;
     }
@@ -292,6 +292,10 @@ class MatcherNode extends Node {
   equals(node: Node): boolean {
     return node instanceof MatcherNode
         && this.matcher.equals(node.matcher);
+  }
+
+  toString(): string {
+    return this.matcher.toString();
   }
 }
 
@@ -422,6 +426,10 @@ class CharacterTokenMatcher implements TokenMatcher {
     return other instanceof CharacterTokenMatcher
         && this.character === other.character;
   }
+
+  toString(): string {
+    return this.character;
+  }
 }
 
 class AnyOfTokenMatcher implements TokenMatcher {
@@ -436,6 +444,10 @@ class AnyOfTokenMatcher implements TokenMatcher {
     return other instanceof AnyOfTokenMatcher
         && shallowEquals(this.allowed, other.allowed);
   }
+
+  toString(): string {
+    return this.allowed.toString();
+  }
 }
 
 class AnyTokenMatcher implements TokenMatcher {
@@ -445,6 +457,10 @@ class AnyTokenMatcher implements TokenMatcher {
 
   equals(other: TokenMatcher): boolean {
     return other instanceof AnyOfTokenMatcher;
+  }
+
+  toString(): string {
+    return "*";
   }
 }
 
@@ -459,6 +475,10 @@ class NotTokenMatcher implements TokenMatcher {
   equals(other: TokenMatcher): boolean {
     return other instanceof NotTokenMatcher
         && this.matcher.equals(other.matcher);
+  }
+
+  toString(): string {
+    return "!" + this.matcher;
   }
 }
 

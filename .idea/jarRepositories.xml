@@ -31,5 +31,15 @@
       <option name="name" value="Gradle Central Plugin Repository" />
       <option name="url" value="https://plugins.gradle.org/m2" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven" />
+      <option name="name" value="maven" />
+      <option name="url" value="https://artifacts.ea.com/artifactory/apache-maven-remote/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven2" />
+      <option name="name" value="maven2" />
+      <option name="url" value="https://artifacts.ea.com/artifactory/plugins-gradle-remote/" />
+    </remote-repository>
   </component>
 </project>

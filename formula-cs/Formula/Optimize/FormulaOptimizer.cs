@@ -3,51 +3,53 @@ using Formula.ShuntingYard;
 
 namespace Formula.Optimize;
 
-public class FormulaOptimizer
+public abstract class FormulaOptimizer
 {
     private static readonly ShuntingYardParser Parser = ShuntingYardParser.Create()
-            .Operator("^", 4, Associativity.Right, OpFn2((a, b) => a + "^" + b))
-            .Operator("*", 3, Associativity.Left, (a,b) => new MathFunction("*", a, b))
-            .Operator("/", 3, Associativity.Left, (a,b) => new MathFunction("/", a, b))
-            .Operator("+", 2, Associativity.Left, (a,b) => new MathFunction("+", a, b))
-            .Operator("-", 2, Associativity.Left, (a,b) => new MathFunction("-", a, b))
-            .Operator("!", 2, Associativity.Left, OpFn1((a) => "!" + a))
-            .Operator("<", 3, Associativity.Left, OpFn2((a, b) => a + "<" + b))
-            .Operator("<=", 3, Associativity.Left, OpFn2((a, b) => a + "<=" + b))
-            .Operator(">", 3, Associativity.Left, OpFn2((a, b) => a + ">" + b))
-            .Operator(">=", 3, Associativity.Left, OpFn2((a, b) => a + ">=" + b))
-            .Operator("==", 3, Associativity.Left, OpFn2((a, b) => a + "==" + b))
-            .Operator("!=", 3, Associativity.Left, OpFn2((a, b) => a + "!=" + b))
-            .Operator("AND", 1, Associativity.Left, (a, b) => new AllFunction(new List<ResolvedValue>(new[] {a, b})))
-            .Operator("OR", 1, Associativity.Left, (a, b) => new AnyFunction(new List<ResolvedValue>(new[] {a, b})))
-            .Operator("d", 4, Associativity.Left, OpFn2((a, b) => a + "d" + b))
-            .Term("true", () => ResolvedValue.Of("true"))
-            .Term("false", () => ResolvedValue.Of("false"))
-            .Term("null", () => ResolvedValue.Of("null"))
-            .Function("abs", OpFn1(a => $"abs({a})"))
-            .Function("min", OpFn2((a, b) => $"min({a},{b})"))
-            .Function("max", OpFn2((a, b) => $"max({a},{b})"))
-            .Function("floor", OpFn1(a => $"floor({a})"))
-            .Function("ceil", OpFn1(a => $"ceil({a})"))
-            .Function("signed", OpFn1(a => $"signed({a})"))
-            .Function("if", OpFn3((a, b, c) => $"if({a},{b},{c})"))
-            .Function("concat", OpFn2((a, b) => $"concat({a},{b})"))
-            .Function("ordinal", OpFn1(a => $"ordinal({a})"))
-            .Function("any", a => new AnyFunction(new List<ResolvedValue>(a)))
-            .Function("all", a => new AllFunction(new List<ResolvedValue>(a)))
-            .Variable("@", (_, key) => ResolvedValue.Of($"@{key}"))
-            .Variable("@{", "}", (_, key) => ResolvedValue.Of($"@{{{key}}}"))
-            .Variable("min(@", ")", (_, key) => ResolvedValue.Of($"min(@{key})"))
-            .Variable("max(@", ")", (_, key) => ResolvedValue.Of($"max(@{key})"))
-            .Variable("sum(@", ")", (_, key) => ResolvedValue.Of($"sum(@{key})"))
-            .Comment("[", "]", (value, comment) => NamedResolvedValue.Of(value, comment.Substring(1, comment.Length - 2)))
-            ;
+        .Operator("^", 4, Associativity.Right, OpFn2((a, b) => a + "^" + b))
+        .Operator("*", 3, Associativity.Left, (a, b) => new MathFunction("*", a, b))
+        .Operator("/", 3, Associativity.Left, (a, b) => new MathFunction("/", a, b))
+        .Operator("+", 2, Associativity.Left, (a, b) => new MathFunction("+", a, b))
+        .Operator("-", 2, Associativity.Left, (a, b) => new MathFunction("-", a, b))
+        .Operator("!", 2, Associativity.Left, OpFn1((a) => "!" + a))
+        .Operator("<", 3, Associativity.Left, OpFn2((a, b) => a + "<" + b))
+        .Operator("<=", 3, Associativity.Left, OpFn2((a, b) => a + "<=" + b))
+        .Operator(">", 3, Associativity.Left, OpFn2((a, b) => a + ">" + b))
+        .Operator(">=", 3, Associativity.Left, OpFn2((a, b) => a + ">=" + b))
+        .Operator("==", 3, Associativity.Left, OpFn2((a, b) => a + "==" + b))
+        .Operator("!=", 3, Associativity.Left, OpFn2((a, b) => a + "!=" + b))
+        .Operator("AND", 1, Associativity.Left, (a, b) => new AllFunction(new List<ResolvedValue>(new[] { a, b })))
+        .Operator("OR", 1, Associativity.Left, (a, b) => new AnyFunction(new List<ResolvedValue>(new[] { a, b })))
+        .Operator(",", 1, Associativity.Left, (a, b) => new ListFunction(a, b))
+        .Term("true", () => ResolvedValue.Of("true"))
+        .Term("false", () => ResolvedValue.Of("false"))
+        .Term("null", () => ResolvedValue.Of("null"))
+        .Function("abs", OpFn1(a => $"abs({a})"))
+        .Function("min", OpFn2((a, b) => $"min({a},{b})"))
+        .Function("max", OpFn2((a, b) => $"max({a},{b})"))
+        .Function("floor", OpFn1(a => $"floor({a})"))
+        .Function("ceil", OpFn1(a => $"ceil({a})"))
+        .Function("signed", OpFn1(a => $"signed({a})"))
+        .Function("if", OpFn3((a, b, c) => $"if({a},{b},{c})"))
+        .Function("concat", OpFn2((a, b) => $"concat({a},{b})"))
+        .Function("ordinal", OpFn1(a => $"ordinal({a})"))
+        .Function("any", a => new AnyFunction(new List<ResolvedValue>(a)))
+        .Function("all", a => new AllFunction(new List<ResolvedValue>(a)))
+        .Variable("@", (_, key) => ResolvedValue.Of($"@{key}"))
+        .Variable("@{", "}", (_, key) => ResolvedValue.Of($"@{{{key}}}"))
+        .Variable("min(@", ")", (_, key) => ResolvedValue.Of($"min(@{key})"))
+        .Variable("max(@", ")", (_, key) => ResolvedValue.Of($"max(@{key})"))
+        .Variable("sum(@", ")", (_, key) => ResolvedValue.Of($"sum(@{key})"))
+        .Comment("[", "]", (value, comment) => NamedResolvedValue.Of(value, comment.Substring(1, comment.Length - 2)));
 
-    public static string Optimize(string formulaText) {
+    public static string Optimize(string formulaText)
+    {
         var resolved = Parser.Parse(formulaText).Resolve();
-        if (resolved is MathFunction mf) {
+        if (resolved is MathFunction mf)
+        {
             return mf.AsTextNoBrackets();
         }
+
         return Format(resolved);
     }
 
@@ -61,19 +63,24 @@ public class FormulaOptimizer
         };
     }
 
-    private static Func<ResolvedValue, ResolvedValue> OpFn1(Func<string, string> fn) {
+    private static Func<ResolvedValue, ResolvedValue> OpFn1(Func<string, string> fn)
+    {
         return a => ResolvedValue.Of(fn.Invoke(Format(a)));
     }
 
-    private static Func<ResolvedValue, ResolvedValue, ResolvedValue> OpFn2(Func<string, string, string> fn) {
+    private static Func<ResolvedValue, ResolvedValue, ResolvedValue> OpFn2(Func<string, string, string> fn)
+    {
         return (a, b) => ResolvedValue.Of(fn.Invoke(Format(a), Format(b)));
     }
 
-    private static Func<ResolvedValue, ResolvedValue, ResolvedValue, ResolvedValue> OpFn3(Func<string, string, string, string> fn) {
+    private static Func<ResolvedValue, ResolvedValue, ResolvedValue, ResolvedValue> OpFn3(
+        Func<string, string, string, string> fn)
+    {
         return (a, b, c) => ResolvedValue.Of(fn.Invoke(Format(a), Format(b), Format(c)));
     }
 
-    private class MathFunction : AbstractOptimizedFunction {
+    private class MathFunction : AbstractOptimizedFunction
+    {
         private readonly string _operator;
         private readonly ResolvedValue _a;
         private readonly ResolvedValue _b;
@@ -84,18 +91,20 @@ public class FormulaOptimizer
             _a = a;
             _b = b;
         }
-        
-        public override string AsText() {
+
+        public override string AsText()
+        {
             return "(" + AsTextNoBrackets() + ")";
         }
 
-        public string AsTextNoBrackets() {
+        public string AsTextNoBrackets()
+        {
             return FormatMath(_a)
                    + _operator
                    + FormatMath(_b);
         }
 
-        private string FormatMath(ResolvedValue v) 
+        private string FormatMath(ResolvedValue v)
         {
             if (v is MathFunction mv)
             {
@@ -114,36 +123,44 @@ public class FormulaOptimizer
                     _ => Format(v)
                 };
             }
+
             return Format(v);
         }
     }
 
-    private class AnyFunction : AbstractOptimizedFunction {
+    private class AnyFunction : AbstractOptimizedFunction
+    {
         private readonly List<ResolvedValue> _values;
 
-        internal AnyFunction(List<ResolvedValue> values) {
+        internal AnyFunction(List<ResolvedValue> values)
+        {
             _values = new List<ResolvedValue>();
             var hasFalse = false;
-            foreach (var next in values) 
+            foreach (var value in values)
             {
-                if (next is AnyFunction anyFn) {
-                    _values.AddRange(anyFn._values);
-                    continue;
-                }
-
-                if (next.Equals(False))
+                foreach (var next in value.AsList())
                 {
-                    hasFalse = true;
-                    continue;
-                }
+                    if (next is AnyFunction anyFn)
+                    {
+                        _values.AddRange(anyFn._values);
+                        continue;
+                    }
 
-                if (next.Equals(True))
-                {
-                    _values.Clear();
-                    _values.Add(True);
-                    return;
+                    if (next.Equals(False))
+                    {
+                        hasFalse = true;
+                        continue;
+                    }
+
+                    if (next.Equals(True))
+                    {
+                        _values.Clear();
+                        _values.Add(True);
+                        return;
+                    }
+
+                    _values.Add(next);
                 }
-                _values.Add(next);
             }
 
             if (_values.Count == 0)
@@ -151,9 +168,11 @@ public class FormulaOptimizer
                 _values.Add(hasFalse ? False : True);
             }
         }
-        
-        public override string AsText() {
-            if (_values.Count == 1) {
+
+        public override string AsText()
+        {
+            if (_values.Count == 1)
+            {
                 return Format(_values[0]);
             }
 
@@ -175,31 +194,37 @@ public class FormulaOptimizer
         }
     }
 
-    private class AllFunction : AbstractOptimizedFunction 
+    private class AllFunction : AbstractOptimizedFunction
     {
         private readonly List<ResolvedValue> _values;
 
-        internal AllFunction(List<ResolvedValue> values) {
+        internal AllFunction(List<ResolvedValue> values)
+        {
             _values = new List<ResolvedValue>();
-            foreach (var next in values) 
+            foreach (var value in values)
             {
-                if (next is AllFunction allFn) {
-                    _values.AddRange(allFn._values);
-                    continue;
-                }
-
-                if (next.Equals(True))
+                foreach (var next in value.AsList())
                 {
-                    continue;
-                }
+                    if (next is AllFunction allFn)
+                    {
+                        _values.AddRange(allFn._values);
+                        continue;
+                    }
 
-                if (next.Equals(False))
-                {
-                    _values.Clear();
-                    _values.Add(False);
-                    return;
+                    if (next.Equals(True))
+                    {
+                        continue;
+                    }
+
+                    if (next.Equals(False))
+                    {
+                        _values.Clear();
+                        _values.Add(False);
+                        return;
+                    }
+
+                    _values.Add(next);
                 }
-                _values.Add(next);
             }
 
             if (_values.Count == 0)
@@ -207,10 +232,11 @@ public class FormulaOptimizer
                 _values.Add(True);
             }
         }
-        
-        public override string AsText() 
+
+        public override string AsText()
         {
-            if (_values.Count == 1) {
+            if (_values.Count == 1)
+            {
                 return Format(_values[0]);
             }
 
@@ -232,21 +258,51 @@ public class FormulaOptimizer
         }
     }
 
+    private class ListFunction : AbstractOptimizedFunction
+    {
+        private readonly List<ResolvedValue> _values;
 
-    private abstract class AbstractOptimizedFunction : ResolvedValue 
+        public ListFunction(ResolvedValue a, ResolvedValue b)
+        {
+            _values = new List<ResolvedValue>();
+            _values.AddRange(a.AsList());
+            _values.AddRange(b.AsList());
+        }
+
+        public override string AsText()
+        {
+            return string.Join(',', _values);
+        }
+
+        public override IReadOnlyList<ResolvedValue> AsList()
+        {
+            return _values;
+        }
+    }
+
+
+    private abstract class AbstractOptimizedFunction : ResolvedValue
     {
         private static readonly InvalidOperationException NotAvailableException = new("Not available for optimization");
-        
-        public override int AsNumber() {
+
+        public override int AsNumber()
+        {
             throw NotAvailableException;
         }
-        
-        public override double AsDecimal() {
+
+        public override double AsDecimal()
+        {
             throw NotAvailableException;
         }
-        
-        public override bool AsBoolean() {
+
+        public override bool AsBoolean()
+        {
             throw NotAvailableException;
+        }
+
+        public override string ToString()
+        {
+            return AsText();
         }
     }
 }

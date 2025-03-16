@@ -10,16 +10,25 @@ type ZeroOperandFunction<T> = () => T;
 type OneOperandFunction<T> = (x: T) => T;
 type TwoOperandFunction<T> = (x: T, y: T) => T;
 type ThreeOperandFunction<T> = (x: T, y: T, z: T) => T;
-type OperandFunction<T> = ZeroOperandFunction<T> | OneOperandFunction<T> | TwoOperandFunction<T> | ThreeOperandFunction<T>;
+type OperandFunction<T> =
+    ZeroOperandFunction<T>
+    | OneOperandFunction<T>
+    | TwoOperandFunction<T>
+    | ThreeOperandFunction<T>;
 type VarargsOperandFunction<T> = (n: T[]) => T;
 
 function mapIntFunction(operands: number, fn: OperandFunction<number>): OperandFunction<ResolvedValue> {
   switch (operands) {
-    case 0: return () => ResolvedValue.of((fn as ZeroOperandFunction<number>)());
-    case 1: return (x?: ResolvedValue) => ResolvedValue.of((fn as OneOperandFunction<number>)(x?.asNumber() ?? 0));
-    case 2: return (x?: ResolvedValue, y?: ResolvedValue) => ResolvedValue.of((fn as TwoOperandFunction<number>)(x?.asNumber() ?? 0, y?.asNumber() ?? 0));
-    case 3: return (x?: ResolvedValue, y?: ResolvedValue, z?: ResolvedValue) => ResolvedValue.of((fn as ThreeOperandFunction<number>)(x?.asNumber() ?? 0, y?.asNumber() ?? 0, z?.asNumber() ?? 0));
-    default: throw new Error(`Unsupported number of operands: ${operands}`);
+    case 0:
+      return () => ResolvedValue.of((fn as ZeroOperandFunction<number>)());
+    case 1:
+      return (x?: ResolvedValue) => ResolvedValue.of((fn as OneOperandFunction<number>)(x?.asNumber() ?? 0));
+    case 2:
+      return (x?: ResolvedValue, y?: ResolvedValue) => ResolvedValue.of((fn as TwoOperandFunction<number>)(x?.asNumber() ?? 0, y?.asNumber() ?? 0));
+    case 3:
+      return (x?: ResolvedValue, y?: ResolvedValue, z?: ResolvedValue) => ResolvedValue.of((fn as ThreeOperandFunction<number>)(x?.asNumber() ?? 0, y?.asNumber() ?? 0, z?.asNumber() ?? 0));
+    default:
+      throw new Error(`Unsupported number of operands: ${operands}`);
   }
 }
 
@@ -32,26 +41,43 @@ interface Node {
 
 }
 
+export abstract class Modifier {
+  abstract apply(value: ResolvedValue): ResolvedValue;
+}
+
+class NoModifier extends Modifier {
+  static readonly instance = new NoModifier();
+
+  apply(value: ResolvedValue): ResolvedValue {
+    return value;
+  }
+}
+
 abstract class OperatorFunction implements Node {
   public readonly name: string;
   public readonly operands: number;
   private readonly fn: OperandFunction<ResolvedValue>;
+
   protected constructor(name: string, operands: number, fn: OperandFunction<ResolvedValue>) {
     this.name = name;
     this.operands = operands;
     this.fn = fn;
   }
 
-  execute(x?: ResolvedValue, y?: ResolvedValue, z?: ResolvedValue): ResolvedValue {
+  execute(modifier: Modifier, x?: ResolvedValue, y?: ResolvedValue, z?: ResolvedValue): ResolvedValue {
+    const modifiedX = modifier.apply(x);
+    const modifiedY = modifier.apply(y);
+    const modifiedZ = modifier.apply(z);
+
     switch (this.operands) {
       case 0:
         return (this.fn as ZeroOperandFunction<ResolvedValue>)();
       case 1:
-        return (this.fn as OneOperandFunction<ResolvedValue>)(x as ResolvedValue);
+        return (this.fn as OneOperandFunction<ResolvedValue>)(modifiedX);
       case 2:
-        return (this.fn as TwoOperandFunction<ResolvedValue>)(x as ResolvedValue, y as ResolvedValue);
+        return (this.fn as TwoOperandFunction<ResolvedValue>)(modifiedX, modifiedY);
       case 3:
-        return (this.fn as ThreeOperandFunction<ResolvedValue>)(x as ResolvedValue, y as ResolvedValue, z as ResolvedValue);
+        return (this.fn as ThreeOperandFunction<ResolvedValue>)(modifiedX, modifiedY, modifiedZ);
       default:
         throw new Error(`Unsupported number of operands: ${this.operands}`);
     }
@@ -68,8 +94,9 @@ class VarargsFunction implements Node {
   constructor(public readonly name: string,
               private readonly fn: VarargsOperandFunction<ResolvedValue>) {
   }
-  execute(args: ResolvedValue[]): ResolvedValue {
-    return this.fn(args);
+
+  execute(modifier: Modifier, args: ResolvedValue[]): ResolvedValue {
+    return this.fn(args.map(modifier.apply));
   }
 }
 
@@ -89,9 +116,10 @@ class BiOperator implements Node {
 
 class Variable implements Node {
   constructor(public readonly key: string,
-              private readonly resolver: (context: DataContext, key: string) => ResolvedValue|Resolvable|undefined) {}
+              private readonly resolver: (context: DataContext, key: string) => ResolvedValue | Resolvable | undefined) {
+  }
 
-  resolve(context: DataContext): ResolvedValue|Resolvable {
+  resolve(context: DataContext): ResolvedValue | Resolvable {
     return this.resolver(context, this.key) ?? ResolvedValue.None;
   }
 
@@ -102,7 +130,8 @@ class Variable implements Node {
 
 class Comment implements Node {
   constructor(private readonly text: string,
-              private readonly decorator: (text: string, value: ResolvedValue) => ResolvedValue) {}
+              private readonly decorator: (text: string, value: ResolvedValue) => ResolvedValue) {
+  }
 
   apply(previous: ResolvedValue) {
     return this.decorator(this.text, previous);
@@ -110,14 +139,15 @@ class Comment implements Node {
 }
 
 class Term implements Node {
-  constructor(private readonly resolver: (context: DataContext) => ResolvedValue|Resolvable|undefined,
-              private readonly prefix: string|undefined = undefined,
-              private readonly suffix: string|undefined = undefined) {}
+  constructor(private readonly resolver: (context: DataContext) => ResolvedValue | Resolvable | undefined,
+              private readonly prefix: string | undefined = undefined,
+              private readonly suffix: string | undefined = undefined) {
+  }
 
   resolve(context: DataContext) {
     return (this.prefix && this.suffix)
-      ? this.resolver(context).map(resolved => new QuotedTextResolvedValue(resolved, this.prefix, this.suffix))
-      : this.resolver(context);
+        ? this.resolver(context).map(resolved => new QuotedTextResolvedValue(resolved, this.prefix, this.suffix))
+        : this.resolver(context);
   }
 }
 
@@ -127,14 +157,14 @@ export class ShuntingYardParser implements Parser {
 
   constructor() {
     this.parser = new TokenTree()
-      .ignoreWhitespaces()
-      .add([ integer ], token => parseInt(token))
-      .add([ decimal ], token => parseFloat(token))
-      .add('(', token => token)
-      .add(')', token => token)
-      .add(',', token => token)
-      .add(literal('"', '"', '\\"'), quote => new Term(() => ResolvedValue.of(quote.slice(1,-1)), "\"", "\""))
-      .add(literal("'", "'", "\\'"), quote => new Term(() => ResolvedValue.of(quote.slice(1,-1)), "'", "'"))
+    .ignoreWhitespaces()
+    .add([integer], token => parseInt(token))
+    .add([decimal], token => parseFloat(token))
+    .add('(', token => token)
+    .add(')', token => token)
+    .add(';', token => token)
+    .add(literal('"', '"', '\\"'), quote => new Term(() => ResolvedValue.of(quote.slice(1, -1)), "\"", "\""))
+    .add(literal("'", "'", "\\'"), quote => new Term(() => ResolvedValue.of(quote.slice(1, -1)), "'", "'"))
   }
 
   operator(symbol: string, precedence: number, associativity: Associativity, operands: number, fn: OperandFunction<ResolvedValue>) {
@@ -161,6 +191,11 @@ export class ShuntingYardParser implements Parser {
     return this;
   }
 
+  modifier(name: string, mod: Modifier) {
+    this.parser.add(name, _ => mod);
+    return this;
+  }
+
   varargsFunction(name: string, fn: VarargsOperandFunction<ResolvedValue>) {
     this.parser.add(name, _ => new VarargsFunction(name, fn));
     return this;
@@ -170,8 +205,8 @@ export class ShuntingYardParser implements Parser {
     return this.function(name, operands, mapIntFunction(operands, fn));
   }
 
-  variable(prefix: string, suffix: string, extractor: (context: DataContext, key: string) => ResolvedValue|Resolvable) {
-    this.parser.add([ term(prefix), alpha, optional(key), term(suffix) ],
+  variable(prefix: string, suffix: string, extractor: (context: DataContext, key: string) => ResolvedValue | Resolvable) {
+    this.parser.add([term(prefix), alpha, optional(key), term(suffix)],
         key => new Variable(key, (context: DataContext, key: string) =>
             extractor(context, key.substring(prefix.length, key.length - suffix.length))));
     return this;
@@ -183,8 +218,8 @@ export class ShuntingYardParser implements Parser {
     return this;
   }
 
-  term(text: string, extractor: (context: DataContext) => ResolvedValue|Resolvable|undefined) {
-    this.parser.add([ term(text) ],
+  term(text: string, extractor: (context: DataContext) => ResolvedValue | Resolvable | undefined) {
+    this.parser.add([term(text)],
         key => new Variable(key, (context: DataContext) =>
             extractor(context)));
     return this;
@@ -204,12 +239,12 @@ export class ShuntingYardParser implements Parser {
 
     for (let i = 0; i < tokens.length; i++) {
       let token = tokens[i];
-      let previous = i > 0 ? tokens[i-1] : undefined;
+      let previous = i > 0 ? tokens[i - 1] : undefined;
 
       if (token instanceof BiOperator) {
         let operator = token;
         token = operator.binary;
-        if (!previous || previous instanceof Operator || previous === '(' || previous === ',') {
+        if (!previous || previous instanceof Operator || previous === '(' || previous === ';') {
           token = operator.unary;
         }
       }
@@ -227,6 +262,11 @@ export class ShuntingYardParser implements Parser {
         }
 
         operatorStack.push(operator);
+        continue;
+      }
+
+      if (token instanceof Modifier) {
+        operatorStack.push(token);
         continue;
       }
 
@@ -263,8 +303,8 @@ export class ShuntingYardParser implements Parser {
         case '}':
           // ignore
           break;
-        case ',':
-          arityStack[arityStack.length-1]++;
+        case ';':
+          arityStack[arityStack.length - 1]++;
           while (operatorStack.length > 0) {
             let next = operatorStack.pop();
             if (next === '(') {
@@ -293,12 +333,13 @@ export class ShuntingYardParser implements Parser {
               throw new Error(`${func.name} expected ${func.operands} parameters, but got ${paramCount}`);
             }
             outputBuffer.push(func);
-          }
-          else if (operatorStack.at(-1) instanceof VarargsFunction) {
+          } else if (operatorStack.at(-1) instanceof VarargsFunction) {
             let arity = arityStack.pop();
             arity = previous === '(' ? 0 : arity;
             outputBuffer.push(arity);
             outputBuffer.push(operatorStack.pop());
+          } else if (operatorStack.at(-1) instanceof Modifier) {
+            outputBuffer.push(operatorStack.pop() as Modifier);
           }
           break;
         default:
@@ -314,7 +355,7 @@ export class ShuntingYardParser implements Parser {
   }
 }
 
-type OperatorStack = Array<Node|string|number|null|undefined>;
+type OperatorStack = Array<Node | string | number | null | undefined>;
 
 export class ShuntingYard extends Resolvable {
   private readonly originalFormula: string;
@@ -334,39 +375,41 @@ export class ShuntingYard extends Resolvable {
     return this.originalFormula;
   }
 
-  resolve(context: DataContext = DataContext.Empty): ResolvedValue|undefined {
+  resolve(context: DataContext = DataContext.Empty): ResolvedValue | undefined {
     let localStack: OperatorStack = [];
     let stack: OperatorStack = [...this.stack];
+    let modifierStack: Modifier[] = [NoModifier.instance];
     while (stack.length > 0) {
       let next = stack.shift();
+
+      if (next instanceof Modifier) {
+        modifierStack.push(next);
+        continue;
+      }
 
       if (next instanceof OperatorFunction) {
         let func = next;
         if (func.operands === 0) {
-          localStack.push(func.execute());
-        }
-        else if (func.operands === 1) {
+          localStack.push(func.execute(modifierStack.at(-1)));
+        } else if (func.operands === 1) {
           let x = localStack.pop() as ResolvedValue;
           if (x === undefined) throw new ResolveError(`Missing parameter #1 for "${func.name}"`);
-          localStack.push(func.execute(x));
-        }
-        else if (func.operands === 2) {
+          localStack.push(func.execute(modifierStack.at(-1), x));
+        } else if (func.operands === 2) {
           let b = localStack.pop() as ResolvedValue;
           let a = localStack.pop() as ResolvedValue;
           if (b === undefined) throw new ResolveError(`Missing parameter #1 for "${func.name}"`)
           if (a === undefined) throw new ResolveError(`Missing parameter #2 for "${func.name}"`)
-          localStack.push(func.execute(a, b));
-        }
-        else if (func.operands === 3) {
+          localStack.push(func.execute(modifierStack.at(-1), a, b));
+        } else if (func.operands === 3) {
           let c = localStack.pop() as ResolvedValue;
           let b = localStack.pop() as ResolvedValue;
           let a = localStack.pop() as ResolvedValue;
           if (c === undefined) throw new ResolveError(`Missing parameter #1 for "${func.name}"`)
           if (b === undefined) throw new ResolveError(`Missing parameter #2 for "${func.name}"`)
           if (a === undefined) throw new ResolveError(`Missing parameter #3 for "${func.name}"`)
-          localStack.push(func.execute(a, b, c));
-        }
-        else {
+          localStack.push(func.execute(modifierStack.at(-1), a, b, c));
+        } else {
           throw new Error("Unsupported number of operands: " + func.operands);
         }
         continue;
@@ -379,7 +422,8 @@ export class ShuntingYard extends Resolvable {
         while (paramCount-- > 0) {
           params.unshift(localStack.pop() as ResolvedValue);
         }
-        localStack.push(func.execute(params));
+        const modifier = modifierStack.at(-1);
+        localStack.push(func.execute(modifier, params));
         continue;
       }
 
@@ -411,6 +455,6 @@ export class ShuntingYard extends Resolvable {
       localStack.push(next);
     }
 
-    return localStack.pop() as ResolvedValue;
+    return modifierStack.at(-1).apply(localStack.pop() as ResolvedValue);
   }
 }

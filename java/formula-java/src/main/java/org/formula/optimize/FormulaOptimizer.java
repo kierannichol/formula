@@ -32,7 +32,7 @@ public class FormulaOptimizer {
             .operator("!=", 3, Associativity.LEFT, opFn2((a, b) -> a + "!=" + b))
             .operator("AND", 1, Associativity.LEFT, (a, b) -> new AllFunction(List.of(a, b)))
             .operator("OR", 1, Associativity.LEFT, (a, b) -> new AnyFunction(List.of(a, b)))
-            .operator("d", 4, Associativity.LEFT, opFn2((a, b) -> a + "d" + b))
+            .operator(",", 1, Associativity.LEFT, OptimizedListFunction::create)
             .term("true", () -> ResolvedValue.of("true"))
             .term("false", () -> ResolvedValue.of("false"))
             .term("null", () -> ResolvedValue.of("null"))
@@ -131,21 +131,23 @@ public class FormulaOptimizer {
         private AnyFunction(List<ResolvedValue> values) {
             this.values = new ArrayList<>();
             boolean hasFalse = false;
-            for (ResolvedValue next : values) {
-                if (next instanceof AnyFunction anyFn) {
-                    this.values.addAll(anyFn.values);
-                    continue;
+            for (ResolvedValue value : values) {
+                for (ResolvedValue next : value.asList()) {
+                    if (next instanceof AnyFunction anyFn) {
+                        this.values.addAll(anyFn.values);
+                        continue;
+                    }
+                    if (next.equals(ResolvedValue.FALSE)) {
+                        hasFalse = true;
+                        continue;
+                    }
+                    if (next.equals(ResolvedValue.TRUE)) {
+                        this.values.clear();
+                        this.values.add(ResolvedValue.TRUE);
+                        return;
+                    }
+                    this.values.add(next);
                 }
-                if (next.equals(ResolvedValue.FALSE)) {
-                    hasFalse = true;
-                    continue;
-                }
-                if (next.equals(ResolvedValue.TRUE)) {
-                    this.values.clear();
-                    this.values.add(ResolvedValue.TRUE);
-                    return;
-                }
-                this.values.add(next);
             }
 
             if (this.values.isEmpty()) {
@@ -169,20 +171,22 @@ public class FormulaOptimizer {
 
         private AllFunction(List<ResolvedValue> values) {
             this.values = new ArrayList<>();
-            for (ResolvedValue next : values) {
-                if (next instanceof AllFunction allFn) {
-                    this.values.addAll(allFn.values);
-                    continue;
+            for (ResolvedValue value : values) {
+                for (ResolvedValue next : value.asList()) {
+                    if (next instanceof AllFunction allFn) {
+                        this.values.addAll(allFn.values);
+                        continue;
+                    }
+                    if (next.equals(ResolvedValue.TRUE)) {
+                        continue;
+                    }
+                    if (next.equals(ResolvedValue.FALSE)) {
+                        this.values.clear();
+                        this.values.add(ResolvedValue.FALSE);
+                        return;
+                    }
+                    this.values.add(next);
                 }
-                if (next.equals(ResolvedValue.TRUE)) {
-                    continue;
-                }
-                if (next.equals(ResolvedValue.FALSE)) {
-                    this.values.clear();
-                    this.values.add(ResolvedValue.FALSE);
-                    return;
-                }
-                this.values.add(next);
             }
 
             if (this.values.isEmpty()) {
@@ -198,6 +202,31 @@ public class FormulaOptimizer {
             return "all(" + values.stream()
                     .map(FormulaOptimizer::format)
                     .collect(Collectors.joining(",")) + ")";
+        }
+    }
+
+    private static class OptimizedListFunction extends AbstractOptimizedFunction {
+        private final List<ResolvedValue> values;
+
+        public static OptimizedListFunction create(ResolvedValue a, ResolvedValue b) {
+            List<ResolvedValue> values = new ArrayList<>();
+            values.addAll(a.asList());
+            values.addAll(b.asList());
+            return new OptimizedListFunction(values);
+        }
+
+        private OptimizedListFunction(List<ResolvedValue> values) {
+            this.values = values;
+        }
+
+        @Override
+        public String asText() {
+            return values.stream().map(ResolvedValue::asText).collect(Collectors.joining(","));
+        }
+
+        @Override
+        public List<ResolvedValue> asList() {
+            return values;
         }
     }
 
