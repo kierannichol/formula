@@ -3,12 +3,12 @@
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$">
-      <excludeFolder url="file://$MODULE_DIR$/formula-cs/Formula/bin" />
-      <excludeFolder url="file://$MODULE_DIR$/formula-cs/Formula/obj" />
-      <excludeFolder url="file://$MODULE_DIR$/formula-cs/FormulaTest/bin" />
-      <excludeFolder url="file://$MODULE_DIR$/formula-cs/FormulaTest/obj" />
-      <excludeFolder url="file://$MODULE_DIR$/formula-py/.venv/bin" />
-      <excludeFolder url="file://$MODULE_DIR$/formula-py/.venv/lib" />
+      <excludeFolder url="file://$MODULE_DIR$/cs/formula-cs/Formula/bin" />
+      <excludeFolder url="file://$MODULE_DIR$/cs/formula-cs/Formula/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/cs/formula-cs/FormulaTest/bin" />
+      <excludeFolder url="file://$MODULE_DIR$/cs/formula-cs/FormulaTest/obj" />
+      <excludeFolder url="file://$MODULE_DIR$/py/formula-py/.venv/bin" />
+      <excludeFolder url="file://$MODULE_DIR$/py/formula-py/.venv/lib" />
     </content>
     <orderEntry type="jdk" jdkName="17" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />

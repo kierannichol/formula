@@ -7,12 +7,12 @@ on:
     branches: [ "main" ]
     paths:
       - '.github/workflows/formula-js.yml'
-      - 'formula-js/**'
+      - 'js/formula-js/**'
   pull_request:
     branches: [ "main" ]
     paths:
       - '.github/workflows/formula-js.yml'
-      - 'formula-js/**'
+      - 'js/formula-js/**'
 
 permissions:
   contents: read
@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./formula-js
+        working-directory: ./js/formula-js
 
     steps:
     - uses: actions/checkout@v4
