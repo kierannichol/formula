@@ -13,7 +13,7 @@ import {
 
 test('empty tree', () => {
   const tree = new TokenTree();
-  expect(() => tree.parse('Test')).toThrowError();
+  expect(() => tree.parse('Test')).toThrow();
 });
 
 test('single node', () => {
@@ -26,9 +26,9 @@ test('simple chain', () => {
   const tree = new TokenTree()
   .add('ABC', token => token);
   expect(tree.parse('ABC')).toEqual(['ABC']);
-  expect(() => tree.parse('A')).toThrowError();
-  expect(() => tree.parse('AB')).toThrowError();
-  expect(() => tree.parse('ABX')).toThrowError();
+  expect(() => tree.parse('A')).toThrow();
+  expect(() => tree.parse('AB')).toThrow();
+  expect(() => tree.parse('ABX')).toThrow();
 });
 
 test('splitting chain', () => {
@@ -52,7 +52,7 @@ test('anyof()', () => {
   .ignoreWhitespaces()
   .add(anyof(DigitCharacters), token => parseInt(token));
   expect(tree.parse('1 2 3')).toEqual([1, 2, 3]);
-  expect(() => tree.parse('A')).toThrowError();
+  expect(() => tree.parse('A')).toThrow();
 });
 
 test('anyof() chain', () => {
@@ -60,7 +60,7 @@ test('anyof() chain', () => {
   .ignoreWhitespaces()
   .add([ anyof(DigitCharacters), anyof(DigitCharacters) ], token => parseInt(token));
   expect(tree.parse('13 25 36')).toEqual([13, 25, 36]);
-  expect(() => tree.parse('4')).toThrowError();
+  expect(() => tree.parse('4')).toThrow();
 });
 
 test('repeated', () => {
@@ -79,8 +79,8 @@ test('optional trailing character', () => {
   expect(tree.parse('A5')).toEqual(['A5']);
   expect(tree.parse('ABC6')).toEqual(['ABC6']);
   expect(tree.parse('ABC')).toEqual(['ABC']);
-  expect(() => tree.parse('5')).toThrowError();
-  expect(() => tree.parse('ABC56')).toThrowError();
+  expect(() => tree.parse('5')).toThrow();
+  expect(() => tree.parse('ABC56')).toThrow();
 });
 
 test('optional leading character', () => {
@@ -89,8 +89,8 @@ test('optional leading character', () => {
   .add([ anyof('@').optional(), anyof(WordCharacters).repeats(1) ], token => token);
   expect(tree.parse('@A5')).toEqual(['@A5']);
   expect(tree.parse('A5')).toEqual(['A5']);
-  expect(() => tree.parse('@')).toThrowError();
-  expect(() => tree.parse('@@A5')).toThrowError();
+  expect(() => tree.parse('@')).toThrow();
+  expect(() => tree.parse('@@A5')).toThrow();
 });
 
 test('number', () => {
@@ -101,11 +101,11 @@ test('number', () => {
   expect(tree.parse('23')).toEqual([23]);
   expect(tree.parse('54890')).toEqual([54890]);
   expect(tree.parse('3.14')).toEqual([3.14]);
-  expect(() => tree.parse('A')).toThrowError();
-  expect(() => tree.parse('5B')).toThrowError();
+  expect(() => tree.parse('A')).toThrow();
+  expect(() => tree.parse('5B')).toThrow();
 
-  expect(() => tree.parse('2.')).toThrowError();
-  expect(() => tree.parse('.5')).toThrowError();
+  expect(() => tree.parse('2.')).toThrow();
+  expect(() => tree.parse('.5')).toThrow();
 });
 
 test('expression order', () => {
