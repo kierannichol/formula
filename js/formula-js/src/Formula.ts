@@ -34,8 +34,8 @@ export class Formula {
   .function('if', 3, (a: ResolvedValue, b: ResolvedValue, c: ResolvedValue) => a.asBoolean() ? b : c)
   .varargsFunction('concat', Formula.concatFn)
   .function('ordinal', 1, (a: ResolvedValue) => ResolvedValue.of(ordinal(a.asNumber())))
-  .varargsFunction('any', args => ResolvedValue.of(args.flatMap(arg => arg.hasValue() ? arg.asList() : [arg]).some(arg => arg.asBoolean())))
-  .varargsFunction('all', args => ResolvedValue.of(args.flatMap(arg => arg.hasValue() ? arg.asList() : [arg]).every(arg => arg.asBoolean())))
+  .varargsFunction('any', Formula.anyFn)
+  .varargsFunction('all', Formula.allFn)
   .variable('@', '', Formula.variableFn)
   .variable('@{', '}', Formula.variableFn)
   .function('sum', 1, Formula.sumFn)
@@ -109,6 +109,18 @@ export class Formula {
 
   private static clampFn(a: ResolvedValue, min: ResolvedValue, max: ResolvedValue) {
     return ResolvedValue.of(Math.min(max.asNumber(), Math.max(min.asNumber(), a.asNumber())));
+  }
+
+  private static allFn(args: ResolvedValue[]): ResolvedValue {
+    return args
+      .flatMap(arg => arg.hasValue() ? arg.asList() : [ResolvedValue.False])
+      .every(arg => arg.asBoolean()) ? ResolvedValue.True : ResolvedValue.False;
+  }
+
+  private static anyFn(args: ResolvedValue[]): ResolvedValue {
+    return args
+    .flatMap(arg => arg.hasValue() ? arg.asList() : [ResolvedValue.False])
+    .some(arg => arg.asBoolean()) ? ResolvedValue.True : ResolvedValue.False;
   }
 }
 
