@@ -7,7 +7,7 @@ import {ResolvedValue} from "./ResolvedValue";
 
 const YAML = require("yaml");
 
-const dataContextTestCasesPath = path.resolve(__dirname, '..', '..', 'formula-test', 'data-context-test-cases.yml');
+const dataContextTestCasesPath = path.resolve(__dirname, '..', '..', '..', 'formula-test', 'data-context-test-cases.yml');
 const dataContextTestCasesYaml = fs.readFileSync(dataContextTestCasesPath, "utf8");
 
 const dataContextTestCases = YAML.parse(dataContextTestCasesYaml);

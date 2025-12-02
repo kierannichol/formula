@@ -4,7 +4,7 @@ import fs from "node:fs";
 
 const YAML = require("yaml");
 
-const optimizeTestCasesPath = path.resolve(__dirname, '..', '..', 'formula-test', 'optimize-test-cases.yml');
+const optimizeTestCasesPath = path.resolve(__dirname, '..', '..', '..', 'formula-test', 'optimize-test-cases.yml');
 const optimizeTestCasesYaml = fs.readFileSync(optimizeTestCasesPath, "utf8");
 
 const optimizeTestCases = YAML.parse(optimizeTestCasesYaml);

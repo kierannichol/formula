@@ -112,15 +112,23 @@ export class Formula {
   }
 
   private static allFn(args: ResolvedValue[]): ResolvedValue {
-    return args
-      .flatMap(arg => arg.hasValue() ? arg.asList() : [ResolvedValue.False])
-      .every(arg => arg.asBoolean()) ? ResolvedValue.True : ResolvedValue.False;
+    for (const arg of args) {
+      if (!arg.hasValue()) return ResolvedValue.False;
+      for (const el of arg.asList()) {
+        if (!el.asBoolean()) return ResolvedValue.False;
+      }
+    }
+    return ResolvedValue.True;
   }
 
   private static anyFn(args: ResolvedValue[]): ResolvedValue {
-    return args
-    .flatMap(arg => arg.hasValue() ? arg.asList() : [ResolvedValue.False])
-    .some(arg => arg.asBoolean()) ? ResolvedValue.True : ResolvedValue.False;
+    for (const arg of args) {
+      if (!arg.hasValue()) continue;
+      for (const el of arg.asList()) {
+        if (el.asBoolean()) return ResolvedValue.True;
+      }
+    }
+    return ResolvedValue.False;
   }
 }
 

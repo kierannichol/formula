@@ -16,6 +16,9 @@
 - name: exponents
   formula: "2^3"
   expected_number: 8
+- name: exponents of exponents
+  formula: "2^(2^3)"
+  expected_number: 256
 - name: with brackets
   formula: "4 + 4 * 2 / ( 1 - 5 )"
   expected_number: 2
@@ -70,6 +73,11 @@
 - name: max function
   formula: "1 + max(4, 2)"
   expected_number: 5
+- name: max(0; @value-1)
+  data:
+    value: 10
+  formula: "max(0, @value-3)"
+  expected_number: 7
 - name: complex max function
   formula: "max(4 - 2, 2 / 2)"
   expected_number: 2
@@ -153,6 +161,23 @@
     b: "2"
   expected_number: 2
 
+- name: "all(@str_score>=13,@bab>=1)"
+  formula: "all(@str_score>=13,@bab>=1)"
+  data:
+    str_score: 14
+    bab: 2
+  expected_boolean: true
+- name: "all(null)"
+  formula: "all(null)"
+  expected_boolean: false
+- name: "all(unknown, unknown)"
+  formula: "all(@unknown_a,@unknown_b)"
+  expected_boolean: false
+- name: "all(true, unknown)"
+  formula: "all(@known_a,@unknown_b)"
+  data:
+    - known_a: true
+  expected_boolean: false
 - name: "all(empty)"
   formula: "all()"
   expected_boolean: true
