@@ -115,7 +115,7 @@ export class Formula {
     for (const arg of args) {
       if (!arg.hasValue()) return ResolvedValue.False;
       for (const el of arg.asList()) {
-        if (!el.asBoolean()) return ResolvedValue.False;
+        if (!el.hasValue() || !el.asBoolean()) return ResolvedValue.False;
       }
     }
     return ResolvedValue.True;
@@ -125,7 +125,7 @@ export class Formula {
     for (const arg of args) {
       if (!arg.hasValue()) continue;
       for (const el of arg.asList()) {
-        if (el.asBoolean()) return ResolvedValue.True;
+        if (el.hasValue() && el.asBoolean()) return ResolvedValue.True;
       }
     }
     return ResolvedValue.False;
