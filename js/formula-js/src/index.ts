@@ -5,6 +5,7 @@ export { NamedResolvedValue } from "./NamedResolvedValue";
 export { QuotedTextResolvedValue } from "./QuotedTextResolvedValue";
 export { DataContext, BaseDataContext, DataContextState, MutableDataContext, ImmutableDataContext } from "./DataContext";
 export { Formula } from "./Formula";
+export { FormulaParser } from "./FormulaParser";
 export { ShuntingYard, ShuntingYardParser, Associativity } from "./ShuntingYard";
 
 export { ResolveError } from "./ResolveError";
