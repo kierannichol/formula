@@ -23,7 +23,7 @@ export class Formula {
   .operator('!=', 3, Associativity.Left, 2, (a: ResolvedValue, b: ResolvedValue) => ResolvedValue.of(!a.equals(b)))
   .operator('AND', 1, Associativity.Left, 2, (a: ResolvedValue, b: ResolvedValue) => ResolvedValue.of(a.asBoolean() && b.asBoolean()))
   .operator('OR', 1, Associativity.Left, 2, (a: ResolvedValue, b: ResolvedValue) => ResolvedValue.of(a.asBoolean() || b.asBoolean()))
-  .operator(',', 1, Associativity.Left, 2, (a: ResolvedValue, b: ResolvedValue) => ResolvedValue.of([...a.asList(), ...b.asList()]))
+  .operator(',', 1, Associativity.Left, 2, Formula.mergeLists)
   .term('true', () => ResolvedValue.of(true))
   .term('false', () => ResolvedValue.of(false))
   .term('null', () => ResolvedValue.None)
@@ -115,7 +115,6 @@ export class Formula {
     for (const arg of args) {
       if (!arg.hasValue()) return ResolvedValue.False;
       const argList = arg.asList();
-      if (argList.length === 0) return ResolvedValue.False;
       for (const el of argList) {
         if (!el.hasValue() || !el.asBoolean()) return ResolvedValue.False;
       }
@@ -131,6 +130,13 @@ export class Formula {
       }
     }
     return ResolvedValue.False;
+  }
+
+  private static mergeLists(a: ResolvedValue, b: ResolvedValue) {
+    return ResolvedValue.of([
+      ...(a.hasValue() ? a.asList() : [ResolvedValue.None]),
+      ...(b.hasValue() ? b.asList() : [ResolvedValue.None])
+    ])
   }
 }
 
