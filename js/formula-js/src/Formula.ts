@@ -114,7 +114,9 @@ export class Formula {
   private static allFn(args: ResolvedValue[]): ResolvedValue {
     for (const arg of args) {
       if (!arg.hasValue()) return ResolvedValue.False;
-      for (const el of arg.asList()) {
+      const argList = arg.asList();
+      if (argList.length === 0) return ResolvedValue.False;
+      for (const el of argList) {
         if (!el.hasValue() || !el.asBoolean()) return ResolvedValue.False;
       }
     }
