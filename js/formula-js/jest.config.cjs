@@ -20,7 +20,7 @@ module.exports = {
     "node_modules/variables/.+\\.(j|t)sx?$": "ts-jest"
   },
 
-  testEnvironment: 'node',
+  testEnvironment: 'jsdom',
 
   testMatch: [
     '**/*.test.ts?(x)',

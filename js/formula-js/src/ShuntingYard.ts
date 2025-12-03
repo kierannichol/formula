@@ -251,7 +251,7 @@ export class ShuntingYardParser implements Parser {
 
       if (token instanceof Operator) {
         let operator = token;
-        let top = operatorStack.at(-1);
+        let top = operatorStack[operatorStack.length-1];
         if (top instanceof Operator) {
           if ((operator.precedence < top.precedence)
               || (operator.associativity === Associativity.Left
@@ -326,19 +326,19 @@ export class ShuntingYardParser implements Parser {
             outputBuffer.push(next);
           }
 
-          if (operatorStack.at(-1) instanceof Function) {
+          if (operatorStack[operatorStack.length-1] instanceof Function) {
             const paramCount = arityStack.pop();
             const func = operatorStack.pop() as Function;
             if (paramCount !== func.operands) {
               throw new Error(`${func.name} expected ${func.operands} parameters, but got ${paramCount}`);
             }
             outputBuffer.push(func);
-          } else if (operatorStack.at(-1) instanceof VarargsFunction) {
+          } else if (operatorStack[operatorStack.length-1] instanceof VarargsFunction) {
             let arity = arityStack.pop();
             arity = previous === '(' ? 0 : arity;
             outputBuffer.push(arity);
             outputBuffer.push(operatorStack.pop());
-          } else if (operatorStack.at(-1) instanceof Modifier) {
+          } else if (operatorStack[operatorStack.length-1] instanceof Modifier) {
             outputBuffer.push(operatorStack.pop() as Modifier);
           }
           break;
@@ -390,17 +390,17 @@ export class ShuntingYard extends Resolvable {
       if (next instanceof OperatorFunction) {
         let func = next;
         if (func.operands === 0) {
-          localStack.push(func.execute(modifierStack.at(-1)));
+          localStack.push(func.execute(modifierStack[modifierStack.length-1]));
         } else if (func.operands === 1) {
           let x = localStack.pop() as ResolvedValue;
           if (x === undefined) throw new ResolveError(`Missing parameter #1 for "${func.name}"`);
-          localStack.push(func.execute(modifierStack.at(-1), x));
+          localStack.push(func.execute(modifierStack[modifierStack.length-1], x));
         } else if (func.operands === 2) {
           let b = localStack.pop() as ResolvedValue;
           let a = localStack.pop() as ResolvedValue;
           if (b === undefined) throw new ResolveError(`Missing parameter #1 for "${func.name}"`)
           if (a === undefined) throw new ResolveError(`Missing parameter #2 for "${func.name}"`)
-          localStack.push(func.execute(modifierStack.at(-1), a, b));
+          localStack.push(func.execute(modifierStack[modifierStack.length-1], a, b));
         } else if (func.operands === 3) {
           let c = localStack.pop() as ResolvedValue;
           let b = localStack.pop() as ResolvedValue;
@@ -408,7 +408,7 @@ export class ShuntingYard extends Resolvable {
           if (c === undefined) throw new ResolveError(`Missing parameter #1 for "${func.name}"`)
           if (b === undefined) throw new ResolveError(`Missing parameter #2 for "${func.name}"`)
           if (a === undefined) throw new ResolveError(`Missing parameter #3 for "${func.name}"`)
-          localStack.push(func.execute(modifierStack.at(-1), a, b, c));
+          localStack.push(func.execute(modifierStack[modifierStack.length-1], a, b, c));
         } else {
           throw new Error("Unsupported number of operands: " + func.operands);
         }
@@ -422,7 +422,7 @@ export class ShuntingYard extends Resolvable {
         while (paramCount-- > 0) {
           params.unshift(localStack.pop() as ResolvedValue);
         }
-        const modifier = modifierStack.at(-1);
+        const modifier = modifierStack[modifierStack.length-1];
         localStack.push(func.execute(modifier, params));
         continue;
       }
@@ -455,6 +455,6 @@ export class ShuntingYard extends Resolvable {
       localStack.push(next);
     }
 
-    return modifierStack.at(-1).apply(localStack.pop() as ResolvedValue);
+    return modifierStack[modifierStack.length-1].apply(localStack.pop() as ResolvedValue);
   }
 }
