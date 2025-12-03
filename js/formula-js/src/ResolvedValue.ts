@@ -175,7 +175,7 @@ export abstract class ResolvedValue {
   static readonly None: ResolvedValue = NullValue.Instance;
 
   static of(value: string | number | boolean | ResolvedValue | (string | number | boolean | ResolvedValue)[]): ResolvedValue {
-    if (value === undefined) {
+    if (value === undefined || value === null) {
       return NullValue.Instance;
     }
 
