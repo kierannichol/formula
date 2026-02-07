@@ -15,7 +15,7 @@ public interface NodeExpression {
     NodeExpression NUMBER = of(INTEGER, optional(just('.'), DIGITS));
     NodeExpression ALPHA = anyOf(ALPHA_CHARACTERS);
     NodeExpression WORD = anyOf(WORD_CHARACTERS).repeats(1);
-    NodeExpression KEY = anyOf(WORD_CHARACTERS + ":.#*").repeats(1);
+    NodeExpression KEY = anyOf(WORD_CHARACTERS + ":.#*/").repeats(1);
 
     static NodeExpression of(NodeExpression... expressions) {
         return CompositeNodeExpression.of(Arrays.asList(expressions));

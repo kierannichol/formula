@@ -404,4 +404,4 @@ def optional(*nodes: NodeFactory) -> NodeFactory:
 INTEGER = any_of(string.digits).repeats(1)
 DECIMAL = [INTEGER, just('.'), INTEGER]
 NUMBER = [INTEGER, optional(just('.'), INTEGER)]
-KEY = any_of(string.ascii_letters + string.digits + '_:.#*').repeats(1)
+KEY = any_of(string.ascii_letters + string.digits + '_:.#*/').repeats(1)
